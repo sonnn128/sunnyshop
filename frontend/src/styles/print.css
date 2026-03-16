@@ -1,0 +1,91 @@
+@media print {
+  /* Ẩn các phần không cần thiết khi in */
+  header, 
+  nav, 
+  footer, 
+  button:not(.print-include), 
+  .no-print {
+    display: none !important;
+  }
+  
+  /* Cài đặt chung cho trang in */
+  body {
+    background-color: white;
+    font-size: 12pt;
+    color: #000;
+    margin: 0;
+    padding: 20mm;
+  }
+  
+  /* Đảm bảo nội dung hiển thị đầy đủ */
+  .print-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: white !important;
+  }
+  
+  /* Tiêu đề in */
+  .print-header {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10mm;
+    margin-bottom: 10mm;
+    text-align: center;
+  }
+  
+  /* Logo khi in */
+  .print-logo {
+    max-height: 15mm;
+    margin-bottom: 5mm;
+  }
+  
+  /* Định dạng các phần nội dung */
+  .print-section {
+    margin-bottom: 8mm;
+    page-break-inside: avoid;
+  }
+  
+  /* Định dạng bảng */
+  .print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8mm;
+  }
+  
+  .print-table th,
+  .print-table td {
+    border: 1px solid #ccc;
+    padding: 2mm;
+    text-align: left;
+  }
+  
+  .print-table th {
+    background-color: #f0f0f0;
+  }
+  
+  /* Tổng tiền */
+  .print-total {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 5mm;
+    font-size: 14pt;
+  }
+  
+  /* Chữ ký */
+  .print-signatures {
+    margin-top: 15mm;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .print-signature {
+    text-align: center;
+    width: 40%;
+  }
+  
+  .print-signature-line {
+    margin-top: 20mm;
+    border-top: 1px solid #000;
+  }
+}

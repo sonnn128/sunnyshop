@@ -1,0 +1,162 @@
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Calendar, Users, Grid3X3, FileText, BarChart3, Settings, LogOut, Search, ChevronDown, Package, Building2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth.store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { NotificationDropdown } from './NotificationDropdown';
+import { BottomNav } from './BottomNav';
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+const navigation = [{
+  name: 'Dashboard',
+  href: '/',
+  icon: LayoutDashboard
+}, {
+  name: 'Lịch đặt sân',
+  href: '/calendar',
+  icon: Calendar
+}, {
+  name: 'Khách hàng',
+  href: '/customers',
+  icon: Users
+}, {
+  name: 'Quản lý sân',
+  href: '/courts',
+  icon: Grid3X3
+}, {
+  name: 'Quản lý cơ sở',
+  href: '/venues',
+  icon: Building2
+}, {
+  name: 'Hóa đơn',
+  href: '/invoices',
+  icon: FileText
+}, {
+  name: 'Kho & Dịch vụ',
+  href: '/inventory',
+  icon: Package
+}, {
+  name: 'Báo cáo',
+  href: '/reports',
+  icon: BarChart3
+}];
+export function AppLayout({
+  children
+}) {
+  const {
+    user,
+    logout
+  } = useAuthStore();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+  return /*#__PURE__*/_jsxs("div", {
+    className: "flex h-screen bg-background",
+    children: [/*#__PURE__*/_jsxs("aside", {
+      className: "hidden md:flex w-64 bg-background-secondary border-r border-border flex-col",
+      children: [/*#__PURE__*/_jsxs("div", {
+        className: "h-16 flex items-center gap-2 px-6 border-b border-border",
+        children: [/*#__PURE__*/_jsx("div", {
+          className: "w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center",
+          children: /*#__PURE__*/_jsx("span", {
+            className: "text-white font-bold text-lg",
+            children: "C"
+          })
+        }), /*#__PURE__*/_jsx("span", {
+          className: "text-xl font-bold text-primary-500",
+          children: "Courtify"
+        })]
+      }), /*#__PURE__*/_jsx("nav", {
+        className: "flex-1 px-3 py-4 space-y-1 overflow-y-auto",
+        children: navigation.map(item => /*#__PURE__*/_jsxs(NavLink, {
+          to: item.href,
+          className: ({
+            isActive
+          }) => cn('flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors', isActive ? 'bg-primary-500/10 text-primary-500' : 'text-foreground-secondary hover:text-foreground hover:bg-background-tertiary'),
+          children: [/*#__PURE__*/_jsx(item.icon, {
+            className: "w-5 h-5"
+          }), item.name]
+        }, item.href))
+      }), /*#__PURE__*/_jsxs("div", {
+        className: "p-3 border-t border-border space-y-1",
+        children: [/*#__PURE__*/_jsxs(NavLink, {
+          to: "/settings",
+          className: ({
+            isActive
+          }) => cn('flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors', isActive ? 'bg-primary-500/10 text-primary-500' : 'text-foreground-secondary hover:text-foreground hover:bg-background-tertiary'),
+          children: [/*#__PURE__*/_jsx(Settings, {
+            className: "w-5 h-5"
+          }), "C\xE0i \u0111\u1EB7t"]
+        }), /*#__PURE__*/_jsxs("button", {
+          onClick: handleLogout,
+          className: "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground-secondary hover:text-error hover:bg-error/10 transition-colors w-full",
+          children: [/*#__PURE__*/_jsx(LogOut, {
+            className: "w-5 h-5"
+          }), "\u0110\u0103ng xu\u1EA5t"]
+        })]
+      })]
+    }), /*#__PURE__*/_jsxs("div", {
+      className: "flex-1 flex flex-col overflow-hidden",
+      children: [/*#__PURE__*/_jsxs("header", {
+        className: "h-16 bg-background-secondary border-b border-border flex items-center justify-between px-4 md:px-6",
+        children: [/*#__PURE__*/_jsx("div", {
+          className: "md:hidden flex items-center gap-2",
+          children: /*#__PURE__*/_jsx("div", {
+            className: "w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center",
+            children: /*#__PURE__*/_jsx("span", {
+              className: "text-white font-bold text-lg",
+              children: "C"
+            })
+          })
+        }), /*#__PURE__*/_jsx("div", {
+          className: "hidden md:block w-80",
+          children: /*#__PURE__*/_jsx(Input, {
+            placeholder: "T\xECm ki\u1EBFm...",
+            icon: /*#__PURE__*/_jsx(Search, {
+              className: "w-4 h-4"
+            })
+          })
+        }), /*#__PURE__*/_jsxs("div", {
+          className: "flex items-center gap-2 md:gap-4",
+          children: [/*#__PURE__*/_jsxs(Button, {
+            variant: "secondary",
+            size: "sm",
+            className: "hidden sm:flex gap-2",
+            children: [/*#__PURE__*/_jsx("span", {
+              className: "hidden lg:inline",
+              children: "Courtify Ph\xFA Nhu\u1EADn"
+            }), /*#__PURE__*/_jsx("span", {
+              className: "lg:hidden",
+              children: "C\u01A1 s\u1EDF"
+            }), /*#__PURE__*/_jsx(ChevronDown, {
+              className: "w-4 h-4"
+            })]
+          }), /*#__PURE__*/_jsx(NotificationDropdown, {}), /*#__PURE__*/_jsxs("div", {
+            className: "flex items-center gap-3 pl-2 md:pl-4 border-l border-border",
+            children: [/*#__PURE__*/_jsx("div", {
+              className: "w-8 h-8 bg-primary-500/20 rounded-full flex items-center justify-center",
+              children: /*#__PURE__*/_jsx("span", {
+                className: "text-primary-500 font-medium text-sm",
+                children: user?.name?.charAt(0) || 'U'
+              })
+            }), /*#__PURE__*/_jsxs("div", {
+              className: "hidden lg:block",
+              children: [/*#__PURE__*/_jsx("p", {
+                className: "text-sm font-medium text-foreground",
+                children: user?.name
+              }), /*#__PURE__*/_jsx("p", {
+                className: "text-xs text-foreground-muted",
+                children: user?.role
+              })]
+            })]
+          })]
+        })]
+      }), /*#__PURE__*/_jsx("main", {
+        className: "flex-1 overflow-auto bg-background pb-16 md:pb-0 p-4 md:p-6",
+        children: children
+      })]
+    }), /*#__PURE__*/_jsx(BottomNav, {})]
+  });
+}

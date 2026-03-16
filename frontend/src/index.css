@@ -22,19 +22,19 @@
     --primary-800: #1e40af;
     --primary-900: #1e3a8a;
 
-    /* Background (Dark Mode) */
-    --background: #0a0a0a;
-    --background-secondary: #171717;
-    --background-tertiary: #262626;
-    --background-hover: #2a2a2a;
+    /* Background (Light/Warm Mode) */
+    --background: #f8fafc;
+    --background-secondary: #ffffff;
+    --background-tertiary: #f1f5f9;
+    --background-hover: #e2e8f0;
 
     /* Text */
-    --foreground: #fafafa;
-    --foreground-secondary: #a3a3a3;
-    --foreground-muted: #737373;
+    --foreground: #0f172a;
+    --foreground-secondary: #475569;
+    --foreground-muted: #64748b;
 
     /* Border */
-    --border: #262626;
+    --border: #e2e8f0;
     --border-focus: #3b82f6;
 
     /* Semantic */
@@ -63,11 +63,11 @@
     --color-primary-foreground: #FFFFFF;
     --color-secondary: #0ea5e9;
     --color-secondary-foreground: #FFFFFF;
-    --color-accent: #D69E2E;
+    --color-accent: #0ea5e9;
     --color-accent-foreground: #FFFFFF;
     --color-border: #E2E8F0;
     --color-input: #FFFFFF;
-    --color-ring: #D69E2E;
+    --color-ring: #2563eb;
     --color-success: #38A169;
     --color-success-foreground: #FFFFFF;
     --color-warning: #D69E2E;
@@ -90,7 +90,7 @@
     --secondary-foreground: 210 40% 98%;
     --muted: 210 40% 98%;
     --muted-foreground: 215 16% 47%;
-    --accent: 41 100% 50%;
+    --accent: 199 89% 48%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -102,12 +102,12 @@
 
 
   * {
-    border-color: var(--border);
+    border-color: hsl(var(--border));
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -163,49 +163,19 @@
 
 @layer utilities {
 
-  /* Background colors */
-  .bg-background {
-    background-color: var(--background);
-  }
+  /* Background colors (removed bg-background to let Tailwind handle HSL) */
 
-  .bg-background-secondary {
-    background-color: var(--background-secondary);
-  }
+  /* Removed to let Tailwind handle it */
 
-  .bg-background-tertiary {
-    background-color: var(--background-tertiary);
-  }
-
-  .bg-background-hover {
-    background-color: var(--background-hover);
-  }
-
-  /* Text colors */
-  .text-foreground {
-    color: var(--foreground);
-  }
+  /* Text colors (removed text-foreground to let Tailwind handle HSL) */
 
   .text-foreground-secondary {
     color: var(--foreground-secondary);
   }
 
-  .text-foreground-muted {
-    color: var(--foreground-muted);
-  }
+  /* Border colors (removed border-border to let Tailwind handle HSL) */
 
-  /* Border colors */
-  .border-border {
-    border-color: var(--border);
-  }
-
-  .border-focus {
-    border-color: var(--border-focus);
-  }
-
-  /* Primary colors */
-  .bg-primary-500 {
-    background-color: var(--primary-500);
-  }
+  /* Removed */
 
   .bg-primary-600 {
     background-color: var(--primary-600);
@@ -299,6 +269,14 @@
   /* Safe area for mobile bottom nav */
   .safe-area-inset-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .shadow-elegant {
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 10px -2px rgba(0, 0, 0, 0.02);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 15px rgba(var(--primary), 0.5);
   }
 
   /* Line clamp */

@@ -310,8 +310,8 @@ const OrdersList = () => {
       </div>
       
       {/* Filters */}
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-        <h3 className="font-medium">Bộ lọc</h3>
+      <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant space-y-4">
+        <h3 className="text-lg font-bold">Bộ lọc nâng cao</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <Input 
@@ -342,7 +342,7 @@ const OrdersList = () => {
       </div>
       
       {/* Orders table */}
-      <div className="bg-card border border-border rounded-lg shadow-elegant overflow-hidden">
+      <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] shadow-elegant overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-muted/50">

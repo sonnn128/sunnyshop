@@ -129,35 +129,35 @@ const ProductCarousel = ({ title, subtitle, products, sectionId }) => {
   };
 
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="py-24 bg-white border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex items-end justify-between mb-16 border-b border-slate-200 pb-6">
           <div>
-            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-2">
+            <h2 className="text-3xl lg:text-4xl font-serif text-slate-900 mb-2 font-light tracking-wide uppercase">
               {title}
             </h2>
-            <p className="text-lg text-muted-foreground">
+            <p className="text-base font-light text-slate-500 tracking-wide">
               {subtitle}
             </p>
           </div>
           
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-4">
             <button
               onClick={prevSlide}
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => setIsAutoPlaying(true)}
-              className="w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200"
+              className="w-12 h-12 flex items-center justify-center border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 transition-all duration-300"
             >
-              <Icon name="ChevronLeft" size={20} />
+              <Icon name="ChevronLeft" size={20} strokeWidth={1} />
             </button>
             <button
               onClick={nextSlide}
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => setIsAutoPlaying(true)}
-              className="w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200"
+              className="w-12 h-12 flex items-center justify-center border border-slate-200 text-slate-500 hover:border-slate-900 hover:text-slate-900 transition-all duration-300"
             >
-              <Icon name="ChevronRight" size={20} />
+              <Icon name="ChevronRight" size={20} strokeWidth={1} />
             </button>
           </div>
         </div>
@@ -180,106 +180,88 @@ const ProductCarousel = ({ title, subtitle, products, sectionId }) => {
                 key={product?.id}
                 className="w-1/4 flex-shrink-0 px-3"
               >
-                <div className="bg-card rounded-2xl shadow-elegant hover:shadow-product transition-all duration-300 transform hover:-translate-y-1 group">
+                <div className="bg-transparent group cursor-pointer">
                   {/* Product Image */}
-                  <Link to={`/product-detail?id=${product?.id}`} className="relative aspect-[3/4] overflow-hidden rounded-t-2xl block">
+                  <Link to={`/product-detail?id=${product?.id}`} className="relative aspect-[3/4] overflow-hidden block bg-slate-50">
                     <Image
                       src={product?.image}
                       alt={product?.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
                     />
                     
+                    {/* Dark overly on hover */}
+                    <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
                     {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
+                    <div className="absolute top-4 left-4 flex flex-col gap-2">
                       {product?.isNew && (
-                        <span className="bg-success text-success-foreground px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-900 border border-slate-200">
                           Mới
                         </span>
                       )}
                       {product?.discount && (
-                        <span className="bg-error text-error-foreground px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="bg-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                           -{product?.discount}%
                         </span>
                       )}
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-2 group-hover:translate-x-0">
                       <button 
                         onClick={(e) => handleWishlistToggle(product, e)}
-                        className={`w-8 h-8 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors ${
+                        className={`w-10 h-10 bg-white shadow-sm flex items-center justify-center transition-all hover:bg-slate-900 hover:text-white ${
                           wishlistedProducts.includes(product.id)
-                            ? 'bg-red-500 text-white hover:bg-red-600'
-                            : 'bg-background/90 hover:bg-accent hover:text-accent-foreground'
+                            ? 'text-red-500'
+                            : 'text-slate-600'
                         }`}
                       >
                         <Icon 
                           name="Heart" 
-                          size={16} 
+                          size={18} 
+                          strokeWidth={1.5}
                           className={wishlistedProducts.includes(product.id) ? 'fill-current' : ''}
                         />
                       </button>
-                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="w-8 h-8 bg-background/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground transition-colors">
-                        <Icon name="Eye" size={16} />
+                      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); }} className="w-10 h-10 bg-white text-slate-600 shadow-sm flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all">
+                        <Icon name="Eye" size={18} strokeWidth={1.5} />
                       </button>
                     </div>
 
                     {/* Quick Add to Cart */}
-                    <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 opacity-0 group-hover:opacity-100 transform translate-y-full group-hover:translate-y-0 transition-all duration-500">
                       <Button 
-                        size="sm" 
-                        className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                        size="lg" 
+                        className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-none py-5 tracking-widest uppercase text-xs font-semibold"
                         onClick={(e) => handleAddToCart(product, e)}
                       >
-                        <Icon name="ShoppingCart" size={16} className="mr-2" />
                         Thêm vào giỏ
                       </Button>
                     </div>
                   </Link>
 
                   {/* Product Info */}
-                  <div className="p-4">
-                    <div className="mb-2">
-                      <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                        {product?.category}
-                      </span>
+                  <div className="pt-5 pb-2 text-center">
+                    <div className="mb-2 uppercase tracking-widest text-[10px] text-slate-500 font-semibold">
+                      {product?.category}
                     </div>
                     
                     <Link to={`/product-detail?id=${product?.id}`} className="block">
-                      <h3 className="font-semibold text-foreground mb-2 line-clamp-2 hover:text-accent transition-colors">
+                      <h3 className="font-serif text-lg text-slate-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
                         {product?.name}
                       </h3>
                     </Link>
 
-                    {/* Rating */}
-                    <div className="flex items-center gap-1 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)]?.map((_, i) => (
-                          <Icon
-                            key={i}
-                            name="Star"
-                            size={14}
-                            className={i < Math.floor(product?.rating) ? 'text-accent fill-current' : 'text-muted-foreground'}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        ({product?.reviews})
-                      </span>
-                    </div>
-
                     {/* Price */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-foreground">
-                          {formatPrice(product?.price)}
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-base font-medium text-slate-900">
+                        {formatPrice(product?.price)}
+                      </span>
+                      {product?.originalPrice && (
+                        <span className="text-sm text-slate-400 line-through font-light">
+                          {formatPrice(product?.originalPrice)}
                         </span>
-                        {product?.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            {formatPrice(product?.originalPrice)}
-                          </span>
-                        )}
-                      </div>
+                      )}
                     </div>
 
                     {/* Variant badges */}
@@ -334,28 +316,28 @@ const ProductCarousel = ({ title, subtitle, products, sectionId }) => {
         </div>
 
         {/* Mobile Navigation */}
-        <div className="flex md:hidden items-center justify-center gap-2 mt-6">
+        <div className="flex md:hidden items-center justify-center gap-4 mt-8">
           <button
             onClick={prevSlide}
-            className="w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200"
+            className="w-12 h-12 border border-slate-200 text-slate-500 flex items-center justify-center hover:border-slate-900 hover:text-slate-900 transition-all duration-300"
           >
-            <Icon name="ChevronLeft" size={20} />
+            <Icon name="ChevronLeft" size={20} strokeWidth={1.5} />
           </button>
           <button
             onClick={nextSlide}
-            className="w-10 h-10 bg-background border border-border rounded-full flex items-center justify-center hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200"
+            className="w-12 h-12 border border-slate-200 text-slate-500 flex items-center justify-center hover:border-slate-900 hover:text-slate-900 transition-all duration-300"
           >
-            <Icon name="ChevronRight" size={20} />
+            <Icon name="ChevronRight" size={20} strokeWidth={1.5} />
           </button>
         </div>
 
         {/* View All Button */}
-        <div className="text-center mt-8">
+        <div className="text-center mt-12">
           <Link to="/product-catalog">
-            <Button variant="outline" size="lg">
-              Xem Tất Cả Sản Phẩm
-              <Icon name="ArrowRight" size={20} className="ml-2" />
-            </Button>
+            <button className="inline-flex items-center justify-center px-10 py-4 bg-transparent border border-slate-900 text-slate-900 font-medium text-sm tracking-widest uppercase hover:bg-slate-900 hover:text-white transition-all duration-300">
+              Xem Tất Cả
+              <Icon name="ArrowRight" size={16} className="ml-3" />
+            </button>
           </Link>
         </div>
       </div>

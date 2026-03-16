@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Form, Input, Checkbox } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import API from '../../lib/api';
 import { useToast } from '../../components/ui/ToastProvider';
 
@@ -11,7 +13,6 @@ const Login = () => {
     } catch (e) { return ''; }
   });
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState('');
   const [remember, setRemember] = useState(true);
   const navigate = useNavigate();
@@ -80,97 +81,122 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="max-w-4xl w-full bg-card border border-border rounded-lg shadow-lg overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-        {/* Left graphic / promo */}
-        <div className="hidden lg:flex flex-col items-start justify-center p-8 bg-gradient-to-br from-primary to-accent text-white">
-          <h3 className="text-2xl font-bold mb-2">Chào mừng đến với ABC Fashion</h3>
-          <p className="mb-6 text-sm opacity-90">Đăng nhập để xem đơn hàng, lưu sản phẩm yêu thích và thanh toán nhanh hơn.</p>
-          <ul className="space-y-2 text-sm">
-            <li>• Quản lý đơn hàng nhanh chóng</li>
-            <li>• Lưu sản phẩm yêu thích</li>
-            <li>• Ưu đãi dành riêng cho thành viên</li>
-          </ul>
+    <div className="min-h-screen bg-slate-50 flex">
+      {/* Mảng ảnh bên trái */}
+      <div className="hidden lg:block lg:w-1/2 relative bg-slate-900">
+        <div 
+          className="absolute inset-0 bg-cover bg-center opacity-80 mix-blend-luminosity"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent flex items-end p-20">
+          <div className="text-white space-y-6 max-w-lg">
+            <h2 className="text-4xl font-serif tracking-wide leading-tight">
+              Thời trang là ngôn ngữ tự hào.
+            </h2>
+            <p className="text-[11px] uppercase tracking-[0.2em] opacity-80 leading-relaxed font-bold">
+              KẾT NỐI VỚI BỘ SƯU TẬP MỚI NHẤT SHOWROOM CAO CẤP TỪ SUNNY FASHION VÀ KHÁM PHÁ PHONG CÁCH CỦA RIÊNG BẠN.
+            </p>
+          </div>
         </div>
+      </div>
 
-        {/* Right: form */}
-        <div className="p-8">
-          <div className="max-w-md mx-auto">
-            <div className="mb-6 text-center">
-              <div className="w-12 h-12 rounded-md bg-gradient-to-br from-primary to-accent mx-auto mb-3 flex items-center justify-center text-white font-bold">AF</div>
-              <h2 className="text-2xl font-semibold">Đăng nhập</h2>
-              <p className="text-sm text-muted-foreground mt-1">Đăng nhập bằng email của bạn để tiếp tục</p>
+      {/* Form bên phải */}
+      <div className="w-full lg:w-1/2 flex flex-col justify-center py-12 px-8 sm:px-12 xl:px-24">
+        <div className="w-full max-w-[420px] mx-auto">
+          <Link to="/homepage" className="flex mb-12 group">
+            <span className="font-serif text-3xl tracking-widest text-slate-900 uppercase group-hover:opacity-70 transition-opacity">
+              Sunny<span className="font-light">Fashion</span>
+            </span>
+          </Link>
+
+          <div className="mb-10">
+            <h3 className="text-[22px] font-serif text-slate-900 tracking-wide mb-2">ĐĂNG NHẬP</h3>
+            <p className="text-[11px] uppercase tracking-widest text-slate-500 font-bold">CHÀO MỪNG QUAY LẠI THẾ GIỚI CỦA SUNNY</p>
+          </div>
+          <Form 
+            onFinish={handleLogin} 
+            layout="vertical" 
+            className="space-y-8"
+            initialValues={{ email, remember }}
+            requiredMark={false}
+          >
+            {formError && (
+              <div className="p-3 bg-red-50/50 text-red-600 text-[11px] uppercase tracking-wider text-center font-bold">
+                {formError}
+              </div>
+            )}
+
+            <Form.Item 
+              name="email" 
+              label={<span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">Email</span>}
+              rules={[
+                { required: true, message: 'Vui lòng nhập email!' },
+                { type: 'email', message: 'Email không hợp lệ!' }
+              ]}
+              className="mb-6"
+            >
+              <Input
+                placeholder="NHẬP EMAIL CỦA BẠN"
+                onChange={e => setEmail(e.target.value)}
+                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-0 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none"
+              />
+            </Form.Item>
+
+            <Form.Item 
+              name="password" 
+              label={<span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">Mật khẩu</span>}
+              rules={[
+                { required: true, message: 'Vui lòng nhập mật khẩu!' }
+              ]}
+              className="mb-8"
+            >
+              <Input.Password 
+                placeholder="NHẬP MẬT KHẨU" 
+                autoComplete="current-password"
+                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-0 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none [&>input]:bg-transparent"
+              />
+            </Form.Item>
+
+            <div className="flex items-center justify-between mt-2 mb-8">
+              <Form.Item name="remember" valuePropName="checked" noStyle>
+                <label className="flex items-center space-x-3 cursor-pointer group">
+                  <input 
+                    type="checkbox" 
+                    onChange={e => setRemember(e.target.checked)} 
+                    className="w-3.5 h-3.5 border-slate-300 text-slate-900 focus:ring-slate-900 rounded-sm" 
+                  />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 group-hover:text-slate-900 transition-colors">GHI NHỚ ĐĂNG NHẬP</span>
+                </label>
+              </Form.Item>
+              <Link to="/forgot-password" className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 hover:text-slate-900 transition-colors">QUÊN MẬT KHẨU?</Link>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-4">
-                {formError && <div className="text-sm text-red-500">{formError}</div>}
+            <div className="pt-2">
+              <button type="submit" className="w-full bg-slate-900 text-white py-4 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-slate-800 transition-colors flex justify-center items-center">
+                ĐĂNG NHẬP
+              </button>
+            </div>
 
-              <div>
-                <label className="block text-sm mb-1">Email</label>
-                <input
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  type="email"
-                  className="block w-full px-4 py-3 border border-border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-accent"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm mb-1">Mật khẩu</label>
-                <div className="relative">
-                  <input
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    className="block w-full px-4 py-3 border border-border rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-accent"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(s => !s)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground"
-                  >
-                    {showPassword ? 'Ẩn' : 'Hiện'}
-                  </button>
+            <div className="mt-8">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-100" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white text-[10px] font-bold tracking-widest uppercase text-slate-400">
+                    Chưa có tài khoản?
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-sm">
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="form-checkbox" />
-                  <span className="text-sm">Ghi nhớ tôi</span>
-                </label>
-                <Link to="/forgot-password" className="text-sm text-accent">Quên mật khẩu?</Link>
+              <div className="mt-8 flex justify-center">
+                <Link to="/register" className="inline-block relative text-[11px] font-bold uppercase tracking-widest text-slate-900 hover:text-slate-500 transition-colors group">
+                  TẠO TÀI KHOẢN MỚI
+                  <span className="absolute -bottom-1 left-0 w-full h-px bg-slate-900 transition-all duration-300 group-hover:bg-slate-500" />
+                </Link>
               </div>
-
-              <div>
-                <button className="w-full px-4 py-3 bg-accent text-white rounded-md font-medium hover:opacity-95">Đăng nhập</button>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-border" />
-                <div className="text-xs text-muted-foreground">Hoặc tiếp tục với</div>
-                <div className="flex-1 h-px bg-border" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <button type="button" className="flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-md text-sm">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.23c0-.77-.07-1.51-.2-2.23H12v4.22h5.48c-.24 1.3-.98 2.4-2.1 3.14v2.62h3.4c1.99-1.83 3.13-4.53 3.13-7.75z" fill="#4285F4"/><path d="M12 22c2.7 0 4.96-.9 6.62-2.45l-3.4-2.62c-.94.63-2.14.99-3.22.99-2.48 0-4.58-1.67-5.33-3.93H3.05v2.47C4.7 19.9 8.05 22 12 22z" fill="#34A853"/><path d="M6.67 13.99A6.99 6.99 0 016 12c0-.66.1-1.3.28-1.9V7.63H3.05A9.99 9.99 0 002 12c0 1.6.36 3.1 1.05 4.44l3.62-2.45z" fill="#FBBC05"/><path d="M12 6.48c1.47 0 2.79.5 3.83 1.48l2.86-2.86C16.95 3.46 14.7 2.5 12 2.5 8.05 2.5 4.7 4.6 3.05 7.63l3.62 2.47C7.42 8.15 9.52 6.48 12 6.48z" fill="#EA4335"/></svg>
-                  Google
-                </button>
-                <button type="button" className="flex items-center justify-center gap-2 px-3 py-2 border border-border rounded-md text-sm">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 12a10 10 0 10-11.6 9.87v-6.99H7.9v-2.88h2.5V9.41c0-2.47 1.46-3.83 3.7-3.83 1.07 0 2.19.19 2.19.19v2.41h-1.23c-1.21 0-1.59.76-1.59 1.54v1.83h2.72l-.44 2.88h-2.28v6.99A10 10 0 0022 12z" fill="#1877F2"/></svg>
-                  Facebook
-                </button>
-              </div>
-
-              <p className="text-center text-sm text-muted-foreground mt-4">Bạn chưa có tài khoản? <Link to="/register" className="text-accent">Tạo tài khoản</Link></p>
-            </form>
-          </div>
+            </div>
+          </Form>
         </div>
       </div>
     </div>

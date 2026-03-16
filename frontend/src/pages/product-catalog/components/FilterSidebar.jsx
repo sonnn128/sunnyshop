@@ -134,19 +134,22 @@ const FilterSidebar = ({ filters, onFilterChange, onClearFilters, isOpen, onClos
   const materials = ['Cotton', 'Polyester', 'Denim', 'Silk', 'Wool', 'Linen'];
 
   const FilterSection = ({ title, sectionKey, children }) => (
-    <div className="border-b border-border pb-4 mb-4">
+    <div className="border-b border-slate-100 pb-5 mb-5">
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="flex items-center justify-between w-full text-left font-medium text-foreground hover:text-accent transition-smooth"
+        className="flex items-center justify-between w-full text-left bg-transparent"
       >
-        <span>{title}</span>
+        <span className="font-serif text-sm uppercase tracking-widest text-slate-900 font-medium">
+          {title}
+        </span>
         <Icon 
-          name={expandedSections?.[sectionKey] ? "ChevronUp" : "ChevronDown"} 
-          size={16} 
+          name={expandedSections?.[sectionKey] ? "Minus" : "Plus"} 
+          size={14} 
+          className="text-slate-400"
         />
       </button>
       {expandedSections?.[sectionKey] && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
           {children}
         </div>
       )}
@@ -170,27 +173,25 @@ const FilterSidebar = ({ filters, onFilterChange, onClearFilters, isOpen, onClos
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         overflow-y-auto
       `}>
-        <div className="p-6">
+        <div className="p-0 lg:pr-8 pt-2">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-foreground">Bộ lọc</h3>
+          <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+            <h3 className="text-sm font-serif font-bold uppercase tracking-widest text-slate-900">
+              BỘ LỌC
+            </h3>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={onClearFilters}
-                className="text-accent hover:text-accent/80"
+                className="text-[10px] font-medium uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
               >
                 Xóa tất cả
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
+              </button>
+              <button
                 onClick={onClose}
-                className="lg:hidden"
+                className="lg:hidden text-slate-400 hover:text-slate-900 ml-4"
               >
                 <Icon name="X" size={20} />
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -268,16 +269,16 @@ const FilterSidebar = ({ filters, onFilterChange, onClearFilters, isOpen, onClos
 
           {/* Size Filter */}
           <FilterSection title="Kích thước" sectionKey="size">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex flex-wrap gap-2 mt-2">
               {sizes?.map(size => (
                 <button
                   key={size}
                   onClick={() => handleFilterChange('size', size, !filters?.size?.includes(size))}
                   className={`
-                    px-3 py-2 text-sm border rounded-lg transition-smooth
+                    w-12 h-10 flex items-center justify-center text-xs font-medium uppercase transition-colors
                     ${filters?.size?.includes(size)
-                      ? 'bg-accent text-accent-foreground border-accent'
-                      : 'bg-background text-foreground border-border hover:border-accent'
+                      ? 'bg-slate-900 text-white border border-slate-900'
+                      : 'bg-transparent text-slate-600 border border-slate-200 hover:border-slate-900'
                     }
                   `}
                 >
@@ -289,27 +290,23 @@ const FilterSidebar = ({ filters, onFilterChange, onClearFilters, isOpen, onClos
 
           {/* Color Filter */}
           <FilterSection title="Màu sắc" sectionKey="color">
-            <div className="grid grid-cols-4 gap-2">
+            <div className="flex flex-wrap gap-3 mt-2">
               {colors?.map(color => (
                 <button
                   key={color?.value}
                   onClick={() => handleFilterChange('color', color?.value, !filters?.color?.includes(color?.value))}
                   className={`
-                    relative w-10 h-10 rounded-full border-2 transition-smooth
+                    relative w-8 h-8 rounded-full border transition-all duration-300
                     ${filters?.color?.includes(color?.value)
-                      ? 'border-accent shadow-lg'
-                      : 'border-border hover:border-accent'
+                      ? 'border-slate-900 scale-110 shadow-md'
+                      : 'border-slate-200 hover:scale-110'
                     }
                   `}
                   style={{ backgroundColor: color?.color }}
                   title={color?.name}
                 >
                   {filters?.color?.includes(color?.value) && (
-                    <Icon 
-                      name="Check" 
-                      size={16} 
-                      className={`absolute inset-0 m-auto ${color?.value === 'white' ? 'text-black' : 'text-white'}`}
-                    />
+                    <div className={`absolute -inset-1 border border-slate-900 rounded-full`}></div>
                   )}
                 </button>
               ))}

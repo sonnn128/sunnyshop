@@ -13,7 +13,8 @@ export const useRole = () => {
     }
   }, []);
 
-  const role = user?.role || 'staff';
+  // Tạm thời để mặc định là 'admin' để dev dễ dàng hơn theo yêu cầu của user
+  const role = user?.role || 'admin';
 
   // Permission level constants
   const ROLES = {

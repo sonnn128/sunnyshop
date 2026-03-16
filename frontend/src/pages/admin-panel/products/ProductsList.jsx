@@ -169,7 +169,7 @@ const ProductsList = () => {
   const isPageSelected = paginatedProducts.length > 0 && paginatedProducts.every(p => selectedIds.includes(p._id));
 
   return (
-    <div className="bg-card rounded-lg border border-border p-6">
+    <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>

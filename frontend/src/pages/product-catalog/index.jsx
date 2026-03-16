@@ -612,20 +612,21 @@ const ProductCatalog = () => {
       <Header />
       <div className="pt-16">
         {/* Search Section */}
-        <div className="bg-muted/30 py-8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Khám phá thời trang
+        <div className="bg-white py-16 lg:py-24 border-b border-slate-100">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <h1 className="text-3xl lg:text-5xl font-serif text-slate-900 mb-6 font-light tracking-wide">
+                BỘ SƯU TẬP
               </h1>
-              <p className="text-muted-foreground">
-                Tìm kiếm và khám phá hàng nghìn sản phẩm thời trang chất lượng cao
+              <div className="w-16 h-px bg-slate-900 mx-auto mb-6"></div>
+              <p className="text-slate-500 font-light tracking-wide text-sm uppercase">
+                Khám phá những thiết kế tinh tế và đẳng cấp nhất
               </p>
             </div>
             
             <SearchBar
               onSearch={handleSearch}
-              onVoiceSearch={() => {}} // Add missing required prop
+              onVoiceSearch={() => {}}
               suggestions={['áo sơ mi', 'váy midi', 'quần jeans', 'giày sneaker']}
               isLoading={loading}
             />

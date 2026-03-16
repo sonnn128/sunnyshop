@@ -435,7 +435,7 @@ const OrderDetail = () => {
         <div className="print-header hidden print:block">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">ABC</span>
+              <span className="text-white font-bold text-lg">Sunny</span>
             </div>
           </div>
           <h1 className="text-2xl font-bold text-center">CHI TIẾT ĐƠN HÀNG #{displayOrderNumber}</h1>

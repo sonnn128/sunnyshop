@@ -179,26 +179,18 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all duration-300">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="flex items-center justify-between h-20 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
-          <Link to="/homepage" className="flex items-center space-x-2 flex-shrink-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-              <Icon name="Sparkles" size={20} color="white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-accent font-semibold text-lg text-primary leading-none">
-                ABC Fashion
-              </span>
-              <span className="text-xs text-muted-foreground leading-none">
-                Store
-              </span>
-            </div>
+          <Link to="/homepage" className="flex items-center space-x-2 flex-shrink-0 group">
+            <span className="font-serif text-2xl tracking-widest text-slate-900 uppercase group-hover:text-slate-600 transition-colors">
+              Sunny<span className="font-light">Fashion</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-6">
             {primaryNavItems?.map((item) => {
               // Render cart item as icon-only
               if (item.path === '/shopping-cart') {
@@ -249,13 +241,17 @@ const Header = () => {
                 <Link
                   key={item?.path}
                   to={item?.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-smooth hover:bg-muted ${
+                  className={`flex items-center relative py-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-300 ${
                     isActivePath(item?.path)
-                      ? 'bg-accent/10 text-accent' :'text-foreground hover:text-accent'
+                      ? 'text-slate-900' : 'text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  <Icon name={item?.icon} size={16} />
-                  <span>{item?.name}</span>
+                  <span className="relative">
+                    {item?.name}
+                    {isActivePath(item?.path) && (
+                      <span className="absolute -bottom-1 left-0 right-0 h-px bg-slate-900 w-full" />
+                    )}
+                  </span>
                 </Link>
               );
             })}
@@ -294,76 +290,78 @@ const Header = () => {
           </nav>
 
           {/* Search and Actions */}
-          <div className="hidden md:flex items-center space-x-3">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Tìm kiếm sản phẩm..."
-                className="w-64 pl-10 pr-4 py-2 bg-muted border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-smooth"
-              />
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+            <div className="relative group flex items-center transition-all duration-300">
               <Icon
                 name="Search"
-                size={16}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                size={18}
+                className="absolute left-0 text-slate-400 group-hover:text-slate-900 transition-colors"
+                strokeWidth={1.5}
+              />
+              <input
+                type="text"
+                placeholder="TÌM KIẾM..."
+                className="w-32 lg:w-48 pl-7 pr-4 py-2 bg-transparent border-b border-slate-200 text-[10px] font-bold uppercase tracking-widest text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
               />
             </div>
 
-            <Link to="/user-dashboard/wishlist" className="relative inline-flex items-center px-2 py-1">
-              <Icon name="Heart" size={20} />
+            <Link to="/user-dashboard/wishlist" className="relative inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors pt-1">
+              <Icon name="Heart" size={20} strokeWidth={1.5} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-accent-foreground text-xs rounded-full flex items-center justify-center">
-                  {wishlistCount}
+                <span className="absolute -top-1 -right-2 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {wishlistCount > 99 ? '99+' : wishlistCount}
                 </span>
               )}
               <span className="sr-only">Wishlist</span>
             </Link>
 
-            <Link to="/shopping-cart" className="relative inline-flex items-center px-2 py-1">
-              <Icon name="ShoppingCart" size={20} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-accent text-accent-foreground text-xs rounded-full flex items-center justify-center">
-                {cartCount}
+            <Link to="/shopping-cart" className="relative inline-flex items-center text-slate-500 hover:text-slate-900 transition-colors pt-1">
+              <Icon name="ShoppingCart" size={20} strokeWidth={1.5} />
+              <span className="absolute -top-1 -right-2 w-4 h-4 bg-slate-900 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {cartCount > 99 ? '99+' : cartCount}
               </span>
               <span className="sr-only">Giỏ hàng</span>
             </Link>
-            {(() => {
-              try {
+
+            <div className="flex items-center space-x-5 pl-5 border-l border-slate-200 h-5">
+              {(() => {
+                try {
                 const user = typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user') || 'null');
                 if (!user) {
                   return (
                     <>
-                      <Link to="/login" className="text-sm text-foreground hover:text-accent">Đăng nhập</Link>
-                      <Link to="/register" className="text-sm text-accent">Đăng ký</Link>
+                      <Link to="/login" className="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-500 hover:text-slate-900 transition-colors">Đăng nhập</Link>
+                      <Link to="/register" className="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-900 hover:text-slate-500 transition-colors">Đăng ký</Link>
                     </>
                   );
                 }
 
                 return (
-                  <div className="flex items-center space-x-3">
-                    <Link to="/user-dashboard" className="text-sm text-foreground hover:text-accent">{user.email}</Link>
+                  <>
+                    <Link to="/user-dashboard" className="text-[11px] uppercase tracking-[0.1em] font-bold text-slate-900 hover:text-slate-500 transition-colors max-w-[100px] truncate" title={user.email}>{user.email?.split('@')[0]}</Link>
                     <button
                       onClick={async () => {
                         try {
-                          // attempt server logout to clear cookie
                           await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
                         } catch (e) {
                           // ignore
                         }
-                        // preserve rememberedEmail if present, remove auth tokens
                         const remembered = localStorage.getItem('rememberedEmail');
                         try { localStorage.removeItem('user'); localStorage.removeItem('token'); } catch (e) {}
                         if (remembered) try { localStorage.setItem('rememberedEmail', remembered); } catch (e) {}
                         window.location.reload();
                       }}
-                      className="text-sm text-muted-foreground hover:text-foreground"
+                      className="text-[11px] uppercase tracking-[0.1em] font-bold text-red-500 hover:text-red-700 transition-colors"
                     >
-                      Đăng xuất
+                      Thoát
                     </button>
-                  </div>
+                  </>
                 );
               } catch (e) {
                 return null;
               }
             })()}
+            </div>
           </div>
 
           {/* Mobile Menu Button */}

@@ -53,7 +53,7 @@ const SocialProof = () => {
       image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
       likes: 245,
       comments: 18,
-      caption: "Loving this new summer collection! 💕 #ABCFashion #SummerVibes"
+      caption: "Loving this new summer collection! 💕 #SunnyFashion #SummerVibes"
     },
     {
       id: 2,
@@ -67,7 +67,7 @@ const SocialProof = () => {
       image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
       likes: 312,
       comments: 25,
-      caption: "Weekend casual look with ABC Fashion pieces 🌟"
+      caption: "Weekend casual look with Sunny Fashion pieces 🌟"
     },
     {
       id: 4,
@@ -113,29 +113,27 @@ const SocialProof = () => {
   };
 
   return (
-    <section className="py-16 bg-muted/30">
+    <section className="py-24 bg-white border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl font-serif text-slate-900 mb-4 font-light tracking-wide uppercase">
             Khách Hàng Nói Gì Về Chúng Tôi
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Hàng nghìn khách hàng đã tin tưởng và lựa chọn ABC Fashion Store
+          <div className="w-16 h-0.5 bg-slate-900 mx-auto mb-6"></div>
+          <p className="text-base text-slate-500 max-w-2xl mx-auto font-light tracking-wide">
+            Hàng nghìn khách hàng đã tin tưởng và lựa chọn Sunny Fashion Store
           </p>
         </div>
 
         {/* Trust Statistics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12 mb-20">
           {trustStats?.map((stat, index) => (
-            <div key={index} className="text-center bg-background rounded-2xl p-6 shadow-elegant">
-              <div className="w-12 h-12 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon name={stat?.icon} size={24} className="text-accent" />
-              </div>
-              <div className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+            <div key={index} className="text-center">
+              <div className="text-4xl lg:text-5xl font-serif text-slate-900 mb-3 font-light">
                 {stat?.number}
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">
                 {stat?.label}
               </div>
             </div>
@@ -143,20 +141,20 @@ const SocialProof = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-background rounded-lg p-1 shadow-elegant">
+        <div className="flex justify-center mb-12 border-b border-slate-200">
+          <div className="flex gap-8">
             <button
               onClick={() => setActiveTab('reviews')}
-              className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
-                activeTab === 'reviews' ?'bg-accent text-accent-foreground shadow-sm' :'text-muted-foreground hover:text-foreground'
+              className={`pb-4 text-sm font-semibold uppercase tracking-widest transition-all duration-300 relative ${
+                activeTab === 'reviews' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400 hover:text-slate-700'
               }`}
             >
               Đánh Giá Khách Hàng
             </button>
             <button
               onClick={() => setActiveTab('instagram')}
-              className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
-                activeTab === 'instagram' ?'bg-accent text-accent-foreground shadow-sm' :'text-muted-foreground hover:text-foreground'
+              className={`pb-4 text-sm font-semibold uppercase tracking-widest transition-all duration-300 relative ${
+                activeTab === 'instagram' ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400 hover:text-slate-700'
               }`}
             >
               Instagram
@@ -166,56 +164,49 @@ const SocialProof = () => {
 
         {/* Content Tabs */}
         {activeTab === 'reviews' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {customerReviews?.map((review) => (
-              <div key={review?.id} className="bg-background rounded-2xl p-6 shadow-elegant">
+              <div key={review?.id} className="bg-slate-50 p-8 border border-slate-100">
                 {/* Review Header */}
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-4 mb-6">
                   <Image
                     src={review?.avatar}
                     alt={review?.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="w-14 h-14 object-cover rounded-full"
                   />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-foreground">{review?.name}</h4>
-                      {review?.verified && (
-                        <Icon name="BadgeCheck" size={16} className="text-success" />
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1">
+                    <h4 className="font-serif text-lg text-slate-900 mb-1">{review?.name}</h4>
+                    <div className="flex items-center gap-1 text-yellow-500">
                       {renderStars(review?.rating)}
                     </div>
                   </div>
                 </div>
 
                 {/* Review Content */}
-                <p className="text-muted-foreground mb-4 leading-relaxed">
-                  {review?.review}
+                <p className="text-slate-600 mb-6 font-light leading-relaxed italic">
+                  "{review?.review}"
                 </p>
 
                 {/* Product Info */}
-                <div className="text-sm text-muted-foreground mb-4">
-                  Sản phẩm: <span className="font-medium text-foreground">{review?.product}</span>
+                <div className="text-[11px] uppercase tracking-widest text-slate-400 mb-6">
+                  Đã mua: <span className="text-slate-900 font-semibold">{review?.product}</span>
                 </div>
 
                 {/* Review Images */}
                 {review?.images?.length > 0 && (
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex gap-2 mb-6">
                     {review?.images?.map((image, index) => (
-                      <div key={index} className="w-16 h-16 rounded-lg overflow-hidden">
+                      <div key={index} className="w-20 h-20 overflow-hidden bg-slate-200">
                         <Image
                           src={image}
                           alt="Review image"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                         />
                       </div>
                     ))}
                   </div>
                 )}
-
-                {/* Review Date */}
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-slate-400 font-light">
                   {new Date(review.date)?.toLocaleDateString('vi-VN')}
                 </div>
               </div>
@@ -259,34 +250,34 @@ const SocialProof = () => {
             <div className="text-center">
               <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
                 <Icon name="Instagram" size={20} className="mr-2" />
-                Theo Dõi @ABCFashionStore
+                Theo Dõi @SunnyFashionStore
               </Button>
             </div>
           </div>
         )}
 
         {/* Newsletter Signup */}
-        <div className="mt-16 bg-gradient-to-r from-primary to-accent rounded-3xl p-8 lg:p-12 text-center text-white">
-          <h3 className="text-2xl lg:text-3xl font-bold mb-4">
-            Đăng Ký Nhận Tin Khuyến Mãi
+        <div className="mt-24 bg-slate-50 border border-slate-200 p-12 lg:p-20 text-center text-slate-900">
+          <h3 className="text-3xl lg:text-4xl font-serif mb-6 font-light">
+            Nhận Thông Tin Bộ Sưu Tập Mới
           </h3>
-          <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Là người đầu tiên biết về các sản phẩm mới, khuyến mãi đặc biệt và xu hướng thời trang hot nhất
+          <p className="text-base text-slate-500 mb-10 max-w-2xl mx-auto font-light tracking-wide">
+            Đăng ký để nhận thông tin mới nhất về các bộ sưu tập, chương trình ưu đãi độc quyền dành riêng cho khách hàng của Sunny Fashion.
           </p>
           
-          <div className="max-w-md mx-auto flex gap-3">
+          <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-0">
             <input
               type="email"
-              placeholder="Nhập email của bạn"
-              className="flex-1 px-4 py-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-white"
+              placeholder="Nhập địa chỉ email của bạn"
+              className="flex-1 px-6 py-4 bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900 transition-colors"
             />
-            <Button className="bg-white text-primary hover:bg-white/90 px-6">
+            <button className="px-10 py-4 bg-slate-900 text-white font-semibold text-sm uppercase tracking-widest hover:bg-slate-800 transition-colors">
               Đăng Ký
-            </Button>
+            </button>
           </div>
           
-          <p className="text-sm text-white/70 mt-4">
-            Bằng cách đăng ký, bạn đồng ý với điều khoản sử dụng của chúng tôi
+          <p className="text-xs text-slate-400 mt-6 tracking-wide">
+            Bằng việc đăng ký, bạn đã đồng ý với Điều Khoản Dịch Vụ và Chính Sách Bảo Mật của chúng tôi.
           </p>
         </div>
       </div>

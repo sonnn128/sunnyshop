@@ -122,7 +122,7 @@ const Homepage = () => {
         {/* Featured Products Carousel */}
         <ProductCarousel
           title="Sản Phẩm Nổi Bật"
-          subtitle="Những món đồ được yêu thích nhất tại ABC Fashion Store"
+          subtitle="Những món đồ được yêu thích nhất tại Sunny Fashion Store"
           products={featuredProducts}
           sectionId="featured"
         />

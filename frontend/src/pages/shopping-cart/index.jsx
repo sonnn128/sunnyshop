@@ -513,8 +513,8 @@ const ShoppingCart = () => {
   return (
     <>
       <Helmet>
-        <title>Giỏ hàng - ABC Fashion Store</title>
-        <meta name="description" content="Xem và quản lý giỏ hàng của bạn tại ABC Fashion Store. Thanh toán an toàn với nhiều phương thức thanh toán." />
+        <title>Giỏ hàng - Sunny Fashion Store</title>
+        <meta name="description" content="Xem và quản lý giỏ hàng của bạn tại Sunny Fashion Store. Thanh toán an toàn với nhiều phương thức thanh toán." />
       </Helmet>
       <div className="min-h-screen bg-background">
         <Header />

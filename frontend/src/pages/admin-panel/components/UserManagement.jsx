@@ -12,7 +12,7 @@ const UserManagement = () => {
     {
       id: 1,
       name: "Nguyễn Văn Admin",
-      email: "admin@abcfashion.com",
+      email: "admin@sunnyfashion.com",
       role: "admin",
       status: "active",
       lastLogin: "24/09/2024 14:30",
@@ -21,7 +21,7 @@ const UserManagement = () => {
     {
       id: 2,
       name: "Trần Thị Manager",
-      email: "manager@abcfashion.com",
+      email: "manager@sunnyfashion.com",
       role: "manager",
       status: "active",
       lastLogin: "24/09/2024 13:15",
@@ -30,7 +30,7 @@ const UserManagement = () => {
     {
       id: 3,
       name: "Lê Văn Staff",
-      email: "staff1@abcfashion.com",
+      email: "staff1@sunnyfashion.com",
       role: "staff",
       status: "active",
       lastLogin: "24/09/2024 12:45",
@@ -39,7 +39,7 @@ const UserManagement = () => {
     {
       id: 4,
       name: "Phạm Thị Staff",
-      email: "staff2@abcfashion.com",
+      email: "staff2@sunnyfashion.com",
       role: "staff",
       status: "inactive",
       lastLogin: "23/09/2024 16:20",
@@ -48,7 +48,7 @@ const UserManagement = () => {
     {
       id: 5,
       name: "Hoàng Văn Support",
-      email: "support@abcfashion.com",
+      email: "support@sunnyfashion.com",
       role: "support",
       status: "active",
       lastLogin: "24/09/2024 11:30",

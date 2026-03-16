@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useToast } from './ui/ToastProvider';
 
-const EmailSubscription = ({ className = '', compact = false }) => {
+const EmailSubscription = ({ className = '', compact = false, variant = 'default' }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
@@ -68,6 +68,30 @@ const EmailSubscription = ({ className = '', compact = false }) => {
       [preference]: !prev[preference]
     }));
   };
+
+  if (variant === 'minimal') {
+    return (
+      <div className={`${className}`}>
+        <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="NHẬP EMAIL CỦA BẠN"
+            className="w-full bg-transparent border-b border-slate-300 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-slate-900 text-white py-3 text-[10px] font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors disabled:opacity-50"
+          >
+            {loading ? 'ĐANG ĐĂNG KÝ...' : 'ĐĂNG KÝ'}
+          </button>
+        </form>
+      </div>
+    );
+  }
 
   if (compact) {
     return (

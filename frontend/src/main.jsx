@@ -24,19 +24,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <I18nProvider>
             <ConfigProvider
               theme={{
-                algorithm: antdTheme.darkAlgorithm,
                 token: {
                   colorPrimary: '#2563eb',
-                  colorBgBase: '#050814',
-                  colorBgContainer: '#0b1020',
-                  colorBorder: '#1f2937',
-                  colorTextBase: '#e5e7eb',
-                  colorTextSecondary: '#9ca3af',
-                  borderRadius: 10,
+                  borderRadius: 8,
                   fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
                 },
               }}

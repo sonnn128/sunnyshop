@@ -367,7 +367,7 @@ const ProductForm = () => {
         'Mô tả ngắn': 'Áo thun chất liệu cotton cao cấp',
         'Mô tả chi tiết': 'Áo thun nam chất liệu cotton 100%, thoáng mát, thấm hút mồ hôi tốt',
         'SKU *': 'ATN001',
-        'Thương hiệu': 'ABC Fashion',
+        'Thương hiệu': 'Sunny Fashion',
         'Giá bán *': 199000,
         'Giá gốc': 299000,
         'Giá vốn': 100000,
@@ -725,7 +725,6 @@ const ProductForm = () => {
             cost_price: Number(p.cost_price) || 0,
             
             // Inventory
-            stock_quantity: Number(p.stock_quantity) || 0,
             min_stock_level: Number(p.min_stock_level) || 5,
             
             // Status

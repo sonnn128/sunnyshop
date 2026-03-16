@@ -109,9 +109,9 @@ const SearchBar = ({ onSearch, onVoiceSearch, suggestions = [], isLoading = fals
   return (
     <div className="relative w-full max-w-2xl mx-auto">
       {/* Search Input */}
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Icon name="Search" size={20} className="text-muted-foreground" />
+      <div className="relative border-b-2 border-slate-200 focus-within:border-slate-900 transition-colors duration-500 pb-2">
+        <div className="absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none mb-2">
+          <Icon name="Search" size={24} className="text-slate-400" />
         </div>
         
         <input
@@ -121,114 +121,114 @@ const SearchBar = ({ onSearch, onVoiceSearch, suggestions = [], isLoading = fals
           onChange={handleInputChange}
           onKeyPress={handleKeyPress}
           onFocus={() => setShowSuggestions(true)}
-          placeholder="Tìm kiếm sản phẩm, thương hiệu, danh mục..."
-          className="w-full pl-10 pr-20 py-3 bg-background border border-border rounded-lg text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-smooth"
+          placeholder="TÌM KIẾM SẢN PHẨM, THƯƠNG HIỆU..."
+          className="w-full pl-12 pr-24 py-3 bg-transparent text-slate-900 placeholder:text-slate-400 placeholder:text-xs placeholder:tracking-widest placeholder:uppercase focus:outline-none focus:ring-0 font-medium"
         />
 
-        <div className="absolute inset-y-0 right-0 flex items-center space-x-1 pr-2">
+        <div className="absolute inset-y-0 right-0 flex items-center mb-2">
           {query && (
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={clearSearch}
-              className="w-8 h-8 rounded-full hover:bg-muted"
+              className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900 transition-colors"
             >
-              <Icon name="X" size={16} />
-            </Button>
+              <Icon name="X" size={18} />
+            </button>
           )}
           
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={handleVoiceSearch}
-            className={`w-8 h-8 rounded-full hover:bg-muted ${
-              isListening ? 'text-error animate-pulse' : 'text-muted-foreground'
+            className={`w-10 h-10 flex items-center justify-center transition-colors ${
+              isListening ? 'text-error animate-pulse' : 'text-slate-400 hover:text-slate-900'
             }`}
             disabled={isListening}
           >
-            <Icon name="Mic" size={16} />
-          </Button>
+            <Icon name="Mic" size={18} />
+          </button>
 
-          <Button
-            variant="default"
-            size="sm"
+          <button
             onClick={() => handleSearch()}
             disabled={isLoading}
-            className="ml-1"
+            className="w-10 h-10 flex items-center justify-center text-slate-900 ml-1 hover:text-slate-600 transition-colors"
           >
             {isLoading ? (
-              <Icon name="Loader2" size={16} className="animate-spin" />
+              <Icon name="Loader2" size={20} className="animate-spin" />
             ) : (
-              <Icon name="Search" size={16} />
+              <Icon name="ArrowRight" size={20} />
             )}
-          </Button>
+          </button>
         </div>
       </div>
       {/* Search Suggestions */}
       {showSuggestions && (
         <div
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-elegant z-50 max-h-96 overflow-y-auto"
+          className="absolute top-[calc(100%+8px)] left-0 right-0 bg-white border border-slate-100 shadow-xl z-50 max-h-96 overflow-y-auto"
         >
           {/* Auto-complete Suggestions */}
           {suggestions?.length > 0 && query && (
-            <div className="p-2">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 px-2">
+            <div className="p-4">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3 px-2">
                 Gợi ý tìm kiếm
               </h4>
-              {suggestions?.map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg transition-smooth flex items-center space-x-2"
-                >
-                  <Icon name="Search" size={16} className="text-muted-foreground" />
-                  <span className="text-foreground">{suggestion}</span>
-                </button>
-              ))}
+              <div className="space-y-1">
+                {suggestions?.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors flex items-center space-x-3 text-sm text-slate-700 font-medium"
+                  >
+                    <Icon name="Search" size={14} className="text-slate-400" />
+                    <span>{suggestion}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Recent Searches */}
           {recentSearches?.length > 0 && (
-            <div className="p-2 border-t border-border">
-              <h4 className="text-sm font-medium text-muted-foreground mb-2 px-2">
+            <div className="p-4 border-t border-slate-100">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3 px-2">
                 Tìm kiếm gần đây
               </h4>
-              {recentSearches?.map((search, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestionClick(search)}
-                  className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg transition-smooth flex items-center space-x-2"
-                >
-                  <Icon name="Clock" size={16} className="text-muted-foreground" />
-                  <span className="text-foreground">{search}</span>
-                </button>
-              ))}
+              <div className="space-y-1">
+                {recentSearches?.map((search, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(search)}
+                    className="w-full text-left px-3 py-2.5 hover:bg-slate-50 transition-colors flex items-center space-x-3 text-sm text-slate-700"
+                  >
+                    <Icon name="Clock" size={14} className="text-slate-400" />
+                    <span>{search}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
           {/* Popular Searches */}
-          <div className="p-2 border-t border-border">
-            <h4 className="text-sm font-medium text-muted-foreground mb-2 px-2">
+          <div className="p-4 border-t border-slate-100 bg-slate-50/50">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-3 px-2">
               Tìm kiếm phổ biến
             </h4>
-            {popularSearches?.map((search, index) => (
-              <button
-                key={index}
-                onClick={() => handleSuggestionClick(search)}
-                className="w-full text-left px-3 py-2 hover:bg-muted rounded-lg transition-smooth flex items-center space-x-2"
-              >
-                <Icon name="TrendingUp" size={16} className="text-muted-foreground" />
-                <span className="text-foreground">{search}</span>
-              </button>
-            ))}
+            <div className="space-y-1">
+              {popularSearches?.map((search, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(search)}
+                  className="w-full text-left px-3 py-2.5 hover:bg-white transition-colors flex items-center space-x-3 text-sm text-slate-700"
+                >
+                  <Icon name="TrendingUp" size={14} className="text-slate-400" />
+                  <span>{search}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Voice Search Tip */}
-          <div className="p-3 border-t border-border bg-muted/50">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Icon name="Mic" size={16} />
+          <div className="p-4 border-t border-slate-100 bg-slate-900 text-white">
+            <div className="flex items-center space-x-3 text-[11px] font-light tracking-wide">
+              <Icon name="Mic" size={14} className="text-white/70" />
               <span>Nhấn vào biểu tượng mic để tìm kiếm bằng giọng nói</span>
             </div>
           </div>

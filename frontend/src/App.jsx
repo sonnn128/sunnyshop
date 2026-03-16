@@ -86,25 +86,21 @@ function App() {
               <Route
                 path="/court/*"
                 element={
-                  isAuthenticated ? (
-                    <AppLayout>
-                      <Routes>
-                        <Route path="/" element={<DashboardPage />} />
-                        <Route path="/calendar" element={<BookingCalendarPage />} />
-                        <Route path="/customers" element={<CustomersPage />} />
-                        <Route path="/customers/:id" element={<CustomerDetailPage />} />
-                        <Route path="/courts" element={<CourtsPage />} />
-                        <Route path="/invoices" element={<InvoicesPage />} />
-                        <Route path="/inventory" element={<InventoryPage />} />
-                        <Route path="/venues" element={<VenuesPage />} />
-                        <Route path="/reports" element={<ReportsPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
-                        <Route path="*" element={<Navigate to="/court/" replace />} />
-                      </Routes>
-                    </AppLayout>
-                  ) : (
-                    <Navigate to="/court-login" replace />
-                  )
+                  <AppLayout>
+                    <Routes>
+                      <Route path="/" element={<DashboardPage />} />
+                      <Route path="/calendar" element={<BookingCalendarPage />} />
+                      <Route path="/customers" element={<CustomersPage />} />
+                      <Route path="/customers/:id" element={<CustomerDetailPage />} />
+                      <Route path="/courts" element={<CourtsPage />} />
+                      <Route path="/invoices" element={<InvoicesPage />} />
+                      <Route path="/inventory" element={<InventoryPage />} />
+                      <Route path="/venues" element={<VenuesPage />} />
+                      <Route path="/reports" element={<ReportsPage />} />
+                      <Route path="/settings" element={<SettingsPage />} />
+                      <Route path="*" element={<Navigate to="/court/" replace />} />
+                    </Routes>
+                  </AppLayout>
                 }
               />
 

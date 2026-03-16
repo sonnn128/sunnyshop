@@ -103,18 +103,19 @@ const ProductCard = ({ product, onWishlistToggle, onQuickView, onAddToCart }) =>
 
   return (
     <div 
-      className="group relative bg-card rounded-lg overflow-hidden shadow-elegant hover:shadow-product transition-smooth"
+      className="group relative flex flex-col transition-all duration-500"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Product Image */}
-      <Link to={`/product-detail?id=${product?.id}`} className="block relative">
-        <div className="aspect-[3/4] overflow-hidden bg-muted">
+      <Link to={`/product-detail?id=${product?.id}`} className="block relative overflow-hidden bg-slate-100">
+        <div className="aspect-[3/4]">
           <Image
             src={resolvedImage}
             alt={product?.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
           />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
           
           {/* Image Navigation Dots */}
           {imageList.length > 1 && (
@@ -136,88 +137,81 @@ const ProductCard = ({ product, onWishlistToggle, onQuickView, onAddToCart }) =>
           )}
 
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col space-y-1">
+          <div className="absolute top-3 left-3 flex flex-col space-y-2 z-10">
             {product?.isNew && (
-              <span className="px-2 py-1 bg-success text-success-foreground text-xs font-medium rounded">
+              <span className="bg-white text-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-transparent shadow-sm">
                 Mới
               </span>
             )}
             {discount > 0 && (
-              <span className="px-2 py-1 bg-error text-error-foreground text-xs font-medium rounded">
+              <span className="bg-slate-900 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-sm">
                 -{discount}%
               </span>
             )}
             {product?.isBestseller && (
-              <span className="px-2 py-1 bg-accent text-accent-foreground text-xs font-medium rounded">
-                Bán chạy
+              <span className="bg-white text-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-slate-200 shadow-sm">
+                Best Seller
               </span>
             )}
           </div>
 
           {/* Quick Actions */}
-          <div className={`absolute top-2 right-2 flex flex-col space-y-2 transition-smooth ${
-            isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
-          }`}>
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className={`absolute top-4 right-4 flex flex-col space-y-3 transition-all duration-500 ${
+            isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+          } z-10`}>
+            <button
               onClick={handleWishlistClick}
-              className={`w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow-sm ${
-                isWishlisted ? 'text-error' : 'text-foreground'
+              className={`w-10 h-10 bg-white flex items-center justify-center hover:bg-slate-900 hover:text-white transition-colors border border-transparent hover:border-slate-900 shadow-sm ${
+                isWishlisted ? 'text-red-500' : 'text-slate-900'
               }`}
             >
               <Icon 
                 name="Heart" 
-                size={16}
+                size={18}
                 className={isWishlisted ? 'fill-current' : ''}
               />
-            </Button>
+            </button>
             
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={handleQuickView}
-              className="w-8 h-8 rounded-full bg-white/90 hover:bg-white shadow-sm text-foreground"
+              className="w-10 h-10 bg-white flex items-center justify-center text-slate-900 hover:bg-slate-900 hover:text-white transition-colors shadow-sm"
             >
-              <Icon name="Eye" size={16} />
-            </Button>
+              <Icon name="Eye" size={18} />
+            </button>
           </div>
 
           {/* Quick Add to Cart */}
-          <div className={`absolute bottom-2 left-2 right-2 transition-smooth ${
-            isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
+          <div className={`absolute bottom-0 left-0 right-0 transition-all duration-500 z-10 ${
+            isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-full'
           }`}>
-            <Button
-              variant="default"
-              size="sm"
+            <button
               onClick={handleAddToCart}
-              className="w-full"
-              iconName="ShoppingCart"
-              iconPosition="left"
+              className="w-full bg-slate-900 text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2"
             >
-              Thêm vào giỏ
-            </Button>
+              <Icon name="ShoppingCart" size={16} />
+              <span>Thêm vào giỏ</span>
+            </button>
           </div>
         </div>
       </Link>
       {/* Product Info */}
-      <div className="p-4">
+      <div className="pt-5 pb-2 text-center">
         <Link to={`/product-detail?id=${product?.id}`}>
           {/* Brand */}
-          <p className="text-sm text-muted-foreground mb-1">{product?.brand}</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-2">{product?.brand || 'SF Store'}</p>
           
           {/* Product Name */}
-          <h3 className="font-medium text-foreground mb-2 line-clamp-2 group-hover:text-accent transition-smooth">
+          <h3 className="font-serif text-lg text-slate-900 mb-3 truncate group-hover:text-slate-500 transition-colors">
             {product?.name}
           </h3>
 
           {/* Price */}
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold text-foreground">
+          <div className="flex items-center justify-center space-x-3">
+            <span className="font-medium text-slate-900">
               {formatPrice(product?.price)}
             </span>
             {product?.originalPrice && product?.originalPrice > product?.price && (
-              <span className="text-xs text-red-500 line-through">
+              <span className="text-sm text-slate-400 line-through">
                 {formatPrice(product?.originalPrice)}
               </span>
             )}
@@ -225,14 +219,13 @@ const ProductCard = ({ product, onWishlistToggle, onQuickView, onAddToCart }) =>
 
           {/* Available Sizes */}
           {sizeOptions.length > 0 && (
-            <div className="mt-3">
-              <span className="text-xs text-muted-foreground">Size:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
+            <div className="mt-4 flex justify-center items-center gap-2">
+              <span className="text-[10px] uppercase font-bold text-slate-900 tracking-widest hidden group-hover:block transition-all duration-300">
+                Size
+              </span>
+              <div className="flex gap-2 text-[10px] text-slate-500 font-medium">
                 {sizeOptions.map((size) => (
-                  <span
-                    key={size}
-                    className="text-xs px-2 py-0.5 rounded-full bg-muted border border-border"
-                  >
+                  <span key={size} className="hover:text-slate-900 transition-colors">
                     {size}
                   </span>
                 ))}
@@ -242,34 +235,26 @@ const ProductCard = ({ product, onWishlistToggle, onQuickView, onAddToCart }) =>
 
           {/* Available Colors */}
           {product?.availableColors && product?.availableColors?.length > 0 && (
-            <div className="mt-2">
-              <span className="text-xs text-muted-foreground">Màu:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {product.availableColors.map((color, index) => {
-                  const label = typeof color === 'string'
-                    ? color
-                    : (color?.name || color?.value || `Màu ${index + 1}`);
-                  const swatch = typeof color === 'string'
-                    ? color
-                    : (color?.color || color?.value || '#e5e5e5');
-                  const key = typeof color === 'object'
-                    ? (color?.value || color?.name || index)
-                    : `${color}-${index}`;
-                  return (
-                    <span
-                      key={key}
-                      className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-muted border border-border"
-                      title={label}
-                    >
-                      <span
-                        className="w-3 h-3 rounded-full border border-border"
-                        style={{ backgroundColor: swatch }}
-                      />
-                      <span>{label}</span>
-                    </span>
-                  );
-                })}
-              </div>
+            <div className="mt-3 flex justify-center gap-2">
+              {product.availableColors.map((color, index) => {
+                const label = typeof color === 'string'
+                  ? color
+                  : (color?.name || color?.value || `Màu ${index + 1}`);
+                const swatch = typeof color === 'string'
+                  ? color
+                  : (color?.color || color?.value || '#e5e5e5');
+                const key = typeof color === 'object'
+                  ? (color?.value || color?.name || index)
+                  : `${color}-${index}`;
+                return (
+                  <span
+                    key={key}
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: swatch }}
+                    title={label}
+                  />
+                );
+              })}
             </div>
           )}
         </Link>

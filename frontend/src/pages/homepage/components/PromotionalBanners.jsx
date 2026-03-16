@@ -64,58 +64,50 @@ const PromotionalBanners = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Flash Sale Banner */}
         <div className="mb-8">
-          <div className="relative h-[400px] lg:h-[500px] rounded-3xl overflow-hidden bg-gradient-to-r from-error to-warning shadow-product">
-            <div className="absolute inset-0 bg-black/40" />
+          <div className="relative h-[50vh] min-h-[400px] lg:min-h-[600px] overflow-hidden bg-slate-900 flex items-center justify-center text-center">
             <Image
               src={mainPromo?.image}
               alt={mainPromo?.title}
-              className="w-full h-full object-cover mix-blend-overlay"
+              className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
             />
             
-            <div className="absolute inset-0 flex items-center">
-              <div className="max-w-2xl mx-auto text-center px-6">
-                <div className="inline-flex items-center px-4 py-2 rounded-full bg-error text-error-foreground text-sm font-bold mb-6 animate-pulse">
-                  <Icon name="Zap" size={16} className="mr-2" />
-                  FLASH SALE - {mainPromo?.discount} OFF
-                </div>
-                
-                <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4">
-                  {mainPromo?.title}
-                </h2>
-                
-                <p className="text-xl lg:text-2xl text-white/90 mb-2 font-medium">
-                  {mainPromo?.subtitle}
-                </p>
-                
-                <p className="text-lg text-white/80 mb-8">
-                  {mainPromo?.description}
-                </p>
+            <div className="relative z-10 max-w-3xl px-6 flex flex-col items-center">
+              <span className="uppercase tracking-[0.3em] text-xs font-medium text-white/90 mb-6 border border-white/30 px-4 py-1.5">
+                Chỉ Còn Hôm Nay
+              </span>
+              
+              <h2 className="text-5xl lg:text-7xl font-serif text-white mb-6 font-light tracking-wider">
+                {mainPromo?.title}
+              </h2>
+              
+              <p className="text-lg lg:text-xl text-white/80 font-light mb-12 tracking-wide uppercase">
+                {mainPromo?.subtitle} - {mainPromo?.discount} OFF
+              </p>
 
-                {/* Countdown Timer */}
-                <div className="flex items-center justify-center gap-4 mb-8">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                    <div className="text-2xl font-bold text-white">23</div>
-                    <div className="text-xs text-white/80">Giờ</div>
-                  </div>
-                  <div className="text-white text-2xl">:</div>
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                    <div className="text-2xl font-bold text-white">45</div>
-                    <div className="text-xs text-white/80">Phút</div>
-                  </div>
-                  <div className="text-white text-2xl">:</div>
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-                    <div className="text-2xl font-bold text-white">12</div>
-                    <div className="text-xs text-white/80">Giây</div>
-                  </div>
+              {/* Countdown Timer */}
+              <div className="flex items-center justify-center gap-6 mb-12 font-serif text-white/90">
+                <div className="flex flex-col items-center">
+                  <div className="text-4xl lg:text-5xl font-light">23</div>
+                  <div className="text-[10px] uppercase tracking-widest mt-2 text-white/50">Giờ</div>
                 </div>
-                
-                <Link to="/product-catalog">
-                  <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-bold px-8">
-                    {mainPromo?.cta}
-                    <Icon name="ShoppingBag" size={20} className="ml-2" />
-                  </Button>
-                </Link>
+                <div className="text-3xl font-light text-white/30 mb-5">:</div>
+                <div className="flex flex-col items-center">
+                  <div className="text-4xl lg:text-5xl font-light">45</div>
+                  <div className="text-[10px] uppercase tracking-widest mt-2 text-white/50">Phút</div>
+                </div>
+                <div className="text-3xl font-light text-white/30 mb-5">:</div>
+                <div className="flex flex-col items-center">
+                  <div className="text-4xl lg:text-5xl font-light">12</div>
+                  <div className="text-[10px] uppercase tracking-widest mt-2 text-white/50">Giây</div>
+                </div>
               </div>
+              
+              <Link to="/product-catalog">
+                <button className="inline-flex items-center justify-center px-10 py-4 bg-white text-slate-900 font-medium text-sm tracking-widest uppercase hover:bg-slate-100 transition-all duration-300">
+                  {mainPromo?.cta}
+                  <Icon name="ArrowRight" size={16} className="ml-3" />
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -125,33 +117,31 @@ const PromotionalBanners = () => {
           {sidePromos?.map((promo) => (
             <div
               key={promo?.id}
-              className="relative h-[250px] rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 to-primary/20 shadow-elegant hover:shadow-product transition-all duration-300 group"
+              className="relative h-[300px] overflow-hidden bg-slate-100 group"
             >
-              <div className="absolute inset-0 bg-black/30" />
               <Image
                 src={promo?.image}
                 alt={promo?.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
               />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
               
-              <div className="absolute top-4 left-4">
-                <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm font-medium">
+              <div className="absolute top-6 left-6">
+                <span className="bg-white text-slate-900 px-3 py-1 text-[10px] font-bold uppercase tracking-widest border border-transparent">
                   {promo?.badge}
                 </span>
               </div>
               
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="text-2xl font-bold mb-2">
+              <div className="absolute bottom-6 left-6 right-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-3xl font-serif font-light mb-2 tracking-wide">
                   {promo?.title}
                 </h3>
-                <p className="text-white/90 mb-4">
+                <p className="text-white/80 text-sm font-light uppercase tracking-widest mb-6 border-b border-white/20 pb-4 inline-block">
                   {promo?.subtitle}
                 </p>
-                <Link to="/product-catalog">
-                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-primary">
-                    {promo?.cta}
-                    <Icon name="ArrowRight" size={16} className="ml-2" />
-                  </Button>
+                <Link to="/product-catalog" className="flex items-center text-xs font-semibold uppercase tracking-widest text-white/90 hover:text-white transition-colors">
+                  {promo?.cta}
+                  <Icon name="ArrowRight" size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -164,25 +154,25 @@ const PromotionalBanners = () => {
             <Link
               key={banner?.id}
               to="/product-catalog"
-              className="group relative h-[300px] rounded-2xl overflow-hidden shadow-elegant hover:shadow-product transition-all duration-300 transform hover:-translate-y-1"
+              className="group relative h-[400px] overflow-hidden bg-slate-100"
             >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
               <Image
                 src={banner?.image}
                 alt={banner?.title}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
               
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-accent transition-colors">
-                  {banner?.title}
-                </h3>
-                <p className="text-white/80 mb-4">
+              <div className="absolute bottom-8 left-8 right-8 text-white z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                <p className="text-white/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                   {banner?.subtitle}
                 </p>
-                <div className="flex items-center gap-2 text-accent">
-                  <span className="font-medium">{banner?.cta}</span>
-                  <Icon name="ArrowRight" size={16} className="group-hover:translate-x-1 transition-transform" />
+                <h3 className="text-2xl font-serif font-light mb-4 tracking-wide group-hover:text-blue-200 transition-colors">
+                  {banner?.title}
+                </h3>
+                <div className="flex items-center text-xs font-medium uppercase tracking-widest text-white mt-4 border-t border-white/20 pt-4">
+                  <span>{banner?.cta}</span>
+                  <Icon name="ArrowRight" size={14} className="ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                 </div>
               </div>
             </Link>

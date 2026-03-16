@@ -27,6 +27,12 @@ public class WishlistController {
         wishlistService.removeFromWishlist(id);
     }
 
+    @GetMapping
+    public List<Wishlist> getMyWishlist() {
+        // Mocking for now, in reality should use SecurityContext to get userId
+        return wishlistService.getUserWishlist("mock-user-id");
+    }
+
     @GetMapping("/user/{userId}")
     public List<Wishlist> getUserWishlist(@PathVariable String userId) {
         return wishlistService.getUserWishlist(userId);

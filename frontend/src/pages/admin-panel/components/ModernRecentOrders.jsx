@@ -5,14 +5,21 @@ import { useToast } from '../../../components/ui/ToastProvider';
 import { getAllOrders } from '../../../lib/orderApi';
 import { cn } from '../../../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useI18n } from '../../../i18n';
 
 const ModernRecentOrders = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { t, formatDate, formatCurrency } = useI18n();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount);
+  };
+
+  const formatDate = (date) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+  };
 
   useEffect(() => {
     const fetchRecentOrders = async () => {
@@ -47,8 +54,8 @@ const ModernRecentOrders = () => {
     <div className="bg-white border border-slate-200 overflow-hidden">
       <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-50">
         <div>
-          <h3 className="text-xl font-serif text-slate-900 tracking-tight">{t.dashboard.recentOrders.title}</h3>
-          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-[0.2em]">{t.dashboard.recentOrders.subtitle}</p>
+          <h3 className="text-xl font-serif text-slate-900 tracking-tight">Đơn hàng gần đây</h3>
+          <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-[0.2em]">Nhật ký hoạt động giao dịch mới nhất</p>
         </div>
         <motion.button 
           whileHover={{ y: -2 }}
@@ -56,7 +63,7 @@ const ModernRecentOrders = () => {
           onClick={() => navigate('/admin-panel?tab=orders')}
           className="h-10 px-6 bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2"
         >
-          <span>{t.dashboard.recentOrders.viewAll}</span>
+          <span>Xem tất cả giao dịch</span>
           <Icon name="ArrowRight" size={12} strokeWidth={2} />
         </motion.button>
       </div>
@@ -65,12 +72,12 @@ const ModernRecentOrders = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="text-slate-400 uppercase text-[9px] font-bold tracking-[0.2em] border-b border-slate-50 bg-slate-50/30">
-              <th className="px-8 py-4">{t.dashboard.recentOrders.reference}</th>
-              <th className="px-8 py-4">{t.dashboard.recentOrders.customer}</th>
-              <th className="px-8 py-4">{t.dashboard.recentOrders.amount}</th>
-              <th className="px-8 py-4">{t.dashboard.recentOrders.status}</th>
-              <th className="px-8 py-4">{t.dashboard.recentOrders.date}</th>
-              <th className="px-8 py-4 text-right">{t.dashboard.recentOrders.action}</th>
+              <th className="px-8 py-4">Mã đơn</th>
+              <th className="px-8 py-4">Khách hàng</th>
+              <th className="px-8 py-4">Số tiền</th>
+              <th className="px-8 py-4">Trạng thái</th>
+              <th className="px-8 py-4">Ngày</th>
+              <th className="px-8 py-4 text-right">Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -86,7 +93,7 @@ const ModernRecentOrders = () => {
                   <td colSpan="6" className="py-24 text-center">
                     <div className="flex flex-col items-center justify-center opacity-20">
                       <Icon name="Inbox" size={48} strokeWidth={1} className="mb-4 text-slate-400" />
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{t.dashboard.recentOrders.noActivity}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">Không có hoạt động gần đây</p>
                     </div>
                   </td>
                 </tr>
@@ -137,7 +144,7 @@ const ModernRecentOrders = () => {
                           onClick={() => navigate(`/admin-panel/orders/${orderId}`)}
                           className="text-[9px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-2 ml-auto"
                         >
-                          <span>{t.dashboard.recentOrders.viewDetails}</span>
+                          <span>Xem chi tiết</span>
                           <Icon name="ArrowRight" size={10} />
                         </button>
                       </td>

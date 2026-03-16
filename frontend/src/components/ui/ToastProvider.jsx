@@ -53,17 +53,17 @@ export const ToastProvider = ({ children }) => {
             onMouseEnter={() => pause(t.id)}
             onMouseLeave={() => resume(t.id, t.timeout)}
           >
-            <div className="flex-shrink-0 mt-1 text-accent-foreground">
-              <Icon name={iconFor(t.type)} size={20} />
+            <div className="flex-shrink-0 mt-0.5 toast-icon">
+              <Icon name={iconFor(t.type)} size={18} strokeWidth={1.5} />
             </div>
-            <div className="flex-1">
-              {t.title ? <div className="text-sm font-semibold text-foreground">{t.title}</div> : null}
-              <div className="text-xs text-muted-foreground mt-1">{t.message}</div>
-              <div className="mt-3 h-1 bg-white/10 rounded-full overflow-hidden">
-                <div className="toast-progress bg-white/60 h-full" style={{ animationDuration: `${t.timeout}ms` }} />
+            <div className="flex-1 min-w-0">
+              {t.title ? <div className="text-[12px] font-semibold text-foreground uppercase tracking-wide">{t.title}</div> : null}
+              <div className="text-[11px] text-muted-foreground mt-0.5">{t.message}</div>
+              <div className="mt-2.5 h-[2px] bg-slate-100 rounded-full overflow-hidden">
+                <div className="toast-progress h-full" style={{ animationDuration: `${t.timeout}ms` }} />
               </div>
             </div>
-            <button className="ml-2 text-muted-foreground hover:text-foreground" onClick={() => remove(t.id)}>✕</button>
+            <button className="ml-2 text-slate-300 hover:text-slate-600 transition-colors text-xs" onClick={() => remove(t.id)}>✕</button>
           </div>
         ))}
       </div>

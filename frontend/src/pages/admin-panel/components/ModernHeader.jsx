@@ -1,13 +1,33 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../lib/utils';
-import { useNavigate } from 'react-router-dom';
-import { useI18n } from '../../../i18n';
 
 const ModernHeader = ({ collapsed, user, roleLabels }) => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowUserMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+    } catch (e) {}
+    const remembered = localStorage.getItem('rememberedEmail');
+    try { localStorage.removeItem('user'); localStorage.removeItem('token'); } catch (e) {}
+    if (remembered) try { localStorage.setItem('rememberedEmail', remembered); } catch (e) {}
+    window.location.href = '/login';
+  };
 
   return (
     <motion.header 
@@ -28,7 +48,7 @@ const ModernHeader = ({ collapsed, user, roleLabels }) => {
             </div>
             <input 
               type="text" 
-              placeholder={t.common.search + "..."} 
+              placeholder="Tìm kiếm..." 
               className="w-full bg-slate-50 border-none rounded-none py-2 pl-12 pr-4 text-[11px] font-bold uppercase tracking-tight focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
             />
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
@@ -46,14 +66,15 @@ const ModernHeader = ({ collapsed, user, roleLabels }) => {
           </div>
 
           <div 
-            className="flex items-center space-x-4 pl-2 cursor-pointer group"
-            onClick={() => navigate('/settings')}
+            ref={menuRef}
+            className="relative flex items-center space-x-4 pl-2 cursor-pointer group"
+            onClick={() => setShowUserMenu(!showUserMenu)}
           >
             <div className="text-right hidden sm:block">
               <p className="text-[11px] font-bold text-slate-900 leading-none uppercase tracking-widest transition-colors">
                 {user?.name?.split(' ')[0] || "Admin"}
               </p>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-1 opacity-70">
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.1em] mt-1">
                 {roleLabels[user?.role] || user?.role}
               </p>
             </div>
@@ -67,6 +88,39 @@ const ModernHeader = ({ collapsed, user, roleLabels }) => {
               </div>
               <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
             </div>
+
+            <AnimatePresence>
+              {showUserMenu && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 mt-3 w-56 bg-white border border-slate-200 shadow-xl z-50"
+                >
+                  <div className="p-4 border-b border-slate-100">
+                    <p className="text-[11px] font-bold text-slate-900 uppercase tracking-wide">{user?.email}</p>
+                    <p className="text-[9px] text-slate-500 mt-1 uppercase tracking-wider">{roleLabels[user?.role] || user?.role}</p>
+                  </div>
+                  <div className="py-2">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate('/user-dashboard'); setShowUserMenu(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    >
+                      <Icon name="User" size={16} />
+                      <span>Hồ sơ</span>
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleLogout(); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-bold uppercase tracking-wide text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors"
+                    >
+                      <Icon name="LogOut" size={16} />
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
@@ -78,7 +132,7 @@ const HeaderAction = ({ icon, badge }) => (
   <motion.button 
     whileHover={{ y: -2 }}
     whileTap={{ scale: 0.95 }}
-    className="relative p-2 rounded-none hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-900"
+    className="relative p-2 rounded-none hover:bg-slate-50 transition-all text-slate-600 hover:text-slate-900"
   >
     <Icon name={icon} size={18} strokeWidth={1.5} />
     {badge && (

@@ -28,6 +28,17 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/admin")
+    public List<Order> getAdminOrders() {
+        return orderService.getAllOrders();
+    }
+
+    @GetMapping("/top-products")
+    public List<?> getTopProducts() {
+        // Mock data or service call
+        return List.of();
+    }
+
     @GetMapping("/{id}")
     public Order getOrderById(@PathVariable Long id) {
         return orderService.getOrderById(id);

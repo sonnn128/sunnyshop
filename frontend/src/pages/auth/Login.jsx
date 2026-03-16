@@ -146,7 +146,7 @@ const Login = () => {
             >
               <Input
                 placeholder="NHẬP TÊN ĐĂNG NHẬP HOẶC EMAIL"
-                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-0 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none"
+                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-2 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none"
               />
             </Form.Item>
 
@@ -161,7 +161,7 @@ const Login = () => {
               <Input.Password 
                 placeholder="NHẬP MẬT KHẨU" 
                 autoComplete="current-password"
-                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-0 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none [&>input]:bg-transparent"
+                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-2 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none [&>input]:bg-transparent"
               />
             </Form.Item>
 

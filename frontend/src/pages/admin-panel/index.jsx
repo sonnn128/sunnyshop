@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRole } from '../../hooks/useRole';
-import { useI18n } from '../../i18n';
 import API from '../../lib/api';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
@@ -25,13 +24,20 @@ import AnalyticsDashboard from './components/AnalyticsDashboard';
 import TopProducts from './components/TopProduct';
 
 const AdminPanel = () => {
-  const { t, formatCurrency, formatNumber } = useI18n();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
   const { role } = useRole();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount);
+  };
+
+  const formatNumber = (num) => {
+    return new Intl.NumberFormat('vi-VN').format(num);
+  };
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -71,12 +77,12 @@ const AdminPanel = () => {
     const stats = dashboardData?.stats;
     if (!stats) return [];
     return [
-      { title: t.dashboard.monthlyRevenue, value: formatCurrency(stats.revenue.current), change: formatPercent(stats.revenue.changePercent), changeType: stats.revenue.changeType, icon: 'DollarSign', color: 'primary' },
-      { title: t.dashboard.totalOrders, value: formatNumber(stats.orders.current), change: formatPercent(stats.orders.changePercent), changeType: stats.orders.changeType, icon: 'ShoppingCart', color: 'success' },
-      { title: t.dashboard.newCustomers, value: formatNumber(stats.customers.current), change: formatPercent(stats.customers.changePercent), changeType: stats.customers.changeType, icon: 'Users', color: 'accent' },
-      { title: t.dashboard.storeInventory, value: formatNumber(stats.inventory.total), change: stats.inventory.lowStock > 0 ? `${stats.inventory.lowStock} ${t.dashboard.lowStock.toLowerCase()}` : t.dashboard.healthyStock, changeType: stats.inventory.lowStock > 0 ? 'decrease' : 'neutral', icon: 'Package', color: 'warning' }
+      { title: 'Doanh thu tháng', value: formatCurrency(stats.revenue.current), change: formatPercent(stats.revenue.changePercent), changeType: stats.revenue.changeType, icon: 'DollarSign', color: 'primary' },
+      { title: 'Tổng đơn hàng', value: formatNumber(stats.orders.current), change: formatPercent(stats.orders.changePercent), changeType: stats.orders.changeType, icon: 'ShoppingCart', color: 'success' },
+      { title: 'Khách hàng mới', value: formatNumber(stats.customers.current), change: formatPercent(stats.customers.changePercent), changeType: stats.customers.changeType, icon: 'Users', color: 'accent' },
+      { title: 'Kho hàng', value: formatNumber(stats.inventory.total), change: stats.inventory.lowStock > 0 ? `${stats.inventory.lowStock} sắp hết` : 'Ổn định', changeType: stats.inventory.lowStock > 0 ? 'decrease' : 'neutral', icon: 'Package', color: 'warning' }
     ];
-  }, [dashboardData, t, formatCurrency, formatNumber]);
+  }, [dashboardData, formatCurrency, formatNumber]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -91,12 +97,12 @@ const AdminPanel = () => {
                   animate={{ opacity: 1, x: 0 }}
                   className="text-5xl font-serif text-slate-900 leading-[1.1]"
                 >
-                  {t.dashboard.executiveOverview.split(' ')[0]} <br /> <span className="italic text-slate-500">{t.dashboard.executiveOverview.split(' ').slice(1).join(' ')}</span>
+                  Tổng quan <br /> <span className="italic text-slate-500">điều hành</span>
                 </motion.h2>
                 <div className="flex items-center gap-3 mt-6">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                   <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
-                    {t.dashboard.systemSynchronized}: {new Date().toLocaleTimeString('vi-VN')}
+                    Đã đồng bộ: {new Date().toLocaleTimeString('vi-VN')}
                   </p>
                 </div>
               </div>
@@ -106,14 +112,14 @@ const AdminPanel = () => {
                   className="h-14 px-8 rounded-none border-slate-200 bg-white text-slate-900 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-50 transition-all duration-300" 
                   iconName="Download"
                 >
-                  Export Report
+                  Xuất báo cáo
                 </Button>
                 <Button 
                   className="h-14 px-8 rounded-none bg-slate-900 text-white shadow-xl shadow-slate-900/10 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-800 transition-all duration-300" 
                   iconName="Plus" 
                   onClick={() => navigate('/admin-panel/products/new')}
                 >
-                  Add New Asset
+                  Thêm sản phẩm
                 </Button>
               </div>
             </div>
@@ -164,10 +170,10 @@ const AdminPanel = () => {
                 </div>
                 <div className="bg-white rounded-none p-8 border border-slate-200 shadow-sm">
                   <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
-                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900">Live Activity Pulse</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900">Hoạt động gần đây</h3>
                     <div className="flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">Real-time</span>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">Thời gian thực</span>
                     </div>
                   </div>
                   <ModernActivityFeed />

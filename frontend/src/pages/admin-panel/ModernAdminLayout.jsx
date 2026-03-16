@@ -1,13 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useRole } from '../../hooks/useRole';
-import { useI18n } from '../../i18n';
 import ModernSidebar from './components/ModernSidebar';
 import ModernHeader from './components/ModernHeader';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
   const { user, role } = useRole();
-  const { t } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
 
   const currentUser = useMemo(() => ({
@@ -17,21 +15,21 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
   }), [user, role]);
 
   const roleLabels = {
-    staff: t.settings.users.split(' ')[0], // Approximate, or we can add specific keys
+    staff: 'Nhân viên',
     manager: 'Quản lý',
     admin: 'Quản trị viên'
   };
 
   const tabs = [
-    { id: 'dashboard', label: t.nav.overview, icon: 'LayoutDashboard', roles: ['staff', 'manager', 'admin'] },
-    { id: 'orders', label: t.nav.orders, icon: 'ShoppingBag', roles: ['staff', 'manager', 'admin'] },
-    { id: 'products', label: t.nav.products, icon: 'Package', roles: ['staff', 'manager', 'admin'] },
-    { id: 'categories', label: t.nav.categories, icon: 'FolderTree', roles: ['staff', 'manager', 'admin'] },
-    { id: 'brands', label: t.nav.brands, icon: 'Globe', roles: ['staff', 'manager', 'admin'] },
-    { id: 'chat', label: t.nav.messages, icon: 'MessageCircle', roles: ['staff', 'manager', 'admin'] },
-    { id: 'analytics', label: t.nav.analytics, icon: 'BarChart3', roles: ['manager', 'admin'] },
-    { id: 'users', label: t.nav.customers, icon: 'Users', roles: ['admin'] },
-    { id: 'settings', label: t.nav.settings, icon: 'Settings', roles: ['admin'] }
+    { id: 'dashboard', label: 'Tổng quan', icon: 'LayoutDashboard', roles: ['staff', 'manager', 'admin'] },
+    { id: 'orders', label: 'Đơn hàng', icon: 'ShoppingBag', roles: ['staff', 'manager', 'admin'] },
+    { id: 'products', label: 'Sản phẩm', icon: 'Package', roles: ['staff', 'manager', 'admin'] },
+    { id: 'categories', label: 'Danh mục', icon: 'FolderTree', roles: ['staff', 'manager', 'admin'] },
+    { id: 'brands', label: 'Thương hiệu', icon: 'Globe', roles: ['staff', 'manager', 'admin'] },
+    { id: 'chat', label: 'Tin nhắn', icon: 'MessageCircle', roles: ['staff', 'manager', 'admin'] },
+    { id: 'analytics', label: 'Phân tích', icon: 'BarChart3', roles: ['manager', 'admin'] },
+    { id: 'users', label: 'Khách hàng', icon: 'Users', roles: ['admin'] },
+    { id: 'settings', label: 'Cài đặt', icon: 'Settings', roles: ['admin'] }
   ].filter(tab => tab.roles.includes(role));
 
   return (

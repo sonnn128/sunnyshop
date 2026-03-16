@@ -3,22 +3,20 @@ import Icon from '../../../components/AppIcon';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import { motion } from 'framer-motion';
-import { useI18n } from '../../../i18n';
 
 const ModernQuickActions = ({ className }) => {
   const navigate = useNavigate();
-  const { t } = useI18n();
   
   const actions = [
-    { id: 1, title: t.dashboard.quickActions.newAsset, description: t.dashboard.quickActions.newAssetDesc, icon: "Plus", color: "slate", onClick: () => navigate('/admin-panel/products/new') },
-    { id: 2, title: t.dashboard.quickActions.collections, description: t.dashboard.quickActions.collectionsDesc, icon: "Folder", color: "slate", onClick: () => navigate('/admin-panel?tab=categories') },
-    { id: 3, title: t.dashboard.quickActions.logistics, description: t.dashboard.quickActions.logisticsDesc, icon: "Package", color: "slate", onClick: () => navigate('/admin-panel?tab=orders') },
-    { id: 4, title: t.dashboard.quickActions.directory, description: t.dashboard.quickActions.directoryDesc, icon: "Users", color: "slate", onClick: () => navigate('/admin-panel?tab=users') }
+    { id: 1, title: 'Thêm mới', description: 'Tạo sản phẩm', icon: "Plus", color: "slate", onClick: () => navigate('/admin-panel/products/new') },
+    { id: 2, title: 'Bộ sưu tập', description: 'Quản lý danh mục', icon: "Folder", color: "slate", onClick: () => navigate('/admin-panel?tab=categories') },
+    { id: 3, title: 'Vận chuyển', description: 'Luồng đơn hàng', icon: "Package", color: "slate", onClick: () => navigate('/admin-panel?tab=orders') },
+    { id: 4, title: 'Danh bạ', description: 'Cơ sở thành viên', icon: "Users", color: "slate", onClick: () => navigate('/admin-panel?tab=users') }
   ];
 
   return (
     <div className={cn("bg-white p-8 border border-slate-200", className)}>
-      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900 mb-8 pb-4 border-b border-slate-50">{t.dashboard.quickActions.title}</h3>
+      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900 mb-8 pb-4 border-b border-slate-50">Trung tâm điều hành</h3>
       <div className="grid grid-cols-2 gap-4">
         {actions.map((action, index) => (
           <motion.button

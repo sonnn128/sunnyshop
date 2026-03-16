@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../lib/utils';
-import { useI18n } from '../../../i18n';
 
 const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }) => {
   const navigate = useNavigate();
-  const { t } = useI18n();
 
   return (
     <motion.aside 
@@ -22,26 +20,25 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
     >
       <div className="flex flex-col h-full">
         {/* Logo Section */}
-        <div className="pt-10 pb-12 px-8 flex items-center mb-4 border-b border-slate-50">
-          <motion.div 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-10 h-10 bg-slate-900 rounded-none flex items-center justify-center shadow-lg cursor-pointer flex-shrink-0"
-            onClick={() => navigate('/')}
-          >
-            <Icon name="Sparkles" size={20} color="white" />
-          </motion.div>
+        <div className="pt-10 pb-12 px-8 flex items-center mb-4 border-b border-slate-50 cursor-pointer" onClick={() => navigate('/')}>
           <AnimatePresence>
-            {!collapsed && (
+            {collapsed ? (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="font-serif text-xl font-bold text-slate-900 uppercase"
+              >S</motion.span>
+            ) : (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.2 }}
-                className="ml-4 overflow-hidden whitespace-nowrap"
+                className="overflow-hidden whitespace-nowrap"
               >
-                <h1 className="text-lg font-serif tracking-tight text-slate-900 uppercase">SUNNY</h1>
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">{t.nav.management}</p>
+                <h1 className="text-lg font-serif tracking-widest text-slate-900 uppercase">Sunny<span className="font-light">Fashion</span></h1>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Quản lý</p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -58,8 +55,8 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
                 className={cn(
                   "w-full flex items-center p-3.5 rounded-none transition-all duration-300 group relative",
                   isActive 
-                    ? "text-slate-900 bg-slate-50" 
-                    : "text-slate-400 hover:text-slate-900 hover:bg-slate-50/50"
+                    ? "text-slate-900 bg-slate-100 font-extrabold" 
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/70 hover:font-bold"
                 )}
               >
                 <div className={cn(
@@ -71,7 +68,7 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
                     size={20} 
                     className={cn(
                       "transition-all duration-300",
-                      isActive ? "text-slate-900" : "text-slate-400 group-hover:text-slate-900"
+                      isActive ? "text-slate-900" : "text-slate-600 group-hover:text-slate-900"
                     )} 
                   />
                 </div>
@@ -115,7 +112,7 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
             className="w-full flex items-center justify-center p-3 text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all group"
           >
             <Icon name={collapsed ? "ChevronRight" : "ChevronLeft"} size={20} />
-            {!collapsed && <span className="ml-3 text-[10px] font-bold uppercase tracking-widest">Collapse</span>}
+            {!collapsed && <span className="ml-3 text-[10px] font-bold uppercase tracking-widest">Thu gọn</span>}
           </button>
         </div>
       </div>

@@ -70,15 +70,19 @@ body {
 }
 
 /* Toast styles */
-.toast-item { opacity: 0; transform: translateY(10px); animation: toastIn 260ms cubic-bezier(.2,.9,.2,1) forwards; }
-@keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.toast-success { background: linear-gradient(90deg, #06b6d4 0%, #10b981 60%); border: 1px solid rgba(16,185,129,0.25); color: #fff; }
-.toast-error { background: linear-gradient(90deg, #ef4444 0%, #f97316 60%); border: 1px solid rgba(244,77,76,0.35); color: #fff; }
-.toast-warning { background: linear-gradient(90deg, #f59e0b 0%, #f97316 60%); border: 1px solid rgba(245,158,11,0.30); color: #111827; }
-.toast-info { background: linear-gradient(90deg, #06b6ff 0%, #3b82f6 60%); border: 1px solid rgba(59,130,246,0.28); color: #fff; }
-.toast-item { color: #fff; }
-.toast-item .text-muted-foreground { color: rgba(255,255,255,0.9); }
-.toast-item .toast-progress { width: 100%; transform-origin: left; animation-name: toastProgress; animation-timing-function: linear; animation-fill-mode: forwards; background: rgba(255,255,255,0.85); }
+.toast-item { opacity: 0; transform: translateY(-8px); animation: toastIn 220ms cubic-bezier(.2,.9,.2,1) forwards; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.08); color: #1e293b; border-radius: 6px; }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+.toast-success { border-left: 3px solid #64748b; }
+.toast-success .toast-icon { color: #475569; }
+.toast-error { border-left: 3px solid #ef4444; }
+.toast-error .toast-icon { color: #ef4444; }
+.toast-warning { border-left: 3px solid #f59e0b; }
+.toast-warning .toast-icon { color: #f59e0b; }
+.toast-info { border-left: 3px solid #94a3b8; }
+.toast-info .toast-icon { color: #94a3b8; }
+.toast-item .text-foreground { color: #1e293b; font-size: 13px; }
+.toast-item .text-muted-foreground { color: #64748b; }
+.toast-item .toast-progress { width: 100%; transform-origin: left; animation-name: toastProgress; animation-timing-function: linear; animation-fill-mode: forwards; background: #cbd5e1; }
 @keyframes toastProgress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
 

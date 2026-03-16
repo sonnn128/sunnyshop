@@ -54,10 +54,14 @@ const I18nContext = createContext(null);
 function getStoredLanguage() {
   if (typeof window === 'undefined') return 'vi';
   const stored = localStorage.getItem('language');
+  // Force Vietnamese for now, remove this line if you want auto-detect
+  if (!stored) localStorage.setItem('language', 'vi');
   if (stored === 'en' || stored === 'vi') return stored;
   // Auto-detect from browser
   const browserLang = navigator.language.split('-')[0];
-  return browserLang === 'en' ? 'en' : 'vi';
+  const lang = browserLang === 'en' ? 'en' : 'vi';
+  localStorage.setItem('language', lang);
+  return lang;
 }
 
 export function I18nProvider({ children }) {

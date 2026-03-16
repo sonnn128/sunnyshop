@@ -295,13 +295,13 @@ const Header = () => {
               <Icon
                 name="Search"
                 size={18}
-                className="absolute left-0 text-slate-400 group-hover:text-slate-900 transition-colors"
+                className="absolute left-2 text-slate-400 group-hover:text-slate-900 transition-colors"
                 strokeWidth={1.5}
               />
               <input
                 type="text"
                 placeholder="TÌM KIẾM..."
-                className="w-32 lg:w-48 pl-7 pr-4 py-2 bg-transparent border-b border-slate-200 text-[10px] font-bold uppercase tracking-widest text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+                className="w-32 lg:w-48 pl-9 pr-4 py-2 bg-transparent border-b border-slate-200 text-[10px] font-bold uppercase tracking-widest text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
               />
             </div>
 

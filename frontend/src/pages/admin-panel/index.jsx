@@ -90,15 +90,15 @@ const AdminPanel = () => {
                 <motion.h2 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-5xl font-black tracking-tight text-foreground leading-[1.1]"
+                  className="text-5xl font-black tracking-tight text-foreground leading-[1.1] font-serif"
                 >
                   Global Command <br /> <span className="text-primary italic">Intelligence Center</span>
                 </motion.h2>
                 <p className="text-muted-foreground mt-4 font-bold uppercase tracking-[0.3em] text-[10px] opacity-60">System Synchronized: {new Date().toLocaleTimeString('vi-VN')}</p>
               </div>
               <div className="flex items-center gap-4">
-                <Button variant="outline" className="h-14 px-8 rounded-[1.5rem] border-border/30 glass-card font-black uppercase tracking-widest text-[10px]" iconName="Download">Export Report</Button>
-                <Button className="h-14 px-8 rounded-[1.5rem] shadow-2xl shadow-primary/40 font-black uppercase tracking-widest text-[10px]" iconName="Plus" onClick={() => navigate('/admin-panel/products/new')}>New Asset</Button>
+                <Button variant="outline" className="h-14 px-8 rounded-full border-border/30 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all duration-300" iconName="Download">Export Report</Button>
+                <Button className="h-14 px-8 rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40 font-bold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all duration-300" iconName="Plus" onClick={() => navigate('/admin-panel/products/new')}>New Asset</Button>
               </div>
             </div>
 

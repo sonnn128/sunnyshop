@@ -6,7 +6,7 @@ const ChatManagement = () => {
   const [selectedConversation, setSelectedConversation] = useState(null);
 
   return (
-    <div className="h-[calc(100vh-12rem)] bg-background rounded-lg border border-border flex">
+    <div className="h-[calc(100vh-14rem)] bg-card/60 backdrop-blur-md rounded-[2.5rem] border border-border/50 flex overflow-hidden shadow-elegant">
       {/* Conversations List - Fixed width with its own scroll */}
       <div 
         className={`${

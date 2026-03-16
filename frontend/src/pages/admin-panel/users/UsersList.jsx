@@ -225,8 +225,8 @@ const UsersList = () => {
         </Button>
       </div>
 
-      <div className="bg-card border border-border rounded-lg p-6 space-y-4">
-        <h3 className="font-medium">Bộ lọc</h3>
+      <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant space-y-4">
+        <h3 className="text-lg font-bold">Bộ lọc tìm kiếm</h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2">
             <Input
@@ -281,7 +281,7 @@ const UsersList = () => {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-lg shadow-sm">
+      <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] shadow-elegant overflow-hidden">
         {loading ? (
           <div className="py-16 text-center">
             <div className="inline-flex flex-col items-center gap-3 text-muted-foreground">

@@ -1,65 +1,87 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../lib/utils';
+import { motion } from 'framer-motion';
 
 const ModernStatsCard = ({ title, value, change, changeType, icon, color = "primary" }) => {
-  const getColors = () => {
+  const getVariants = () => {
     const variants = {
-      primary: "from-blue-500/10 to-indigo-500/10 text-blue-600 dark:text-blue-400 bg-blue-500",
-      success: "from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 bg-emerald-500",
-      warning: "from-amber-500/10 to-orange-500/10 text-amber-600 dark:text-amber-400 bg-amber-500",
-      error: "from-rose-500/10 to-pink-500/10 text-rose-600 dark:text-rose-400 bg-rose-500",
-      accent: "from-violet-500/10 to-purple-500/10 text-violet-600 dark:text-violet-400 bg-violet-500"
+      primary: { bg: "from-blue-500/10 to-indigo-500/10", accent: "text-blue-600 dark:text-blue-400", glow: "bg-blue-500", iconBg: "bg-blue-500/20" },
+      success: { bg: "from-emerald-500/10 to-teal-500/10", accent: "text-emerald-600 dark:text-emerald-400", glow: "bg-emerald-500", iconBg: "bg-emerald-500/20" },
+      warning: { bg: "from-amber-500/10 to-orange-500/10", accent: "text-amber-600 dark:text-amber-400", glow: "bg-amber-500", iconBg: "bg-amber-500/20" },
+      error: { bg: "from-rose-500/10 to-pink-500/10", accent: "text-rose-600 dark:text-rose-400", glow: "bg-rose-500", iconBg: "bg-rose-500/20" },
+      accent: { bg: "from-violet-500/10 to-purple-500/10", accent: "text-violet-600 dark:text-violet-400", glow: "bg-violet-500", iconBg: "bg-violet-500/20" }
     };
     return variants[color] || variants.primary;
   };
 
-  const colors = getColors();
+  const v = getVariants();
 
   return (
-    <div className="relative group overflow-hidden bg-card/60 backdrop-blur-md border border-border/50 rounded-3xl p-6 shadow-elegant hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-      {/* Background Glow */}
-      <div className={cn(
-        "absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 group-hover:opacity-30 transition-opacity",
-        colors.split(' ').pop()
-      )} />
+    <motion.div 
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="relative group overflow-hidden glass-card rounded-[2.5rem] p-8 shadow-2xl border-white/40"
+    >
+      {/* Dynamic Background Glow */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.2, 1],
+          opacity: [0.1, 0.2, 0.1]
+        }}
+        transition={{ duration: 4, repeat: Infinity }}
+        className={cn("absolute -right-10 -top-10 w-40 h-40 rounded-full blur-3xl", v.glow)} 
+      />
 
-      <div className="flex items-start justify-between relative z-10">
-        <div className="space-y-4">
-          <div className={cn(
-            "w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-inner",
-            colors.split(' ').slice(0, 2).join(' ')
-          )}>
-            <Icon name={icon} size={24} className={colors.split(' ')[2]} />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-8">
+          <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br shadow-inner border border-white/30", v.bg)}>
+            <Icon name={icon} size={28} className={v.accent} strokeWidth={2.5} />
           </div>
-          <div>
-            <p className="text-sm font-medium text-muted-foreground tracking-tight">{title}</p>
-            <h3 className="text-2xl font-bold text-foreground mt-1 tabular-nums">{value}</h3>
+          
+          {change && (
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={cn(
+                "flex items-center px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-wider border backdrop-blur-md",
+                changeType === 'increase' 
+                  ? "bg-success/10 text-success border-success/30" 
+                  : changeType === 'decrease' 
+                    ? "bg-error/10 text-error border-error/30" 
+                    : "bg-muted text-muted-foreground border-border/30"
+              )}
+            >
+              <Icon 
+                name={changeType === 'increase' ? 'ArrowUpRight' : changeType === 'decrease' ? 'ArrowDownRight' : 'Minus'} 
+                size={12} 
+                className="mr-1.5"
+                strokeWidth={3}
+              />
+              {change}
+            </motion.div>
+          )}
+        </div>
+
+        <div>
+          <h4 className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">{title}</h4>
+          <div className="flex items-baseline gap-2">
+            <span className="text-4xl font-black text-foreground tracking-tight tabular-nums">{value}</span>
           </div>
         </div>
 
-        {change && (
-          <div className={cn(
-            "flex items-center px-2 py-1 rounded-full text-[11px] font-bold border",
-            changeType === 'increase' 
-              ? "bg-success/10 text-success border-success/20" 
-              : changeType === 'decrease' 
-                ? "bg-error/10 text-error border-error/20" 
-                : "bg-muted text-muted-foreground border-border"
-          )}>
-            <Icon 
-              name={changeType === 'increase' ? 'TrendingUp' : changeType === 'decrease' ? 'TrendingDown' : 'Minus'} 
-              size={12} 
-              className="mr-1"
-            />
-            {change}
+        {/* Action Reveal */}
+        <div className="mt-8 pt-6 border-t border-border/20 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">View Analytics</span>
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <Icon name="ArrowRight" size={14} strokeWidth={3} />
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Decorative Line */}
-      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-    </div>
+      {/* Holographic Line */}
+      <div className="absolute inset-x-0 bottom-0 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 blur-[2px] transition-all duration-700" />
+    </motion.div>
   );
 };
 

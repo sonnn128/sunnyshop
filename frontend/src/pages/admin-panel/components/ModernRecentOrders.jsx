@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
 import { useToast } from '../../../components/ui/ToastProvider';
 import { getAllOrders } from '../../../lib/orderApi';
 import { cn } from '../../../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ModernRecentOrders = () => {
   const navigate = useNavigate();
@@ -16,12 +16,11 @@ const ModernRecentOrders = () => {
     const fetchRecentOrders = async () => {
       try {
         setLoading(true);
-        const response = await getAllOrders({ includeDetails: true, limit: 5, sort: '-created_at' });
+        const response = await getAllOrders({ includeDetails: true, limit: 10, sort: '-created_at' });
         const ordersData = response?.orders || [];
         setOrders(Array.isArray(ordersData) ? ordersData : []);
       } catch (err) {
         console.error('Error fetching recent orders:', err);
-        toast.push({ message: 'Không thể tải dữ liệu đơn hàng', type: 'error' });
       } finally {
         setLoading(false);
       }
@@ -31,8 +30,8 @@ const ModernRecentOrders = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
+    return new Intl.DateTimeFormat('en-US', {
+      day: '2-digit', month: 'short', year: 'numeric'
     }).format(new Date(dateString));
   };
 
@@ -42,124 +41,123 @@ const ModernRecentOrders = () => {
 
   const getStatusStyle = (status) => {
     const styles = {
-      pending: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-      confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-      processing: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20",
-      shipping: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-      delivered: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-      completed: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-      cancelled: "bg-rose-500/10 text-rose-600 border-rose-500/20"
+      pending: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+      confirmed: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+      processing: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20",
+      shipping: "text-purple-500 bg-purple-500/10 border-purple-500/20",
+      delivered: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      completed: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+      cancelled: "text-rose-500 bg-rose-500/10 border-rose-500/20"
     };
     return styles[status] || styles.pending;
   };
 
-  const getStatusLabel = (status) => {
-    const labels = {
-      pending: "Chờ xác nhận", confirmed: "Đã xác nhận", processing: "Đang xử lý",
-      shipping: "Đang giao", delivered: "Đã giao", completed: "Hoàn thành", cancelled: "Đã hủy"
-    };
-    return labels[status] || status;
-  };
-
   return (
-    <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] shadow-elegant overflow-hidden transition-all duration-500 hover:shadow-2xl">
-      <div className="p-8 flex items-center justify-between border-b border-border/50">
+    <div className="glass-card rounded-[3rem] shadow-2xl overflow-hidden border-white/30">
+      <div className="p-10 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/20">
         <div>
-          <h3 className="text-xl font-bold text-foreground">Đơn hàng mới nhất</h3>
-          <p className="text-sm text-muted-foreground mt-1">Theo dõi các giao dịch gần đây của cửa hàng</p>
+          <h3 className="text-2xl font-black text-foreground tracking-tight">Recent Acquisitions</h3>
+          <p className="text-xs font-bold text-muted-foreground mt-2 uppercase tracking-[0.2em] opacity-60">Live feed of global transaction protocols</p>
         </div>
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.05, x: 5 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/admin-panel?tab=orders')}
-          className="px-5 py-2.5 rounded-2xl bg-muted/50 hover:bg-primary hover:text-primary-foreground text-sm font-semibold transition-all duration-300 flex items-center space-x-2 border border-border/50"
+          className="h-12 px-8 rounded-2xl bg-primary/10 hover:bg-primary text-primary hover:text-white text-[10px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-3 border border-primary/20"
         >
-          <span>Toàn bộ đơn hàng</span>
-          <Icon name="ArrowRight" size={16} />
-        </button>
+          <span>Omni-View Database</span>
+          <Icon name="ArrowRight" size={14} strokeWidth={3} />
+        </motion.button>
       </div>
 
-      <div className="overflow-x-auto px-4 pb-4">
-        <table className="w-full text-left border-separate border-spacing-y-3">
+      <div className="overflow-x-auto p-6">
+        <table className="w-full text-left border-separate border-spacing-y-4">
           <thead>
-            <tr className="text-muted-foreground uppercase text-[10px] font-bold tracking-widest">
-              <th className="px-6 py-4">Mã đơn</th>
-              <th className="px-6 py-4">Khách hàng</th>
-              <th className="px-6 py-4">Sản phẩm</th>
-              <th className="px-6 py-4">Tổng tiền</th>
-              <th className="px-6 py-4">Trạng thái</th>
-              <th className="px-6 py-4">Ngày đặt</th>
-              <th className="px-6 py-4 text-center">Thao tác</th>
+            <tr className="text-muted-foreground uppercase text-[9px] font-black tracking-[0.25em] opacity-50 px-6">
+              <th className="px-8 pb-4">Protocol ID</th>
+              <th className="px-8 pb-4">Agent Entity</th>
+              <th className="px-8 pb-4">Vector Sum</th>
+              <th className="px-8 pb-4">Status</th>
+              <th className="px-8 pb-4">Timestamp</th>
+              <th className="px-8 pb-4 text-center">Action</th>
             </tr>
           </thead>
-          <tbody>
-            {loading ? (
-              [...Array(5)].map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  <td colSpan="7" className="px-6 py-6 border-b border-border/20 last:border-0 h-16 bg-muted/20 rounded-2xl mb-3" />
-                </tr>
-              ))
-            ) : orders.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="py-20 text-center">
-                  <div className="flex flex-col items-center justify-center opacity-40">
-                    <Icon name="Inbox" size={48} className="mb-4" />
-                    <p className="text-lg font-medium">Chưa có đơn hàng nào</p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              orders.map((order) => {
-                const orderId = order?.id || order?._id;
-                const orderNumber = order?.orderNumber || `#${String(orderId).slice(-6).toUpperCase()}`;
-                const customerName = order?.shippingAddress?.fullName || order?.billingAddress?.fullName || 'Khách hàng';
-                const itemsCount = Array.isArray(order?.items) ? order.items.length : 0;
-
-                return (
-                  <tr key={orderId} className="group hover:bg-muted/40 transition-all duration-300 rounded-2xl cursor-default border-y border-transparent">
-                    <td className="px-6 py-5 first:rounded-l-2xl">
-                      <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">{orderNumber}</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center font-bold text-xs text-primary shadow-sm">
-                          {customerName.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-sm leading-none">{customerName}</p>
-                          <p className="text-[11px] text-muted-foreground mt-1 truncate max-w-[150px]">{order?.guestEmail || 'customer@example.com'}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-xs font-medium px-2 py-1 bg-muted/50 rounded-lg">{itemsCount} món</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="font-bold text-sm tabular-nums text-foreground">{formatCurrency(order?.total)}</span>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className={cn(
-                        "inline-flex items-center px-3 py-1.5 rounded-xl border text-[11px] font-bold shadow-sm",
-                        getStatusStyle(order?.status)
-                      )}>
-                        <div className={cn("w-1.5 h-1.5 rounded-full mr-2 animate-pulse", getStatusStyle(order?.status).split(' ')[1])} />
-                        {getStatusLabel(order?.status)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <span className="text-xs text-muted-foreground font-medium">{formatDate(order?.createdAt)}</span>
-                    </td>
-                    <td className="px-6 py-5 last:rounded-r-2xl text-center">
-                      <button 
-                        onClick={() => navigate(`/admin-panel/orders/${orderId}`)}
-                        className="p-2.5 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300"
-                        title="Xem chi tiết"
-                      >
-                        <Icon name="Eye" size={18} />
-                      </button>
-                    </td>
+          <tbody className="px-6">
+            <AnimatePresence>
+              {loading ? (
+                [...Array(5)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td colSpan="6" className="px-8 h-20 bg-muted/20 rounded-[1.5rem]" />
                   </tr>
-                );
-              })
-            )}
+                ))
+              ) : orders.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="py-24 text-center">
+                    <div className="flex flex-col items-center justify-center opacity-20">
+                      <Icon name="Inbox" size={64} strokeWidth={1} className="mb-6" />
+                      <p className="text-sm font-black uppercase tracking-[0.3em]">No Active Protocols</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                orders.map((order, index) => {
+                  const orderId = order?.id || order?._id;
+                  const orderNumber = order?.orderNumber || `#${String(orderId).slice(-6).toUpperCase()}`;
+                  const customerName = order?.shippingAddress?.fullName || order?.billingAddress?.fullName || 'Anonymous';
+                  
+                  return (
+                    <motion.tr 
+                      key={orderId}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: 1.01, backgroundColor: 'rgba(255,255,255,0.4)' }}
+                      className="group transition-all duration-300 rounded-[2rem] cursor-pointer"
+                    >
+                      <td className="px-8 py-6 first:rounded-l-[2rem] bg-white/40 border-y border-l border-white/20">
+                        <span className="font-black text-xs text-foreground group-hover:text-primary transition-colors tracking-tighter">{orderNumber}</span>
+                      </td>
+                      <td className="px-8 py-6 bg-white/40 border-y border-white/20">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center font-black text-xs text-primary border border-white/50">
+                            {customerName.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-black text-sm text-foreground tracking-tight">{customerName}</p>
+                            <p className="text-[10px] font-bold text-muted-foreground mt-0.5 opacity-60 tracking-tight truncate max-w-[140px] lowercase">{order?.guestEmail || 'entity@network.sys'}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 bg-white/40 border-y border-white/20">
+                        <span className="font-black text-sm tabular-nums text-foreground tracking-tight">{formatCurrency(order?.total)}</span>
+                      </td>
+                      <td className="px-8 py-6 bg-white/40 border-y border-white/20">
+                        <div className={cn(
+                          "inline-flex items-center px-4 py-1.5 rounded-[1.25rem] border text-[9px] font-black uppercase tracking-widest shadow-xl shadow-black/5",
+                          getStatusStyle(order?.status)
+                        )}>
+                          <span className="w-1.5 h-1.5 rounded-full mr-2 bg-current animate-pulse shadow-glow" />
+                          {order?.status}
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 bg-white/40 border-y border-white/20">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{formatDate(order?.createdAt)}</span>
+                      </td>
+                      <td className="px-8 py-6 last:rounded-r-[2rem] bg-white/40 border-y border-r border-white/20 text-center">
+                        <motion.button 
+                          whileHover={{ scale: 1.1, rotate: 10 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => navigate(`/admin-panel/orders/${orderId}`)}
+                          className="w-10 h-10 rounded-xl bg-foreground text-background flex items-center justify-center shadow-xl group-hover:shadow-primary/20 transition-all border border-white/10"
+                        >
+                          <Icon name="Terminal" size={16} strokeWidth={3} />
+                        </motion.button>
+                      </td>
+                    </motion.tr>
+                  );
+                })
+              )}
+            </AnimatePresence>
           </tbody>
         </table>
       </div>

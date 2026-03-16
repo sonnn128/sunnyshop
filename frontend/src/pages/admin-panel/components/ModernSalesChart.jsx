@@ -1,5 +1,6 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { motion } from 'framer-motion';
 
 const ModernSalesChart = ({ data = [], loading = false, error = null, onRetry }) => {
   const formatCurrency = (value) => {
@@ -19,16 +20,16 @@ const ModernSalesChart = ({ data = [], loading = false, error = null, onRetry })
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background/90 backdrop-blur-md border border-border/50 p-4 rounded-2xl shadow-2xl">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2">{label}</p>
+        <div className="glass-card p-5 rounded-[2rem] shadow-2xl border-white/40 min-w-[200px]">
+          <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4 border-b border-primary/10 pb-2">{label}</p>
           {payload.map((entry, index) => (
-            <div key={index} className="flex items-center justify-between space-x-8 mb-1 last:mb-0">
-              <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                <span className="text-sm font-medium text-foreground">{entry.name}:</span>
+            <div key={index} className="flex items-center justify-between gap-6 mb-3 last:mb-0">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full shadow-glow" style={{ backgroundColor: entry.color }} />
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{entry.name}</span>
               </div>
-              <span className="text-sm font-bold tabular-nums">
-                {entry.name === 'Doanh thu' ? formatCurrency(entry.value) + ' VND' : entry.value}
+              <span className="text-sm font-black text-foreground tabular-nums">
+                {entry.name === 'Revenue' ? formatCurrency(entry.value) : entry.value.toLocaleString()}
               </span>
             </div>
           ))}
@@ -39,88 +40,96 @@ const ModernSalesChart = ({ data = [], loading = false, error = null, onRetry })
   };
 
   return (
-    <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] shadow-elegant overflow-hidden transition-all duration-500 hover:shadow-2xl">
-      <div className="p-8 border-b border-border/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="glass-card rounded-[3rem] shadow-2xl overflow-hidden border-white/30"
+    >
+      <div className="p-10 flex flex-col sm:flex-row sm:items-end justify-between gap-8">
         <div>
-          <h3 className="text-xl font-bold text-foreground">Hiệu suất kinh doanh</h3>
-          <p className="text-sm text-muted-foreground mt-1">Phân tích doanh thu và lượng đơn hàng</p>
+          <h3 className="text-2xl font-black text-foreground tracking-tight">Revenue Dynamics</h3>
+          <p className="text-xs font-bold text-muted-foreground mt-2 uppercase tracking-[0.2em] opacity-60">Visualizing global market penetration</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-xl">
-            <div className="w-2 h-2 bg-primary rounded-full shadow-glow"></div>
-            <span className="text-xs font-bold text-primary">Doanh thu</span>
-          </div>
-          <div className="flex items-center space-x-2 px-3 py-1.5 bg-accent/10 rounded-xl">
-            <div className="w-2 h-2 bg-accent rounded-full shadow-glow"></div>
-            <span className="text-xs font-bold text-accent">Đơn hàng</span>
-          </div>
+        <div className="flex items-center gap-6">
+          <ChartLegend label="Revenue" color="hsl(var(--primary))" />
+          <ChartLegend label="Transaction" color="hsl(var(--accent))" />
         </div>
       </div>
 
-      <div className="p-8">
+      <div className="px-10 pb-10">
         {loading ? (
-          <div className="h-80 flex items-center justify-center animate-pulse bg-muted/20 rounded-3xl" />
+          <div className="h-[450px] flex items-center justify-center animate-pulse bg-muted/10 rounded-[2.5rem]" />
         ) : error ? (
-          <div className="h-80 flex flex-col items-center justify-center text-center">
-            <p className="text-muted-foreground mb-4">{error}</p>
-            <button onClick={onRetry} className="text-sm font-bold text-primary hover:underline">Thử lại</button>
+          <div className="h-[450px] flex flex-col items-center justify-center text-center">
+            <p className="text-muted-foreground font-bold mb-6 italic">Protocol Interruption: {error}</p>
+            <button onClick={onRetry} className="h-10 px-8 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary/20 transition-all">Re-sync</button>
           </div>
         ) : chartData.length === 0 ? (
-          <div className="h-80 flex items-center justify-center text-muted-foreground">Không có dữ liệu hiển thị</div>
+          <div className="h-[450px] flex items-center justify-center text-xs font-black uppercase tracking-widest text-muted-foreground/30">Void Spectrum Detected</div>
         ) : (
-          <div className="h-80 w-full mt-4">
+          <div className="h-[450px] w-full mt-6">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData}>
                 <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                  <linearGradient id="anRevenueEl" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
                     <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                   </linearGradient>
-                  <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3}/>
+                  <linearGradient id="anOrdersEl" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.4}/>
                     <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.03)" />
                 <XAxis 
                   dataKey="month" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12, fontWeight: 500 }}
-                  dy={10}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 800, letterSpacing: '0.1em' }}
+                  dy={20}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12, fontWeight: 500 }}
+                  tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 800 }}
                   tickFormatter={formatCurrency}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '8 8', opacity: 0.1 }} />
                 <Area 
-                  name="Doanh thu"
+                  name="Revenue"
                   type="monotone" 
                   dataKey="revenue" 
                   stroke="hsl(var(--primary))" 
-                  strokeWidth={4}
+                  strokeWidth={6}
                   fillOpacity={1} 
-                  fill="url(#colorRevenue)" 
+                  fill="url(#anRevenueEl)" 
+                  animationDuration={2000}
                 />
                 <Area 
-                  name="Đơn hàng"
+                  name="Transaction"
                   type="monotone" 
                   dataKey="orders" 
                   stroke="hsl(var(--accent))" 
-                  strokeWidth={4}
+                  strokeWidth={6}
                   fillOpacity={1} 
-                  fill="url(#colorOrders)" 
+                  fill="url(#anOrdersEl)" 
+                  animationDuration={2500}
                 />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
+
+const ChartLegend = ({ label, color }) => (
+  <div className="flex items-center gap-3">
+    <div className="w-3 h-3 rounded-full shadow-lg" style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}66` }} />
+    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/70">{label}</span>
+  </div>
+);
 
 export default ModernSalesChart;

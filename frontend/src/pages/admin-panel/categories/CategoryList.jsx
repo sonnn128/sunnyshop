@@ -87,8 +87,7 @@ const CategoryList = () => {
     : [];
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -398,7 +397,6 @@ const CategoryList = () => {
           confirmText="Xóa"
           variant="danger"
         />
-      </div>
     </div>
   );
 };

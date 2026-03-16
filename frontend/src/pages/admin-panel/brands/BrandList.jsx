@@ -95,7 +95,7 @@ const BrandList = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

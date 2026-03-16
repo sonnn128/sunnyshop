@@ -11,7 +11,7 @@ import api from './api';
  * @returns {Promise<Array>} - Danh sách địa chỉ
  */
 export async function getAddresses() {
-  const response = await api.get('/api/addresses');
+  const response = await api.get('/addresses');
   return response.data?.addresses || [];
 }
 
@@ -20,7 +20,7 @@ export async function getAddresses() {
  * @returns {Promise<Object|null>} - Địa chỉ mặc định hoặc null
  */
 export async function getDefaultAddress() {
-  const response = await api.get('/api/addresses/default');
+  const response = await api.get('/addresses/default');
   return response.data?.address || null;
 }
 
@@ -30,7 +30,7 @@ export async function getDefaultAddress() {
  * @returns {Promise<Object>} - Chi tiết địa chỉ
  */
 export async function getAddress(id) {
-  const response = await api.get(`/api/addresses/${id}`);
+  const response = await api.get(`/addresses/${id}`);
   return response.data?.address || null;
 }
 
@@ -50,7 +50,7 @@ export async function getAddress(id) {
  * @returns {Promise<Object>} - Địa chỉ đã tạo
  */
 export async function createAddress(data) {
-  const response = await api.post('/api/addresses', data);
+  const response = await api.post('/addresses', data);
   return response.data?.address || null;
 }
 
@@ -61,7 +61,7 @@ export async function createAddress(data) {
  * @returns {Promise<Object>} - Địa chỉ đã cập nhật
  */
 export async function updateAddress(id, data) {
-  const response = await api.put(`/api/addresses/${id}`, data);
+  const response = await api.put(`/addresses/${id}`, data);
   return response.data?.address || null;
 }
 
@@ -71,7 +71,7 @@ export async function updateAddress(id, data) {
  * @returns {Promise<boolean>} - Kết quả xóa
  */
 export async function deleteAddress(id) {
-  const response = await api.delete(`/api/addresses/${id}`);
+  const response = await api.delete(`/addresses/${id}`);
   return response.data?.ok || false;
 }
 
@@ -81,7 +81,7 @@ export async function deleteAddress(id) {
  * @returns {Promise<Object>} - Địa chỉ đã cập nhật
  */
 export async function setDefaultAddress(id) {
-  const response = await api.patch(`/api/addresses/${id}/set-default`);
+  const response = await api.patch(`/addresses/${id}/set-default`);
   return response.data?.address || null;
 }
 

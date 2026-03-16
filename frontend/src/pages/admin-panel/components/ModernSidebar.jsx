@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../lib/utils';
+import { useI18n } from '../../../i18n';
 
 const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }) => {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <motion.aside 
@@ -15,19 +17,19 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
         x: 0 
       }}
       className={cn(
-        "fixed left-0 top-0 h-screen z-50 border-r border-border/50 glass-card shadow-2xl overflow-hidden",
+        "fixed left-0 top-0 h-screen z-50 border-r border-slate-200 bg-white shadow-sm overflow-hidden",
       )}
     >
-      <div className="flex flex-col h-full bg-background/30">
+      <div className="flex flex-col h-full">
         {/* Logo Section */}
-        <div className="pt-10 pb-12 px-6 flex items-center mb-4">
+        <div className="pt-10 pb-12 px-8 flex items-center mb-4 border-b border-slate-50">
           <motion.div 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-[1.25rem] flex items-center justify-center shadow-xl shadow-primary/20 cursor-pointer flex-shrink-0"
+            className="w-10 h-10 bg-slate-900 rounded-none flex items-center justify-center shadow-lg cursor-pointer flex-shrink-0"
             onClick={() => navigate('/')}
           >
-            <Icon name="Sparkles" size={26} color="white" />
+            <Icon name="Sparkles" size={20} color="white" />
           </motion.div>
           <AnimatePresence>
             {!collapsed && (
@@ -38,15 +40,15 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
                 transition={{ duration: 0.2 }}
                 className="ml-4 overflow-hidden whitespace-nowrap"
               >
-                <h1 className="text-xl font-black tracking-tight text-foreground">SUNNY</h1>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Admin Pro</p>
+                <h1 className="text-lg font-serif tracking-tight text-slate-900 uppercase">SUNNY</h1>
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">{t.nav.management}</p>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {/* Navigation Section */}
-        <nav className="flex-1 px-4 space-y-3 overflow-y-auto no-scrollbar">
+        <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto no-scrollbar">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
@@ -54,31 +56,22 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
                 className={cn(
-                  "w-full flex items-center p-3.5 rounded-2xl transition-all duration-300 group relative",
+                  "w-full flex items-center p-3.5 rounded-none transition-all duration-300 group relative",
                   isActive 
-                    ? "bg-primary text-primary-foreground shadow-xl shadow-primary/25" 
-                    : "text-muted-foreground hover:bg-white/50 hover:text-foreground"
+                    ? "text-slate-900 bg-slate-50" 
+                    : "text-slate-400 hover:text-slate-900 hover:bg-slate-50/50"
                 )}
               >
-                {/* Active Glow Effect */}
-                {isActive && (
-                  <motion.div 
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 bg-primary rounded-2xl -z-10"
-                    transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
-                  />
-                )}
-
                 <div className={cn(
                   "flex items-center justify-center transition-all duration-300",
                   collapsed ? "w-full" : "mr-4"
                 )}>
                   <Icon 
                     name={tab.icon} 
-                    size={22} 
+                    size={20} 
                     className={cn(
                       "transition-all duration-300",
-                      isActive ? "text-primary-foreground scale-110" : "text-muted-foreground group-hover:scale-110"
+                      isActive ? "text-slate-900" : "text-slate-400 group-hover:text-slate-900"
                     )} 
                   />
                 </div>
@@ -89,16 +82,24 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="font-bold text-sm tracking-tight"
+                      className="font-bold text-[11px] uppercase tracking-widest whitespace-nowrap"
                     >
                       {tab.label}
                     </motion.span>
                   )}
                 </AnimatePresence>
                 
+                {/* Active Indicator Line */}
+                {isActive && !collapsed && (
+                  <motion.div 
+                    layoutId="sidebar-active-line"
+                    className="absolute right-0 top-1/4 bottom-1/4 w-1 bg-slate-900"
+                  />
+                )}
+
                 {/* Tooltip for collapsed mode */}
                 {collapsed && (
-                  <div className="absolute left-full ml-6 px-4 py-2 bg-foreground text-background text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-2xl translate-x-3 group-hover:translate-x-0">
+                  <div className="absolute left-full ml-6 px-4 py-2 bg-slate-900 text-white text-[9px] font-bold uppercase tracking-widest rounded-none opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-xl translate-x-3 group-hover:translate-x-0">
                     {tab.label}
                   </div>
                 )}
@@ -107,25 +108,15 @@ const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }
           })}
         </nav>
 
-        {/* Bottom Section */}
-        <div className="p-6 border-t border-border/30">
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+        {/* Bottom Section: Collapse Toggle */}
+        <div className="p-4 border-t border-slate-50">
+          <button 
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full flex items-center p-3.5 rounded-2xl bg-muted/30 text-muted-foreground hover:text-foreground transition-all group"
+            className="w-full flex items-center justify-center p-3 text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all group"
           >
-            <div className={cn(
-              "flex items-center justify-center transition-all duration-300",
-              collapsed ? "w-full" : "mr-4"
-            )}>
-              <Icon 
-                name={collapsed ? "LayoutGrid" : "ChevronLeft"} 
-                size={18} 
-              />
-            </div>
-            {!collapsed && <span className="text-xs font-black uppercase tracking-widest">Collapse</span>}
-          </motion.button>
+            <Icon name={collapsed ? "ChevronRight" : "ChevronLeft"} size={20} />
+            {!collapsed && <span className="ml-3 text-[10px] font-bold uppercase tracking-widest">Collapse</span>}
+          </button>
         </div>
       </div>
     </motion.aside>

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/brands")
+@RequestMapping("/api/v1/brands")
 @RequiredArgsConstructor
 public class BrandController {
 

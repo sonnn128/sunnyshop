@@ -28,7 +28,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    public List<Wishlist> getUserWishlist(Long userId) {
+    public List<Wishlist> getUserWishlist(String userId) {
         return wishlistRepository.findByUserId(userId);
     }
 }

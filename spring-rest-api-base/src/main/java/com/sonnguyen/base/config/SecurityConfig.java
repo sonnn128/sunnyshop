@@ -3,6 +3,7 @@ package com.sonnguyen.base.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,8 +32,15 @@ public class SecurityConfig {
                                         , "/api/v1/auth/login"
                                         , "/api/v1/auth/token"
                                         , "/api/v1/users/**"
-                                        , "/api/v1/docs/**")
+                                        , "/api/v1/docs/**"
+                                        , "/api/auth/**"
+                                )
                                 .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/recommendations/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/wishlist/**").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 )

@@ -54,7 +54,7 @@ const ProfileSection = () => {
         setProfileData(mapped);
         setOriginalProfile(mapped);
         try {
-          if (typeof window !== 'undefined' && window.localStorage) {
+          if (typeof window !== 'undefined' && window.localStorage && updatedUser) {
             localStorage.setItem('user', JSON.stringify(updatedUser));
           }
         } catch (e) {}

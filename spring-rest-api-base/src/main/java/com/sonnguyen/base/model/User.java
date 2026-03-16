@@ -2,6 +2,8 @@ package com.sonnguyen.base.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -23,6 +25,8 @@ public class User {
     
     @Column(unique = true)
     private String username;
+    
+    @JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -41,6 +45,14 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @JsonProperty("role")
+    public String getRole() {
+        if (roles == null || roles.isEmpty()) {
+            return "customer";
+        }
+        return roles.iterator().next().getId().toLowerCase();
+    }
 
     public String getUsername() {
         return username;

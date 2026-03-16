@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import API, { API_URL } from '../lib/api';
+import API, { API_URL, BASE } from '../lib/api';
 import { useToast } from './ui/ToastProvider';
 import Icon from './AppIcon';
 
@@ -19,7 +19,7 @@ const ChatWidget = () => {
   const getCurrentUser = () => {
     try {
       const userStr = localStorage.getItem('user') || sessionStorage.getItem('user');
-      if (userStr) {
+      if (userStr && userStr !== 'undefined') {
         return JSON.parse(userStr);
       }
     } catch (error) {
@@ -42,7 +42,7 @@ const ChatWidget = () => {
     if (!user) return;
 
     console.log('🔌 Initializing socket connection...');
-    const base = (API_URL || API.defaults?.baseURL || 'http://localhost:4000');
+    const base = (BASE || 'http://localhost:8080');
     const newSocket = io(base, {
       auth: {
         token: localStorage.getItem('token') || sessionStorage.getItem('token')
@@ -108,7 +108,7 @@ const ChatWidget = () => {
       setLoading(true);
       console.log('Loading conversation...');
       
-      const response = await API.get('/api/chat/conversation');
+      const response = await API.get('/chat/conversation');
       console.log('Conversation response:', response.data);
       
       if (response.data?.success) {
@@ -138,7 +138,7 @@ const ChatWidget = () => {
   const loadMessages = async (conversationId) => {
     try {
       console.log('Loading messages for conversation:', conversationId);
-      const response = await API.get(`/api/chat/messages/${conversationId}`);
+      const response = await API.get(`/chat/messages/${conversationId}`);
       console.log('Messages response:', response.data);
       
       if (response.data?.success) {
@@ -168,7 +168,7 @@ const ChatWidget = () => {
     try {
       console.log('Sending message:', messageText);
       
-      const response = await API.post('/api/chat/messages', {
+      const response = await API.post('/chat/messages', {
         conversationId: conversation._id,
         message: messageText
       });

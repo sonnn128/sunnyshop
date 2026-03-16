@@ -5,14 +5,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8f687527-f71c-40a2-9ae8-16d2b847302d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/api-template/src/config/db.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/controllers/activityLogController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/controllers/addressController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/controllers/brandController.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/models/Address.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/models/Brand.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/utils/slugUtils.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-template/src/utils/stringUtils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/AdminRoute.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/AdminRoute.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ChatWidget.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ChatWidget.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/contexts/AuthContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/contexts/AuthContext.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useRole.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useRole.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/i18n/en.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/i18n/en.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/i18n/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/i18n/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/i18n/vi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/i18n/vi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/lib/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/lib/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/lib/orderApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/lib/orderApi.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/LoginPage.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/ModernAdminLayout.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/ModernAdminLayout.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernActivityFeed.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernActivityFeed.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernHeader.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernHeader.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernQuickActions.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernQuickActions.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernRecentOrders.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernRecentOrders.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernSalesChart.jsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernSidebar.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernSidebar.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernStatsCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/components/ModernStatsCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/admin-panel/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/admin-panel/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/auth/Login.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/auth/Login.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/auth/Register.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/auth/Register.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/user-dashboard/components/ProfileSection.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/user-dashboard/components/ProfileSection.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/services/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/AddressController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/AddressController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/AnalyticsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/AnalyticsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/BrandController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CartController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CartController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CouponController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/CouponController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/EmailController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/EmailController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/LegacyAuthAliasController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/OrderController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/OrderController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/ProductController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/RecommendationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/RecommendationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/UploadController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/UploadController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/WishlistController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/controller/WishlistController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/model/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/model/Product.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/payload/response/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/payload/response/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/repository/WishlistRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/repository/WishlistRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/ChatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/ChatService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/RecommendationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/RecommendationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/WishlistService.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/WishlistService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/ChatServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/ChatServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/RecommendationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/RecommendationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/WishlistServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring-rest-api-base/src/main/java/com/sonnguyen/base/service/impl/WishlistServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,7 +81,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/NguyenAnhTuan-2022602738/N1_DACN_BE&quot;,
+    &quot;url&quot;: &quot;https://github.com/sonnn128/sunnyshop.git&quot;,
     &quot;accountId&quot;: &quot;430d354c-1e02-4a5e-9e5a-cac2a314ade5&quot;
   }
 }</component>
@@ -60,6 +104,7 @@
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/son/Documents/workspace/DATN/ChuHaiDang/code&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -67,6 +112,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -95,6 +141,8 @@
       <option name="presentableId" value="Default" />
       <updated>1773635268697</updated>
       <workItem from="1773635269819" duration="4041000" />
+      <workItem from="1773665982562" duration="45000" />
+      <workItem from="1773666039738" duration="18000" />
     </task>
     <servers />
   </component>

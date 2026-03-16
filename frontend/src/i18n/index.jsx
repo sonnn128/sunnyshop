@@ -1,11 +1,12 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import { vi } from './vi';
 import { en } from './en';
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+
 const translations = {
   vi,
-  en: en
+  en
 };
+
 const currencyFormats = {
   vi: {
     style: 'currency',
@@ -18,6 +19,7 @@ const currencyFormats = {
     maximumFractionDigits: 0
   }
 };
+
 const dateFormats = {
   vi: {
     short: {
@@ -46,7 +48,9 @@ const dateFormats = {
     }
   }
 };
-const I18nContext = /*#__PURE__*/createContext(null);
+
+const I18nContext = createContext(null);
+
 function getStoredLanguage() {
   if (typeof window === 'undefined') return 'vi';
   const stored = localStorage.getItem('language');
@@ -55,18 +59,20 @@ function getStoredLanguage() {
   const browserLang = navigator.language.split('-')[0];
   return browserLang === 'en' ? 'en' : 'vi';
 }
-export function I18nProvider({
-  children
-}) {
+
+export function I18nProvider({ children }) {
   const [language, setLanguageState] = useState(getStoredLanguage);
+
   const setLanguage = useCallback(lang => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
     document.documentElement.lang = lang;
   }, []);
+
   const formatCurrency = useCallback(amount => {
     return new Intl.NumberFormat(language === 'vi' ? 'vi-VN' : 'en-US', currencyFormats[language]).format(amount);
   }, [language]);
+
   const formatDate = useCallback((date, format = 'short') => {
     const d = typeof date === 'string' ? new Date(date) : date;
     if (format === 'relative') {
@@ -82,9 +88,11 @@ export function I18nProvider({
     }
     return new Intl.DateTimeFormat(language === 'vi' ? 'vi-VN' : 'en-US', dateFormats[language][format] || dateFormats[language].short).format(d);
   }, [language]);
+
   const formatNumber = useCallback(num => {
     return new Intl.NumberFormat(language === 'vi' ? 'vi-VN' : 'en-US').format(num);
   }, [language]);
+
   const value = {
     language,
     setLanguage,
@@ -93,11 +101,14 @@ export function I18nProvider({
     formatDate,
     formatNumber
   };
-  return /*#__PURE__*/_jsx(I18nContext.Provider, {
-    value: value,
-    children: children
-  });
+
+  return (
+    <I18nContext.Provider value={value}>
+      {children}
+    </I18nContext.Provider>
+  );
 }
+
 export function useI18n() {
   const context = useContext(I18nContext);
   if (!context) {
@@ -108,19 +119,14 @@ export function useI18n() {
 
 // Language switcher component
 export function LanguageSwitcher() {
-  const {
-    language,
-    setLanguage
-  } = useI18n();
-  return /*#__PURE__*/_jsxs("button", {
-    onClick: () => setLanguage(language === 'vi' ? 'en' : 'vi'),
-    className: "flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background-tertiary hover:bg-background-hover transition-colors",
-    children: [/*#__PURE__*/_jsx("span", {
-      className: "text-lg",
-      children: language === 'vi' ? '🇻🇳' : '🇬🇧'
-    }), /*#__PURE__*/_jsx("span", {
-      className: "text-sm font-medium text-foreground",
-      children: language.toUpperCase()
-    })]
-  });
+  const { language, setLanguage } = useI18n();
+  return (
+    <button
+      onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background-tertiary hover:bg-background-hover transition-colors"
+    >
+      <span className="text-lg">{language === 'vi' ? '🇻🇳' : '🇬🇧'}</span>
+      <span className="text-sm font-medium text-foreground">{language.toUpperCase()}</span>
+    </button>
+  );
 }

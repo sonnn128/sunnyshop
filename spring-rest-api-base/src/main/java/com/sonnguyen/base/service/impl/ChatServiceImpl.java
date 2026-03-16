@@ -19,7 +19,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatConversation getCustomerConversation(Long customerId) {
+    public ChatConversation getCustomerConversation(String customerId) {
         // TODO: Implement logic
         return null;
     }
@@ -37,7 +37,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatConversation assignConversation(Long conversationId, Long staffId) {
+    public ChatConversation assignConversation(Long conversationId, String staffId) {
         // TODO: Implement logic
         return null;
     }

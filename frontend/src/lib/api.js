@@ -5,12 +5,12 @@ import { handleApiError } from './errorHandling';
 const RAW_BASE = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) || '';
 const FALLBACK_BASE = 'http://localhost:8080'; // Sử dụng cổng 4000 cho backend (server default)
 export const BASE = RAW_BASE || FALLBACK_BASE;
-export const API_URL = BASE; // Không thêm '/api/v1' vì route đã trực tiếp (ví dụ: '/orders')
+export const API_URL = `${BASE}/api/v1`; 
 // If RAW_BASE is empty, consider API disabled in dev unless user runs backend
 export const API_ENABLED = true; // Luôn bật API để đảm bảo kết nối
 
 const API = axios.create({
-  baseURL: BASE,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json'
   }

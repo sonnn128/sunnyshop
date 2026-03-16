@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useRole } from '../../hooks/useRole';
+import { useI18n } from '../../i18n';
 import API from '../../lib/api';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
@@ -12,7 +13,6 @@ import ModernStatsCard from './components/ModernStatsCard';
 import ModernQuickActions from './components/ModernQuickActions';
 import ModernRecentOrders from './components/ModernRecentOrders';
 import ModernActivityFeed from './components/ModernActivityFeed';
-import ModernSalesChart from './components/ModernSalesChart';
 
 // Other List Components (Existing)
 import OrdersList from './orders/OrdersList';
@@ -25,6 +25,7 @@ import AnalyticsDashboard from './components/AnalyticsDashboard';
 import TopProducts from './components/TopProduct';
 
 const AdminPanel = () => {
+  const { t, formatCurrency, formatNumber } = useI18n();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [dashboardData, setDashboardData] = useState(null);
   const [statsLoading, setStatsLoading] = useState(true);
@@ -46,7 +47,7 @@ const AdminPanel = () => {
   const loadDashboardStats = useCallback(async () => {
     try {
       setStatsLoading(true);
-      const response = await API.get('/api/dashboard/stats');
+      const response = await API.get('/dashboard/stats');
       if (response?.data?.success) {
         setDashboardData(response.data);
       }
@@ -61,8 +62,6 @@ const AdminPanel = () => {
     loadDashboardStats();
   }, [loadDashboardStats]);
 
-  const formatCurrency = (value = 0) => `${Number(value).toLocaleString('vi-VN')} VND`;
-  const formatNumber = (value = 0) => Number(value).toLocaleString('vi-VN');
   const formatPercent = (value = 0) => {
     const v = Number(value);
     return `${v > 0 ? '+' : ''}${v.toFixed(1)}%`;
@@ -72,12 +71,12 @@ const AdminPanel = () => {
     const stats = dashboardData?.stats;
     if (!stats) return [];
     return [
-      { title: 'Monthly Revenue', value: formatCurrency(stats.revenue.current), change: formatPercent(stats.revenue.changePercent), changeType: stats.revenue.changeType, icon: 'DollarSign', color: 'primary' },
-      { title: 'Total Orders', value: formatNumber(stats.orders.current), change: formatPercent(stats.orders.changePercent), changeType: stats.orders.changeType, icon: 'ShoppingCart', color: 'success' },
-      { title: 'New Customers', value: formatNumber(stats.customers.current), change: formatPercent(stats.customers.changePercent), changeType: stats.customers.changeType, icon: 'Users', color: 'accent' },
-      { title: 'Store Inventory', value: formatNumber(stats.inventory.total), change: stats.inventory.lowStock > 0 ? `${stats.inventory.lowStock} points low` : 'Healthy', changeType: stats.inventory.lowStock > 0 ? 'decrease' : 'neutral', icon: 'Package', color: 'warning' }
+      { title: t.dashboard.monthlyRevenue, value: formatCurrency(stats.revenue.current), change: formatPercent(stats.revenue.changePercent), changeType: stats.revenue.changeType, icon: 'DollarSign', color: 'primary' },
+      { title: t.dashboard.totalOrders, value: formatNumber(stats.orders.current), change: formatPercent(stats.orders.changePercent), changeType: stats.orders.changeType, icon: 'ShoppingCart', color: 'success' },
+      { title: t.dashboard.newCustomers, value: formatNumber(stats.customers.current), change: formatPercent(stats.customers.changePercent), changeType: stats.customers.changeType, icon: 'Users', color: 'accent' },
+      { title: t.dashboard.storeInventory, value: formatNumber(stats.inventory.total), change: stats.inventory.lowStock > 0 ? `${stats.inventory.lowStock} ${t.dashboard.lowStock.toLowerCase()}` : t.dashboard.healthyStock, changeType: stats.inventory.lowStock > 0 ? 'decrease' : 'neutral', icon: 'Package', color: 'warning' }
     ];
-  }, [dashboardData]);
+  }, [dashboardData, t, formatCurrency, formatNumber]);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -85,26 +84,43 @@ const AdminPanel = () => {
         return (
           <div className="space-y-12">
             {/* Elite Header */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-slate-200">
               <div>
                 <motion.h2 
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="text-5xl font-black tracking-tight text-foreground leading-[1.1] font-serif"
+                  className="text-5xl font-serif text-slate-900 leading-[1.1]"
                 >
-                  Global Command <br /> <span className="text-primary italic">Intelligence Center</span>
+                  {t.dashboard.executiveOverview.split(' ')[0]} <br /> <span className="italic text-slate-500">{t.dashboard.executiveOverview.split(' ').slice(1).join(' ')}</span>
                 </motion.h2>
-                <p className="text-muted-foreground mt-4 font-bold uppercase tracking-[0.3em] text-[10px] opacity-60">System Synchronized: {new Date().toLocaleTimeString('vi-VN')}</p>
+                <div className="flex items-center gap-3 mt-6">
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-slate-400">
+                    {t.dashboard.systemSynchronized}: {new Date().toLocaleTimeString('vi-VN')}
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-4">
-                <Button variant="outline" className="h-14 px-8 rounded-full border-border/30 bg-white/5 backdrop-blur-sm font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-all duration-300" iconName="Download">Export Report</Button>
-                <Button className="h-14 px-8 rounded-full bg-primary text-primary-foreground shadow-2xl shadow-primary/40 font-bold uppercase tracking-widest text-xs hover:bg-primary/90 transition-all duration-300" iconName="Plus" onClick={() => navigate('/admin-panel/products/new')}>New Asset</Button>
+                <Button 
+                  variant="outline" 
+                  className="h-14 px-8 rounded-none border-slate-200 bg-white text-slate-900 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-50 transition-all duration-300" 
+                  iconName="Download"
+                >
+                  Export Report
+                </Button>
+                <Button 
+                  className="h-14 px-8 rounded-none bg-slate-900 text-white shadow-xl shadow-slate-900/10 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-slate-800 transition-all duration-300" 
+                  iconName="Plus" 
+                  onClick={() => navigate('/admin-panel/products/new')}
+                >
+                  Add New Asset
+                </Button>
               </div>
             </div>
 
             {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {statsLoading ? [...Array(4)].map((_, i) => <div key={i} className="h-44 bg-card/40 animate-pulse rounded-[2.5rem]" />) :
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {statsLoading ? [...Array(4)].map((_, i) => <div key={i} className="h-44 bg-slate-100 animate-pulse rounded-none" />) :
                statsData.map((stat, i) => (
                  <motion.div
                    key={i}
@@ -126,10 +142,13 @@ const AdminPanel = () => {
                 transition={{ delay: 0.4 }}
                 className="xl:col-span-8 space-y-8"
               >
-                <ModernSalesChart data={dashboardData?.revenueTrend || []} loading={statsLoading} onRetry={loadDashboardStats} />
                 <div className="grid grid-cols-1 2xl:grid-cols-2 gap-8">
-                  <ModernRecentOrders />
-                  <TopProducts />
+                  <div className="bg-white rounded-none border border-slate-200 shadow-sm">
+                    <ModernRecentOrders />
+                  </div>
+                  <div className="bg-white rounded-none border border-slate-200 shadow-sm">
+                    <TopProducts />
+                  </div>
                 </div>
               </motion.div>
 
@@ -140,13 +159,15 @@ const AdminPanel = () => {
                 transition={{ delay: 0.5 }}
                 className="xl:col-span-4 space-y-8"
               >
-                <ModernQuickActions />
-                <div className="glass-card rounded-[2.5rem] p-8 border-border/20 shadow-2xl">
-                  <div className="flex items-center justify-between mb-8">
-                    <h3 className="text-xl font-black uppercase tracking-widest text-primary">Live Pulse</h3>
+                <div className="bg-white rounded-none border border-slate-200 shadow-sm">
+                  <ModernQuickActions />
+                </div>
+                <div className="bg-white rounded-none p-8 border border-slate-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-8 border-b border-slate-100 pb-4">
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-900">Live Activity Pulse</h3>
                     <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-success">Real-time</span>
+                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-600">Real-time</span>
                     </div>
                   </div>
                   <ModernActivityFeed />

@@ -23,7 +23,7 @@ const ProductsList = () => {
     let mounted = true;
     (async () => {
       try {
-        const res = await API.get('/api/products', { params: { limit: 200 } });
+        const res = await API.get('/products', { params: { limit: 200 } });
         if (mounted) {
           setItems(res?.data?.products || []);
           setCurrentPage(1);
@@ -46,7 +46,7 @@ const ProductsList = () => {
 
   const confirmDelete = async () => {
     try {
-      await API.delete(`/api/products/${deleteId}`);
+      await API.delete(`/products/${deleteId}`);
       setItems(prev => prev.filter(p => p._id !== deleteId));
       setSelectedIds(prev => prev.filter(id => id !== deleteId));
       toast.push({ title: 'Đã xóa', message: 'Sản phẩm đã được xóa', type: 'success' });
@@ -84,7 +84,7 @@ const ProductsList = () => {
 
   const confirmBulkDelete = async () => {
     try {
-      await API.delete('/api/products/batch', { data: { ids: selectedIds } });
+      await API.delete('/products/batch', { data: { ids: selectedIds } });
       setItems(prev => prev.filter(p => !selectedIds.includes(p._id)));
       toast.push({ title: 'Đã xóa', message: `Đã xóa ${selectedIds.length} sản phẩm`, type: 'success' });
       setSelectedIds([]);

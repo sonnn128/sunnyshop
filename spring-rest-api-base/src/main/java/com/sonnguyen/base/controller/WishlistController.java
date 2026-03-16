@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wishlist")
+@RequestMapping("/api/v1/wishlist")
 public class WishlistController {
 
     private final WishlistService wishlistService;
@@ -28,7 +28,7 @@ public class WishlistController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<Wishlist> getUserWishlist(@PathVariable Long userId) {
+    public List<Wishlist> getUserWishlist(@PathVariable String userId) {
         return wishlistService.getUserWishlist(userId);
     }
 }

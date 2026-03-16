@@ -340,7 +340,7 @@ const ProductForm = () => {
     let mounted = true;
     (async () => {
       try {
-        const res = await API.get('/api/categories');
+        const res = await API.get('/categories');
         if (!mounted) return;
         const rawCats = res?.data?.data || res?.data?.categories || res?.data || [];
         const sortedCats = Array.isArray(rawCats)
@@ -670,7 +670,7 @@ const ProductForm = () => {
     
     (async () => {
       try {
-        const res = await API.get(`/api/products/${id}`);
+        const res = await API.get(`/products/${id}`);
         if (!mounted) return;
         
         const p = res?.data?.product || res?.data;
@@ -901,14 +901,14 @@ const ProductForm = () => {
 
       // Save to backend
       if (id) {
-        await API.put(`/api/products/${id}`, toSend);
+        await API.put(`/products/${id}`, toSend);
         toast.push({ 
           title: 'Thành công', 
           message: 'Sản phẩm đã được cập nhật', 
           type: 'success' 
         });
       } else {
-        await API.post('/api/products', toSend);
+        await API.post('/products', toSend);
         toast.push({ 
           title: 'Thành công', 
           message: 'Sản phẩm mới đã được tạo', 

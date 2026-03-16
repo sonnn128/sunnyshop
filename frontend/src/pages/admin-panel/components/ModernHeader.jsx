@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { cn } from '../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useI18n } from '../../../i18n';
 
 const ModernHeader = ({ collapsed, user, roleLabels }) => {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   return (
     <motion.header 
@@ -17,56 +19,53 @@ const ModernHeader = ({ collapsed, user, roleLabels }) => {
         "fixed top-0 right-0 h-24 z-40 flex items-center justify-between px-10 pointer-events-none",
       )}
     >
-      <div className="w-full h-16 glass-card rounded-3xl flex items-center justify-between px-8 shadow-2xl pointer-events-auto border-border/30">
+      <div className="w-full h-16 bg-white border border-slate-200 rounded-none flex items-center justify-between px-8 shadow-sm pointer-events-auto">
         {/* Left: Search Bar */}
         <div className="flex-1 max-w-xl group">
           <div className="relative">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <Icon name="Search" size={16} className="text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Icon name="Search" size={16} className="text-slate-400 group-focus-within:text-slate-900 transition-colors" />
             </div>
             <input 
               type="text" 
-              placeholder="Search everything..." 
-              className="w-full bg-muted/40 border-none rounded-2xl py-2 pl-12 pr-4 text-xs font-bold tracking-tight focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+              placeholder={t.common.search + "..."} 
+              className="w-full bg-slate-50 border-none rounded-none py-2 pl-12 pr-4 text-[11px] font-bold uppercase tracking-tight focus:ring-1 focus:ring-slate-900/10 transition-all placeholder:text-slate-400"
             />
             <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
-              <span className="text-[10px] font-black text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-lg border border-border/30">⌘K</span>
+              <span className="text-[9px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-none border border-slate-100">⌘K</span>
             </div>
           </div>
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center space-x-4 ml-6">
-          <div className="flex items-center space-x-2 pr-4 border-r border-border/30">
+        <div className="flex items-center space-x-6 ml-6">
+          <div className="flex items-center space-x-2 pr-6 border-r border-slate-100">
             <HeaderAction icon="Bell" badge />
             <HeaderAction icon="Mail" />
             <HeaderAction icon="LayoutGrid" />
           </div>
 
           <div 
-            className="flex items-center space-x-4 pl-4 cursor-pointer group"
+            className="flex items-center space-x-4 pl-2 cursor-pointer group"
             onClick={() => navigate('/settings')}
           >
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-black text-foreground leading-none group-hover:text-primary transition-colors">
+              <p className="text-[11px] font-bold text-slate-900 leading-none uppercase tracking-widest transition-colors">
                 {user?.name?.split(' ')[0] || "Admin"}
               </p>
-              <p className="text-[9px] font-black text-primary uppercase tracking-[0.1em] mt-1 opacity-70">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.1em] mt-1 opacity-70">
                 {roleLabels[user?.role] || user?.role}
               </p>
             </div>
             <div className="relative">
-              <motion.div 
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="w-10 h-10 rounded-2xl overflow-hidden shadow-xl ring-2 ring-background border-2 border-primary/20"
-              >
+              <div className="w-10 h-10 rounded-none overflow-hidden border border-slate-200">
                 <img 
                   src={user?.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix"} 
                   alt="Avatar" 
                   className="w-full h-full object-cover"
                 />
-              </motion.div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-success border-2 border-background rounded-full shadow-glow" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
             </div>
           </div>
         </div>
@@ -77,13 +76,13 @@ const ModernHeader = ({ collapsed, user, roleLabels }) => {
 
 const HeaderAction = ({ icon, badge }) => (
   <motion.button 
-    whileHover={{ scale: 1.1, y: -2 }}
-    whileTap={{ scale: 0.9 }}
-    className="relative p-2.5 rounded-2xl hover:bg-primary/5 transition-all text-muted-foreground hover:text-primary group"
+    whileHover={{ y: -2 }}
+    whileTap={{ scale: 0.95 }}
+    className="relative p-2 rounded-none hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-900"
   >
-    <Icon name={icon} size={18} strokeWidth={2.5} />
+    <Icon name={icon} size={18} strokeWidth={1.5} />
     {badge && (
-      <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background shadow-glow" />
+      <span className="absolute top-1 right-1 w-2 h-2 bg-slate-900 rounded-full border-2 border-white" />
     )}
   </motion.button>
 );

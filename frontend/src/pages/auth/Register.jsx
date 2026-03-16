@@ -21,9 +21,11 @@ const Register = () => {
     setLoading(true);
     API.post('/api/auth/register', { email, password })
       .then(res => {
-        const { user, token } = res.data;
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
+        const loginData = res.data?.data || res.data;
+        const { user, token } = loginData;
+        
+        if (user) localStorage.setItem('user', JSON.stringify(user));
+        if (token) localStorage.setItem('token', token);
         // show success then redirect
         setFormError('');
         toast.push({ title: 'Đăng ký thành công', message: 'Chào mừng! Đang chuyển hướng...', type: 'success' });

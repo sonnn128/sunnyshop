@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, User as UserOutlined } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/auth.store';
@@ -11,7 +11,7 @@ import { authService } from '@/services/auth.service';
 import { useToast } from '@/hooks/use-toast';
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 const loginSchema = z.object({
-  email: z.string().email('Email không hợp lệ'),
+  username: z.string().min(1, 'Vui lòng nhập tên đăng nhập hoặc email'),
   password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
 });
 export default function LoginPage() {
@@ -147,14 +147,14 @@ export default function LoginPage() {
           onSubmit: handleSubmit(onSubmit),
           className: "space-y-5",
           children: [/*#__PURE__*/_jsx(Input, {
-            label: "Email",
-            type: "email",
+            label: "Tên đăng nhập / Email",
+            type: "text",
             placeholder: "admin@courtify.vn",
-            icon: /*#__PURE__*/_jsx(Mail, {
+            icon: /*#__PURE__*/_jsx(UserOutlined, {
               className: "w-4 h-4"
             }),
-            error: errors.email?.message,
-            ...register('email')
+            error: errors.username?.message,
+            ...register('username')
           }), /*#__PURE__*/_jsxs("div", {
             className: "relative",
             children: [/*#__PURE__*/_jsx(Input, {

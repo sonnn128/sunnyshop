@@ -244,13 +244,8 @@ export const getAllOrders = async (filters = {}) => {
 
   const queryString = queryParams.toString();
   const tryPaths = [
-    `/api/orders${queryString ? `?${queryString}` : ''}`,
-    `/orders${queryString ? `?${queryString}` : ''}`,
-    `/api/orders/admin${queryString ? `?${queryString}` : ''}`,
     `/orders/admin${queryString ? `?${queryString}` : ''}`,
-    `/api/admin/orders${queryString ? `?${queryString}` : ''}`,
     `/admin/orders${queryString ? `?${queryString}` : ''}`,
-    `/api/admin/orders/list${queryString ? `?${queryString}` : ''}`,
     `/admin/orders/list${queryString ? `?${queryString}` : ''}`
   ];
 
@@ -284,7 +279,6 @@ export const getAllOrders = async (filters = {}) => {
 
 export const getTopSellingProducts = async (limit = 5) => {
   const tryPaths = [
-    `/api/orders/top-products?limit=${limit}`,
     `/orders/top-products?limit=${limit}`
   ];
   let lastErr = null;
@@ -314,9 +308,7 @@ export const getTopSellingProducts = async (limit = 5) => {
 // Get order by ID (admin)
 export const getOrderById = async (orderId) => {
   const tryPaths = [
-    `/api/orders/${orderId}?includeDetails=true`,
     `/orders/${orderId}?includeDetails=true`,
-    `/api/orders/admin/${orderId}?includeDetails=true`,
     `/orders/admin/${orderId}?includeDetails=true`
   ];
 

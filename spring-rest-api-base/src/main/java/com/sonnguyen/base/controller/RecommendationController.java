@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/recommendations")
+@RequestMapping("/api/v1/recommendations")
 public class RecommendationController {
 
     private final RecommendationService recommendationService;
@@ -21,7 +21,7 @@ public class RecommendationController {
     }
 
     @GetMapping
-    public List<Product> getRecommendations(@RequestParam(required = false) Long userId,
+    public List<Product> getRecommendations(@RequestParam(required = false) String userId,
                                             @RequestParam(required = false) Long productId,
                                             @RequestParam(defaultValue = "8") int limit) {
         return recommendationService.getRecommendations(userId, productId, limit);

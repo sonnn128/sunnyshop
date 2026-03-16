@@ -20,7 +20,7 @@ export const WishlistProvider = ({ children }) => {
   const loadWishlist = async () => {
     try {
       setIsLoading(true);
-      const response = await API.get('/api/wishlist');
+      const response = await API.get('/wishlist');
       const items = response.data?.items || [];
       
       setWishlistItems(items);
@@ -59,7 +59,7 @@ export const WishlistProvider = ({ children }) => {
         snapshot: snapshot || {}
       };
 
-      await API.post('/api/wishlist/add', payload);
+      await API.post('/wishlist/add', payload);
       
       // Update local state
       setWishlistProductIds(prev => new Set([...prev, finalProductId.toString()]));
@@ -84,7 +84,7 @@ export const WishlistProvider = ({ children }) => {
         product_id: finalProductId
       };
 
-      await API.post('/api/wishlist/remove', payload);
+      await API.post('/wishlist/remove', payload);
       
       // Update local state
       setWishlistProductIds(prev => {

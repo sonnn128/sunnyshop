@@ -12,7 +12,7 @@ import java.util.List;
 public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
-    public List<Product> getRecommendations(Long userId, Long productId, int limit) {
+    public List<Product> getRecommendations(String userId, Long productId, int limit) {
         // TODO: Implement logic
         return Collections.emptyList();
     }
@@ -30,7 +30,7 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public List<Product> getPersonalizedRecommendations(Long userId, int limit) {
+    public List<Product> getPersonalizedRecommendations(String userId, int limit) {
         // TODO: Implement logic
         return Collections.emptyList();
     }

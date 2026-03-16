@@ -18,20 +18,20 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
       
-      if (token && storedUser) {
+      if (token && storedUser && storedUser !== 'undefined') {
         try {
           // Parse thông tin user
           const userData = JSON.parse(storedUser);
-          setUser(userData);
-          setIsAuthenticated(true);
-          
-          // Make auth status globally available for non-React code
-          window.getAuthStatus = () => true;
-          window.getUser = () => userData;
-          
-          // Kiểm tra token hợp lệ (tùy chọn)
-          // Trong thực tế, bạn có thể thêm API call để validate token
-          // await API.get('/api/auth/validate');
+          if (userData) {
+            setUser(userData);
+            setIsAuthenticated(true);
+            
+            // Make auth status globally available for non-React code
+            window.getAuthStatus = () => true;
+            window.getUser = () => userData;
+          } else {
+            throw new Error('User data is null');
+          }
         } catch (e) {
           console.error('Error parsing stored user data:', e);
           // Reset nếu dữ liệu không hợp lệ
@@ -43,7 +43,10 @@ export const AuthProvider = ({ children }) => {
           window.getUser = () => null;
         }
       } else {
-        // Not authenticated
+        // Not authenticated or corrupted data
+        if (storedUser === 'undefined') {
+          localStorage.removeItem('user');
+        }
         window.getAuthStatus = () => false;
         window.getUser = () => null;
       }

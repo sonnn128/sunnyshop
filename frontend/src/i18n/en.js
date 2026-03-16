@@ -36,6 +36,14 @@ export const en = {
   },
   nav: {
     dashboard: 'Dashboard',
+    overview: 'Overview',
+    orders: 'Orders',
+    products: 'Products',
+    categories: 'Categories',
+    brands: 'Brands',
+    messages: 'Messages',
+    analytics: 'Analytics',
+    management: 'Management',
     bookings: 'Bookings',
     calendar: 'Calendar',
     customers: 'Customers',
@@ -161,7 +169,53 @@ export const en = {
     activeCourts: 'Active Courts',
     upcomingBookings: 'Upcoming Bookings',
     recentActivity: 'Recent Activity',
-    shiftHandover: 'Shift Handover'
+    shiftHandover: 'Shift Handover',
+    monthlyRevenue: 'Monthly Revenue',
+    totalOrders: 'Total Orders',
+    newCustomers: 'New Customers',
+    storeInventory: 'Inventory',
+    executiveOverview: 'Executive Overview',
+    systemSynchronized: 'Synchronized',
+    lowStock: 'Low Stock',
+    healthyStock: 'Healthy',
+    quickActions: {
+      title: 'Operational Hub',
+      newAsset: 'New Asset',
+      newAssetDesc: 'Create new entry',
+      collections: 'Collections',
+      collectionsDesc: 'Organize items',
+      logistics: 'Logistics',
+      logisticsDesc: 'Fulfillment flow',
+      directory: 'Directory',
+      directoryDesc: 'Member base'
+    },
+    recentOrders: {
+      title: 'Recent Orders',
+      subtitle: 'Latest transaction activity log',
+      viewAll: 'View All Transactions',
+      reference: 'Reference',
+      customer: 'Customer',
+      amount: 'Amount',
+      status: 'Status',
+      date: 'Date',
+      action: 'Action',
+      noActivity: 'No recent activity',
+      viewDetails: 'View Details'
+    },
+    activityFeed: {
+      title: 'Activity Feed',
+      accessLogs: 'Access Activity Logs'
+    },
+    salesChart: {
+      title: 'Revenue Dynamics',
+      subtitle: 'Visualizing market penetration',
+      revenue: 'Revenue',
+      transactions: 'Transactions',
+      retry: 'Re-sync',
+      voidSpectrum: 'Void Spectrum Detected',
+      protocolInterruption: 'Protocol Interruption',
+      analyticalDetails: 'Analytical Details'
+    }
   },
   validation: {
     required: 'This field is required',

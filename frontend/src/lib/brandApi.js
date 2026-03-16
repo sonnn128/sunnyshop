@@ -24,7 +24,7 @@ export async function getBrands(options = {}) {
   }
   
   const query = params.toString();
-  const url = query ? `/api/brands?${query}` : '/api/brands';
+  const url = query ? `/brands?${query}` : '/brands';
   
   const response = await api.get(url);
   return response.data?.brands || [];
@@ -36,7 +36,7 @@ export async function getBrands(options = {}) {
  * @returns {Promise<Object>} - Chi tiết brand
  */
 export async function getBrand(idOrSlug) {
-  const response = await api.get(`/api/brands/${idOrSlug}`);
+  const response = await api.get(`/brands/${idOrSlug}`);
   return response.data?.brand || null;
 }
 
@@ -50,7 +50,7 @@ export async function getBrand(idOrSlug) {
  * @returns {Promise<Object>} - Brand đã tạo
  */
 export async function createBrand(data) {
-  const response = await api.post('/api/brands', data);
+  const response = await api.post('/brands', data);
   return response.data?.brand || null;
 }
 
@@ -61,7 +61,7 @@ export async function createBrand(data) {
  * @returns {Promise<Object>} - Brand đã cập nhật
  */
 export async function updateBrand(id, data) {
-  const response = await api.put(`/api/brands/${id}`, data);
+  const response = await api.put(`/brands/${id}`, data);
   return response.data?.brand || null;
 }
 
@@ -71,7 +71,7 @@ export async function updateBrand(id, data) {
  * @returns {Promise<boolean>} - Kết quả xóa
  */
 export async function deleteBrand(id) {
-  const response = await api.delete(`/api/brands/${id}`);
+  const response = await api.delete(`/brands/${id}`);
   return response.data?.ok || false;
 }
 
@@ -81,7 +81,7 @@ export async function deleteBrand(id) {
  * @returns {Promise<Object>} - Brand đã cập nhật
  */
 export async function toggleBrandActive(id) {
-  const response = await api.patch(`/api/brands/${id}/toggle-active`);
+  const response = await api.patch(`/brands/${id}/toggle-active`);
   return response.data?.brand || null;
 }
 

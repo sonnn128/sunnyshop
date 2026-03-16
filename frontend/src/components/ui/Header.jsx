@@ -353,7 +353,7 @@ const Header = () => {
                       }}
                       className="text-[11px] uppercase tracking-[0.1em] font-bold text-red-500 hover:text-red-700 transition-colors"
                     >
-                      Thoát
+                      Đăng xuất
                     </button>
                   </>
                 );

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/api/v1/chat")
 public class ChatController {
 
     private final ChatService chatService;
@@ -24,7 +24,7 @@ public class ChatController {
     }
 
     @GetMapping("/conversation/{customerId}")
-    public ChatConversation getCustomerConversation(@PathVariable Long customerId) {
+    public ChatConversation getCustomerConversation(@PathVariable String customerId) {
         return chatService.getCustomerConversation(customerId);
     }
 
@@ -39,7 +39,7 @@ public class ChatController {
     }
 
     @PostMapping("/assign/{conversationId}")
-    public ChatConversation assignConversation(@PathVariable Long conversationId, @RequestBody Long staffId) {
+    public ChatConversation assignConversation(@PathVariable Long conversationId, @RequestBody String staffId) {
         return chatService.assignConversation(conversationId, staffId);
     }
 

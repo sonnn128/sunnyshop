@@ -7,9 +7,9 @@ import API from '../../lib/api';
 import { useToast } from '../../components/ui/ToastProvider';
 
 const Login = () => {
-  const [email, setEmail] = useState(() => {
+  const [username, setUsername] = useState(() => {
     try {
-      return localStorage.getItem('rememberedEmail') || '';
+      return localStorage.getItem('rememberedUsername') || '';
     } catch (e) { return ''; }
   });
   const [password, setPassword] = useState('');
@@ -18,33 +18,43 @@ const Login = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = (values) => {
+    const { username, password } = values;
     setFormError('');
-    if (!email || !password) {
-      setFormError('Vui lòng nhập email và mật khẩu.');
+    if (!username || !password) {
+      setFormError('Vui lòng nhập tên đăng nhập và mật khẩu.');
       return;
     }
-    API.post('/api/auth/login', { email, password })
+    API.post('/auth/login', { username, password })
       .then(res => {
-        const { user, token } = res.data;
+        // Backend returns ApiResponse, so we look for 'data' property
+        const loginData = res.data?.data || res.data;
+        const { user, token } = loginData;
+
+        if (!token) {
+          throw new Error('Token không tồn tại trong phản hồi.');
+        }
+
         try {
           if (remember) {
-            localStorage.setItem('user', JSON.stringify(user));
-            localStorage.setItem('token', token);
-            // Lưu email để đăng nhập tương lai
-            try { localStorage.setItem('rememberedEmail', email); } catch (e) {}
+            if (user) localStorage.setItem('user', JSON.stringify(user));
+            if (token) localStorage.setItem('token', token);
+            // Lưu username để đăng nhập tương lai
+            try { localStorage.setItem('rememberedUsername', username); } catch (e) {}
           } else {
-            sessionStorage.setItem('user', JSON.stringify(user));
-            sessionStorage.setItem('token', token);
-            // Loại bỏ rememberedEmail đã lưu khi người dùng chọn không
-            try { localStorage.removeItem('rememberedEmail'); } catch (e) {}
+            if (user) sessionStorage.setItem('user', JSON.stringify(user));
+            if (token) sessionStorage.setItem('token', token);
+            // Loại bỏ rememberedUsername đã lưu khi người dùng chọn không
+            try { localStorage.removeItem('rememberedUsername'); } catch (e) {}
             // Đảm bảo không có token/user cũ trong localStorage
             try { localStorage.removeItem('user'); localStorage.removeItem('token'); } catch (e) {}
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error('Lỗi lưu trữ thông tin đăng nhập:', e);
+        }
         
         // Xác định chuyển hướng dựa trên vai trò người dùng
+        // Role từ backend đã được normalize về lowercase trong User model
         const userRole = user?.role || 'customer';
         const isAdminUser = ['staff', 'manager', 'admin'].includes(userRole);
         const redirectPath = isAdminUser ? '/admin-panel' : '/user-dashboard';
@@ -117,7 +127,7 @@ const Login = () => {
             onFinish={handleLogin} 
             layout="vertical" 
             className="space-y-8"
-            initialValues={{ email, remember }}
+            initialValues={{ username, remember }}
             requiredMark={false}
           >
             {formError && (
@@ -127,17 +137,15 @@ const Login = () => {
             )}
 
             <Form.Item 
-              name="email" 
-              label={<span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">Email</span>}
+              name="username" 
+              label={<span className="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-400">Tên đăng nhập / Email</span>}
               rules={[
-                { required: true, message: 'Vui lòng nhập email!' },
-                { type: 'email', message: 'Email không hợp lệ!' }
+                { required: true, message: 'Vui lòng nhập tên đăng nhập hoặc email!' }
               ]}
               className="mb-6"
             >
               <Input
-                placeholder="NHẬP EMAIL CỦA BẠN"
-                onChange={e => setEmail(e.target.value)}
+                placeholder="NHẬP TÊN ĐĂNG NHẬP HOẶC EMAIL"
                 className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-0 text-[11px] font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none"
               />
             </Form.Item>
@@ -162,7 +170,6 @@ const Login = () => {
                 <label className="flex items-center space-x-3 cursor-pointer group">
                   <input 
                     type="checkbox" 
-                    onChange={e => setRemember(e.target.checked)} 
                     className="w-3.5 h-3.5 border-slate-300 text-slate-900 focus:ring-slate-900 rounded-sm" 
                   />
                   <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 group-hover:text-slate-900 transition-colors">GHI NHỚ ĐĂNG NHẬP</span>

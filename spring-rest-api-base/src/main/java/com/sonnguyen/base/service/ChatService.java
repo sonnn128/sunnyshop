@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface ChatService {
     List<ChatConversation> getConversations();
-    ChatConversation getCustomerConversation(Long customerId);
+    ChatConversation getCustomerConversation(String customerId);
     List<ChatMessage> getMessages(Long conversationId);
     ChatMessage sendMessage(ChatMessage message);
-    ChatConversation assignConversation(Long conversationId, Long staffId);
+    ChatConversation assignConversation(Long conversationId, String staffId);
     ChatConversation closeConversation(Long conversationId);
     ChatConversation reopenConversation(Long conversationId);
     void markMessagesAsRead(Long conversationId);

@@ -20,7 +20,7 @@ const CategoryList = () => {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const res = await API.get('/api/categories');
+      const res = await API.get('/categories');
       const cats = res?.data?.data || res?.data?.categories || res?.data || [];
       const sortedCats = Array.isArray(cats)
         ? [...cats].sort((a, b) => (a?.sort_order || 0) - (b?.sort_order || 0))
@@ -54,7 +54,7 @@ const CategoryList = () => {
     if (!deleteModal.category) return;
     
     try {
-      await API.delete(`/api/categories/${deleteModal.category._id}`);
+      await API.delete(`/categories/${deleteModal.category._id || deleteModal.category.id}`);
       toast.push({ 
         title: 'Thành công', 
         message: 'Xóa danh mục thành công', 

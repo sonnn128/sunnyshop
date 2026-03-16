@@ -14,7 +14,7 @@ import com.sonnguyen.base.utils.SecurityUtils;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/addresses")
+@RequestMapping("/api/v1/addresses")
 @RequiredArgsConstructor
 public class AddressController {
 

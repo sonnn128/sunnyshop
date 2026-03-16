@@ -36,6 +36,14 @@ export const vi = {
   },
   nav: {
     dashboard: 'Tổng quan',
+    overview: 'Tổng quan',
+    orders: 'Đơn hàng',
+    products: 'Sản phẩm',
+    categories: 'Danh mục',
+    brands: 'Thương hiệu',
+    messages: 'Tin nhắn',
+    analytics: 'Phân tích',
+    management: 'Quản lý',
     bookings: 'Đặt sân',
     calendar: 'Lịch đặt sân',
     customers: 'Khách hàng',
@@ -161,7 +169,53 @@ export const vi = {
     activeCourts: 'Sân đang chơi',
     upcomingBookings: 'Lịch sắp tới',
     recentActivity: 'Hoạt động gần đây',
-    shiftHandover: 'Bàn giao ca'
+    shiftHandover: 'Bàn giao ca',
+    monthlyRevenue: 'Doanh thu tháng',
+    totalOrders: 'Tổng đơn hàng',
+    newCustomers: 'Khách hàng mới',
+    storeInventory: 'Kho hàng',
+    executiveOverview: 'Tổng quan điều hành',
+    systemSynchronized: 'Đã đồng bộ',
+    lowStock: 'Sắp hết hàng',
+    healthyStock: 'Ổn định',
+    quickActions: {
+      title: 'Trung tâm điều hành',
+      newAsset: 'Thêm mới',
+      newAssetDesc: 'Tạo mục mới',
+      collections: 'Bộ sưu tập',
+      collectionsDesc: 'Quản lý danh mục',
+      logistics: 'Vận chuyển',
+      logisticsDesc: 'Luồng đơn hàng',
+      directory: 'Danh bạ',
+      directoryDesc: 'Cơ sở thành viên'
+    },
+    recentOrders: {
+      title: 'Đơn hàng gần đây',
+      subtitle: 'Nhật ký hoạt động giao dịch mới nhất',
+      viewAll: 'Xem tất cả giao dịch',
+      reference: 'Mã đơn',
+      customer: 'Khách hàng',
+      amount: 'Số tiền',
+      status: 'Trạng thái',
+      date: 'Ngày',
+      action: 'Thao tác',
+      noActivity: 'Không có hoạt động gần đây',
+      viewDetails: 'Xem chi tiết'
+    },
+    activityFeed: {
+      title: 'Hoạt động',
+      accessLogs: 'Truy cập nhật ký hoạt động'
+    },
+    salesChart: {
+      title: 'Động lực doanh thu',
+      subtitle: 'Trực quan hóa sự thâm nhập thị trường',
+      revenue: 'Doanh thu',
+      transactions: 'Giao dịch',
+      retry: 'Thử lại',
+      voidSpectrum: 'Không có dữ liệu',
+      protocolInterruption: 'Gián đoạn giao thức',
+      analyticalDetails: 'Chi tiết phân tích'
+    }
   },
   validation: {
     required: 'Trường này là bắt buộc',

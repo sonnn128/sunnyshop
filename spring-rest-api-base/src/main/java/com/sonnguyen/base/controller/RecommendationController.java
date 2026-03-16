@@ -14,21 +14,20 @@ import java.util.List;
 @RequestMapping("/api/v1/recommendations")
 public class RecommendationController {
 
-    private final RecommendationService recommendationService;
+	private final RecommendationService recommendationService;
 
-    public RecommendationController(RecommendationService recommendationService) {
-        this.recommendationService = recommendationService;
-    }
+	public RecommendationController(RecommendationService recommendationService) {
+		this.recommendationService = recommendationService;
+	}
 
-    @GetMapping
-    public List<Product> getRecommendations(@RequestParam(required = false) String userId,
-                                            @RequestParam(required = false) Long productId,
-                                            @RequestParam(defaultValue = "8") int limit) {
-        return recommendationService.getRecommendations(userId, productId, limit);
-    }
+	@GetMapping
+	public List<Product> getRecommendations(@RequestParam(required = false) String userId,
+			@RequestParam(required = false) Long productId, @RequestParam(defaultValue = "8") int limit) {
+		return recommendationService.getRecommendations(userId, productId, limit);
+	}
 
-    @GetMapping("/trending")
-    public List<Product> getTrendingProducts(@RequestParam(defaultValue = "10") int limit) {
-        return recommendationService.getTrendingProducts(limit);
-    }
+	@GetMapping("/trending")
+	public List<Product> getTrendingProducts(@RequestParam(defaultValue = "10") int limit) {
+		return recommendationService.getTrendingProducts(limit);
+	}
 }

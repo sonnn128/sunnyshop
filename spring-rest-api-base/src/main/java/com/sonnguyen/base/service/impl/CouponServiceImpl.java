@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public class CouponServiceImpl implements CouponService {
 
-    private final CouponRepository couponRepository;
+	private final CouponRepository couponRepository;
 
-    public CouponServiceImpl(CouponRepository couponRepository) {
-        this.couponRepository = couponRepository;
-    }
+	public CouponServiceImpl(CouponRepository couponRepository) {
+		this.couponRepository = couponRepository;
+	}
 
-    @Override
-    public List<Coupon> getAllCoupons() {
-        return couponRepository.findAll();
-    }
+	@Override
+	public List<Coupon> getAllCoupons() {
+		return couponRepository.findAll();
+	}
 }

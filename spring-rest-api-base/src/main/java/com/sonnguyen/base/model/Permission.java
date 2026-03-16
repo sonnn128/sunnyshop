@@ -12,19 +12,18 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 @Entity
 @Table(name = "permissions")
 public class Permission implements GrantedAuthority {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+	@Column(columnDefinition = "TEXT")
+	private String description;
 
-    @Override
-    public String getAuthority() {
-        return this.getId();
-    }
+	@Override
+	public String getAuthority() {
+		return this.getId();
+	}
 
-    public SimpleGrantedAuthority toSimpleGrantedAuthority() {
-        return new SimpleGrantedAuthority(this.getId());
-    }
+	public SimpleGrantedAuthority toSimpleGrantedAuthority() {
+		return new SimpleGrantedAuthority(this.getId());
+	}
 }
-

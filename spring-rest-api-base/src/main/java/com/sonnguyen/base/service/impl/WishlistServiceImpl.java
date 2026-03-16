@@ -11,24 +11,24 @@ import java.util.List;
 @Service
 public class WishlistServiceImpl implements WishlistService {
 
-    private final WishlistRepository wishlistRepository;
+	private final WishlistRepository wishlistRepository;
 
-    public WishlistServiceImpl(WishlistRepository wishlistRepository) {
-        this.wishlistRepository = wishlistRepository;
-    }
+	public WishlistServiceImpl(WishlistRepository wishlistRepository) {
+		this.wishlistRepository = wishlistRepository;
+	}
 
-    @Override
-    public Wishlist addToWishlist(Wishlist wishlist) {
-        return wishlistRepository.save(wishlist);
-    }
+	@Override
+	public Wishlist addToWishlist(Wishlist wishlist) {
+		return wishlistRepository.save(wishlist);
+	}
 
-    @Override
-    public void removeFromWishlist(Long id) {
-        wishlistRepository.deleteById(id);
-    }
+	@Override
+	public void removeFromWishlist(Long id) {
+		wishlistRepository.deleteById(id);
+	}
 
-    @Override
-    public List<Wishlist> getUserWishlist(String userId) {
-        return wishlistRepository.findByUserId(userId);
-    }
+	@Override
+	public List<Wishlist> getUserWishlist(String userId) {
+		return wishlistRepository.findByUserId(userId);
+	}
 }

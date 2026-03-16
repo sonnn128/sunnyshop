@@ -13,14 +13,14 @@ import java.util.List;
 @RequestMapping("/api/v1/coupons")
 public class CouponController {
 
-    private final CouponService couponService;
+	private final CouponService couponService;
 
-    public CouponController(CouponService couponService) {
-        this.couponService = couponService;
-    }
+	public CouponController(CouponService couponService) {
+		this.couponService = couponService;
+	}
 
-    @GetMapping
-    public List<Coupon> getAllCoupons() {
-        return couponService.getAllCoupons();
-    }
+	@GetMapping
+	public List<Coupon> getAllCoupons() {
+		return couponService.getAllCoupons();
+	}
 }

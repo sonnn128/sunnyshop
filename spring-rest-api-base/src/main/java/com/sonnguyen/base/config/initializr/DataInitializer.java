@@ -16,46 +16,45 @@ import java.util.Set;
 @Component
 public class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
-    private EntityManager entityManager;
+	@Autowired
+	private EntityManager entityManager;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Override
-    @Transactional
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        // Kiểm tra và tạo Role ADMIN nếu chưa tồn tại
-        Role adminRole = entityManager.find(Role.class, "ADMIN");
-        if (adminRole == null) {
-            adminRole = new Role();
-            adminRole.setId("ADMIN");
-            adminRole.setPermissions(new HashSet<>());
-            entityManager.persist(adminRole);
-            entityManager.flush(); // Đảm bảo role được lưu trước khi dùng
-        }
+	@Override
+	@Transactional
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		// Kiểm tra và tạo Role ADMIN nếu chưa tồn tại
+		Role adminRole = entityManager.find(Role.class, "ADMIN");
+		if (adminRole == null) {
+			adminRole = new Role();
+			adminRole.setId("ADMIN");
+			adminRole.setPermissions(new HashSet<>());
+			entityManager.persist(adminRole);
+			entityManager.flush(); // Đảm bảo role được lưu trước khi dùng
+		}
 
-        // Kiểm tra và tạo User admin nếu chưa tồn tại
-        String query = "SELECT u FROM User u WHERE u.username = :username";
-        try {
-            User existingUser = entityManager.createQuery(query, User.class)
-                    .setParameter("username", "admin")
-                    .getSingleResult();
-            // Nếu user đã tồn tại, không làm gì cả
-        } catch (Exception e) {
-            // Nếu không tìm thấy user, tạo mới
-            User adminUser = new User();
-            adminUser.setUsername("admin");
-            adminUser.setPassword(passwordEncoder.encode("admin"));
+		// Kiểm tra và tạo User admin nếu chưa tồn tại
+		String query = "SELECT u FROM User u WHERE u.username = :username";
+		try {
+			User existingUser = entityManager.createQuery(query, User.class).setParameter("username", "admin")
+					.getSingleResult();
+			// Nếu user đã tồn tại, không làm gì cả
+		} catch (Exception e) {
+			// Nếu không tìm thấy user, tạo mới
+			User adminUser = new User();
+			adminUser.setUsername("admin");
+			adminUser.setPassword(passwordEncoder.encode("admin"));
 
-            // Gán role cho user
-            Set<Role> roles = new HashSet<>();
-            roles.add(adminRole);
-            adminUser.setRoles(roles);
+			// Gán role cho user
+			Set<Role> roles = new HashSet<>();
+			roles.add(adminRole);
+			adminUser.setRoles(roles);
 
-            // Lưu user vào database
-            entityManager.persist(adminUser);
-            entityManager.flush(); // Đảm bảo dữ liệu được ghi vào DB
-        }
-    }
+			// Lưu user vào database
+			entityManager.persist(adminUser);
+			entityManager.flush(); // Đảm bảo dữ liệu được ghi vào DB
+		}
+	}
 }

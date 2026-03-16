@@ -14,39 +14,39 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class OrderItem {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+	@ManyToOne
+	@JoinColumn(name = "order_id", nullable = false)
+	private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+	@ManyToOne
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 
-    @Column(name = "product_name", nullable = false)
-    private String productName;
+	@Column(name = "product_name", nullable = false)
+	private String productName;
 
-    @Column(name = "product_sku")
-    private String productSku;
+	@Column(name = "product_sku")
+	private String productSku;
 
-    @Column(name = "unit_price", nullable = false)
-    private BigDecimal unitPrice;
+	@Column(name = "unit_price", nullable = false)
+	private BigDecimal unitPrice;
 
-    private BigDecimal subtotal;
+	private BigDecimal subtotal;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+	@Column(name = "image_url")
+	private String imageUrl;
 
-    @Column(name = "variant_name")
-    private String variantName;
+	@Column(name = "variant_name")
+	private String variantName;
 
-    private Integer quantity;
+	private Integer quantity;
 
-    @Column(name = "discount_amount")
-    private BigDecimal discountAmount;
+	@Column(name = "discount_amount")
+	private BigDecimal discountAmount;
 
-    // Getters and Setters
+	// Getters and Setters
 }

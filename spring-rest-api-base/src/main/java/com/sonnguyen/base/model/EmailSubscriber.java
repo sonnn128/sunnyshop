@@ -10,23 +10,23 @@ import java.util.Date;
 @Data
 public class EmailSubscriber {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+	@Column(unique = true, nullable = false)
+	private String email;
 
-    private String name;
+	private String name;
 
-    private boolean isActive;
+	private boolean isActive;
 
-    private Date subscribedAt;
+	private Date subscribedAt;
 
-    private Date unsubscribedAt;
+	private Date unsubscribedAt;
 
-    // Preferences can be a separate entity or a JSONB column
+	// Preferences can be a separate entity or a JSONB column
 
-    @Enumerated(EnumType.STRING)
-    private Source source;
+	@Enumerated(EnumType.STRING)
+	private Source source;
 }

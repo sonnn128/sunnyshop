@@ -14,32 +14,32 @@ import java.util.Date;
 @AllArgsConstructor
 public class EmailCampaign {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	private String name;
 
-    private String subject;
+	private String subject;
 
-    @Lob
-    private String content;
+	@Lob
+	private String content;
 
-    @Enumerated(EnumType.STRING)
-    private CampaignType type;
+	@Enumerated(EnumType.STRING)
+	private CampaignType type;
 
-    @Enumerated(EnumType.STRING)
-    private CampaignStatus status;
+	@Enumerated(EnumType.STRING)
+	private CampaignStatus status;
 
-    private Date scheduledAt;
+	private Date scheduledAt;
 
-    private Date sentAt;
+	private Date sentAt;
 
-    // TargetAudience and Statistics can be separate entities or JSONB columns
+	// TargetAudience and Statistics can be separate entities or JSONB columns
 
-    @ManyToOne
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+	@ManyToOne
+	@JoinColumn(name = "created_by", nullable = false)
+	private User createdBy;
 
-    // Getters and Setters
+	// Getters and Setters
 }

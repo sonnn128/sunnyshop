@@ -14,19 +14,19 @@ import java.util.List;
 @RequestMapping("/api/v1/dashboard")
 public class DashboardController {
 
-    private final DashboardService dashboardService;
+	private final DashboardService dashboardService;
 
-    public DashboardController(DashboardService dashboardService) {
-        this.dashboardService = dashboardService;
-    }
+	public DashboardController(DashboardService dashboardService) {
+		this.dashboardService = dashboardService;
+	}
 
-    @GetMapping("/stats")
-    public DashboardStatsDTO getDashboardStats() {
-        return dashboardService.getDashboardStats();
-    }
+	@GetMapping("/stats")
+	public DashboardStatsDTO getDashboardStats() {
+		return dashboardService.getDashboardStats();
+	}
 
-    @GetMapping("/activities")
-    public List<RecentActivityDTO> getRecentActivities() {
-        return dashboardService.getRecentActivities();
-    }
+	@GetMapping("/activities")
+	public List<RecentActivityDTO> getRecentActivities() {
+		return dashboardService.getRecentActivities();
+	}
 }

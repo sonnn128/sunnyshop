@@ -12,40 +12,40 @@ import java.util.List;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
-    private final OrderService orderService;
+	private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
+	public OrderController(OrderService orderService) {
+		this.orderService = orderService;
+	}
 
-    @PostMapping
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.createOrder(order);
-    }
+	@PostMapping
+	public Order createOrder(@RequestBody Order order) {
+		return orderService.createOrder(order);
+	}
 
-    @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
-    }
+	@GetMapping
+	public List<Order> getAllOrders() {
+		return orderService.getAllOrders();
+	}
 
-    @GetMapping("/admin")
-    public List<Order> getAdminOrders() {
-        return orderService.getAllOrders();
-    }
+	@GetMapping("/admin")
+	public List<Order> getAdminOrders() {
+		return orderService.getAllOrders();
+	}
 
-    @GetMapping("/top-products")
-    public List<?> getTopProducts() {
-        // Mock data or service call
-        return List.of();
-    }
+	@GetMapping("/top-products")
+	public List<?> getTopProducts() {
+		// Mock data or service call
+		return List.of();
+	}
 
-    @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id);
-    }
+	@GetMapping("/{id}")
+	public Order getOrderById(@PathVariable Long id) {
+		return orderService.getOrderById(id);
+	}
 
-    @PutMapping("/{id}/status")
-    public Order updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status) {
-        return orderService.updateOrderStatus(id, status);
-    }
+	@PutMapping("/{id}/status")
+	public Order updateOrderStatus(@PathVariable Long id, @RequestBody OrderStatus status) {
+		return orderService.updateOrderStatus(id, status);
+	}
 }

@@ -6,5 +6,5 @@ import com.sonnguyen.base.model.Coupon;
 import java.util.List;
 
 public interface CouponService {
-    List<Coupon> getAllCoupons();
+	List<Coupon> getAllCoupons();
 }

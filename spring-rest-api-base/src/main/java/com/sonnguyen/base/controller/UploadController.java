@@ -12,14 +12,14 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/upload")
 public class UploadController {
 
-    private final UploadService uploadService;
+	private final UploadService uploadService;
 
-    public UploadController(UploadService uploadService) {
-        this.uploadService = uploadService;
-    }
+	public UploadController(UploadService uploadService) {
+		this.uploadService = uploadService;
+	}
 
-    @PostMapping("/image")
-    public String uploadImage(@RequestParam("file") MultipartFile file) {
-        return uploadService.uploadImage(file);
-    }
+	@PostMapping("/image")
+	public String uploadImage(@RequestParam("file") MultipartFile file) {
+		return uploadService.uploadImage(file);
+	}
 }

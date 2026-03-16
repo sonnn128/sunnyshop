@@ -1,6 +1,5 @@
 package com.sonnguyen.base.payload.response;
 
-
 import com.sonnguyen.base.model.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,17 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponse {
-    private String token;
-    
-    @JsonProperty("accessToken")
-    public String getAccessToken() {
-        return token;
-    }
+	private String token;
 
-    @JsonProperty("refreshToken")
-    public String getRefreshToken() {
-        return token; // For now, use the same token as refresh token
-    }
+	@JsonProperty("accessToken")
+	public String getAccessToken() {
+		return token;
+	}
 
-    private User user;
+	@JsonProperty("refreshToken")
+	public String getRefreshToken() {
+		return token; // For now, use the same token as refresh token
+	}
+
+	private User user;
 }

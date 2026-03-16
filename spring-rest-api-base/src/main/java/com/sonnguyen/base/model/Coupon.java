@@ -15,49 +15,49 @@ import java.util.Date;
 @AllArgsConstructor
 public class Coupon {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String code;
+	@Column(unique = true, nullable = false)
+	private String code;
 
-    private String name;
+	private String name;
 
-    private String description;
+	private String description;
 
-    @Enumerated(EnumType.STRING)
-    private CouponType type;
+	@Enumerated(EnumType.STRING)
+	private CouponType type;
 
-    private BigDecimal value;
+	private BigDecimal value;
 
-    @Column(name = "minimum_order_amount")
-    private BigDecimal minimumOrderAmount;
+	@Column(name = "minimum_order_amount")
+	private BigDecimal minimumOrderAmount;
 
-    @Column(name = "maximum_discount_amount")
-    private BigDecimal maximumDiscountAmount;
+	@Column(name = "maximum_discount_amount")
+	private BigDecimal maximumDiscountAmount;
 
-    @Column(name = "usage_limit")
-    private Integer usageLimit;
+	@Column(name = "usage_limit")
+	private Integer usageLimit;
 
-    @Column(name = "usage_count")
-    private Integer usageCount = 0;
+	@Column(name = "usage_count")
+	private Integer usageCount = 0;
 
-    @Column(name = "user_limit")
-    private Integer userLimit = 1;
+	@Column(name = "user_limit")
+	private Integer userLimit = 1;
 
-    @Column(name = "is_active")
-    private boolean isActive = true;
+	@Column(name = "is_active")
+	private boolean isActive = true;
 
-    @Column(name = "starts_at")
-    private Date startsAt;
+	@Column(name = "starts_at")
+	private Date startsAt;
 
-    @Column(name = "expires_at")
-    private Date expiresAt;
+	@Column(name = "expires_at")
+	private Date expiresAt;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+	@ManyToOne
+	@JoinColumn(name = "created_by")
+	private User createdBy;
 
-    // Getters and Setters
+	// Getters and Setters
 }

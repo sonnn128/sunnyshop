@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/analytics")
 public class AnalyticsController {
 
-    private final AnalyticsService analyticsService;
+	private final AnalyticsService analyticsService;
 
-    public AnalyticsController(AnalyticsService analyticsService) {
-        this.analyticsService = analyticsService;
-    }
+	public AnalyticsController(AnalyticsService analyticsService) {
+		this.analyticsService = analyticsService;
+	}
 
-    @GetMapping("/overview")
-    public AnalyticsOverviewDTO getAnalyticsOverview() {
-        return analyticsService.getAnalyticsOverview();
-    }
+	@GetMapping("/overview")
+	public AnalyticsOverviewDTO getAnalyticsOverview() {
+		return analyticsService.getAnalyticsOverview();
+	}
 }

@@ -12,15 +12,15 @@ import java.util.List;
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
-    @Override
-    public DashboardStatsDTO getDashboardStats() {
-        // TODO: Implement logic to fetch and calculate dashboard stats
-        return new DashboardStatsDTO();
-    }
+	@Override
+	public DashboardStatsDTO getDashboardStats() {
+		// TODO: Implement logic to fetch and calculate dashboard stats
+		return new DashboardStatsDTO();
+	}
 
-    @Override
-    public List<RecentActivityDTO> getRecentActivities() {
-        // TODO: Implement logic to fetch recent activities
-        return Collections.emptyList();
-    }
+	@Override
+	public List<RecentActivityDTO> getRecentActivities() {
+		// TODO: Implement logic to fetch recent activities
+		return Collections.emptyList();
+	}
 }

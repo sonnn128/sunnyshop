@@ -14,35 +14,35 @@ import java.util.Date;
 @AllArgsConstructor
 public class ChatConversation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+	@ManyToOne
+	@JoinColumn(name = "customer_id", nullable = false)
+	private User customer;
 
-    @Column(name = "customer_name", nullable = false)
-    private String customerName;
+	@Column(name = "customer_name", nullable = false)
+	private String customerName;
 
-    @Column(name = "customer_email", nullable = false)
-    private String customerEmail;
+	@Column(name = "customer_email", nullable = false)
+	private String customerEmail;
 
-    @ManyToOne
-    @JoinColumn(name = "assigned_to")
-    private User assignedTo;
+	@ManyToOne
+	@JoinColumn(name = "assigned_to")
+	private User assignedTo;
 
-    @Enumerated(EnumType.STRING)
-    private ConversationStatus status;
+	@Enumerated(EnumType.STRING)
+	private ConversationStatus status;
 
-    private String lastMessage;
+	private String lastMessage;
 
-    private Date lastMessageAt;
+	private Date lastMessageAt;
 
-    private int unreadCount;
+	private int unreadCount;
 
-    @Enumerated(EnumType.STRING)
-    private Priority priority;
+	@Enumerated(EnumType.STRING)
+	private Priority priority;
 
-    // Getters and Setters
+	// Getters and Setters
 }

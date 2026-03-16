@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {
 
-    @Override
-    public AnalyticsOverviewDTO getAnalyticsOverview() {
-        // TODO: Implement logic to fetch and calculate analytics overview
-        return new AnalyticsOverviewDTO();
-    }
+	@Override
+	public AnalyticsOverviewDTO getAnalyticsOverview() {
+		// TODO: Implement logic to fetch and calculate analytics overview
+		return new AnalyticsOverviewDTO();
+	}
 }

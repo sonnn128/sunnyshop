@@ -13,37 +13,32 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
-    @Id
-    private String id;
+	@Id
+	private String id;
 
-    public String getId() {
-        return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_permission",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private Set<Permission> permissions;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	private Set<Permission> permissions;
 
-    @Override
-    public String getAuthority() {
-        return this.id;
-    }
+	@Override
+	public String getAuthority() {
+		return this.id;
+	}
 
-    public List<SimpleGrantedAuthority> getSimpleGrantedAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (Permission permission : permissions) {
-            authorities.add(permission.toSimpleGrantedAuthority());
-        }
-        authorities.add(new SimpleGrantedAuthority(this.id));
-        return authorities;
-    }
+	public List<SimpleGrantedAuthority> getSimpleGrantedAuthorities() {
+		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+		for (Permission permission : permissions) {
+			authorities.add(permission.toSimpleGrantedAuthority());
+		}
+		authorities.add(new SimpleGrantedAuthority(this.id));
+		return authorities;
+	}
 }
-

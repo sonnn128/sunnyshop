@@ -18,33 +18,25 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
-    private final ObjectMapper objectMapper;
-    @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,
-                                    @NonNull HttpServletResponse response,
-                                    @NonNull FilterChain filterChain) throws IOException {
+	private final ObjectMapper objectMapper;
+	@Override
+	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+			@NonNull FilterChain filterChain) throws IOException {
 
-        try {
-            filterChain.doFilter(request, response);
-        } catch (CommonException e) {
-            handleException(response, e, e.getHttpStatus().value());
-        } catch (Exception e) {
-            handleException(response, e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
+		try {
+			filterChain.doFilter(request, response);
+		} catch (CommonException e) {
+			handleException(response, e, e.getHttpStatus().value());
+		} catch (Exception e) {
+			handleException(response, e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+	}
 
-    private void handleException(HttpServletResponse response, Exception e, int httpStatus) throws IOException {
-        log.error("{}", e.getMessage());
-        response.setStatus(httpStatus);
-        response.setContentType("application/json");
-        response.getWriter().write(
-                objectMapper.writeValueAsString(
-                        ApiResponse.builder()
-                                .success(false)
-                                .message(e.getMessage())
-                                .build()
-                )
-        );
-    }
+	private void handleException(HttpServletResponse response, Exception e, int httpStatus) throws IOException {
+		log.error("{}", e.getMessage());
+		response.setStatus(httpStatus);
+		response.setContentType("application/json");
+		response.getWriter().write(
+				objectMapper.writeValueAsString(ApiResponse.builder().success(false).message(e.getMessage()).build()));
+	}
 }
-

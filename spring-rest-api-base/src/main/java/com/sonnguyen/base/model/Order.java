@@ -96,15 +96,3 @@ public class Order {
 
     // Getters and Setters
 }
-
-public enum OrderStatus {
-    pending, confirmed, processing, shipping, shipped, delivered, cancelled, refunded
-}
-
-public enum PaymentStatus {
-    pending, paid, completed, failed, refunded, partially_refunded
-}
-
-public enum PaymentMethod {
-    cod, bank_transfer, vnpay, momo, credit_card, sepay
-}

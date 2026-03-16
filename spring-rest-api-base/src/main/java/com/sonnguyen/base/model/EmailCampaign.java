@@ -43,11 +43,3 @@ public class EmailCampaign {
 
     // Getters and Setters
 }
-
-enum CampaignType {
-    promotional, newsletter, product_update, welcome, abandoned_cart
-}
-
-enum CampaignStatus {
-    draft, scheduled, sending, sent, cancelled
-}

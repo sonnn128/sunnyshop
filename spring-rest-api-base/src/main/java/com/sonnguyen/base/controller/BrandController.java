@@ -22,7 +22,8 @@ public class BrandController {
     // Helper kiểm tra role giống Node.js
     private boolean hasManagementAccess() {
         User user = SecurityUtils.getCurrentUser();
-        return Arrays.asList("admin", "manager", "staff").contains(user.getRole().toLowerCase());
+        return user.getRoles().stream()
+                .anyMatch(r -> Arrays.asList("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF").contains(r.getId()));
     }
 
     @GetMapping
@@ -64,7 +65,9 @@ public class BrandController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> remove(@PathVariable Long id) {
         User user = SecurityUtils.getCurrentUser();
-        if (!Arrays.asList("admin", "manager").contains(user.getRole().toLowerCase())) {
+        boolean hasAccess = user.getRoles().stream()
+                .anyMatch(r -> Arrays.asList("ROLE_ADMIN", "ROLE_MANAGER").contains(r.getId()));
+        if (!hasAccess) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Forbidden"));
         }
         try {

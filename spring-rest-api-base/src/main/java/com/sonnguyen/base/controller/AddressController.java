@@ -23,7 +23,7 @@ public class AddressController {
     /**
      * Helper để lấy UserId từ SecurityContext đã qua authentication
      */
-    private Long getCurrentUserId() {
+    private String getCurrentUserId() {
         User user = SecurityUtils.getCurrentUser();
         return user.getId();
     }

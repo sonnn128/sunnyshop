@@ -40,11 +40,3 @@ public class ChatMessage {
 
     // Getters and Setters
 }
-
-public enum SenderType {
-    customer, staff, admin
-}
-
-public enum MessageType {
-    text, image, file
-}

@@ -47,9 +47,8 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public ApiResponse addItem(User user, Long productId, Long variantId, int quantity) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-        if (!"active".equalsIgnoreCase(product.getStatus())) {
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null || !product.isActive()) {
             throw new IllegalStateException("Product is not available");
         }
 

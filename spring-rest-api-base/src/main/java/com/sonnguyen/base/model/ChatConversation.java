@@ -46,11 +46,3 @@ public class ChatConversation {
 
     // Getters and Setters
 }
-
-public enum ConversationStatus {
-    active, closed, waiting
-}
-
-public enum Priority {
-    low, medium, high
-}

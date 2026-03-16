@@ -61,8 +61,3 @@ public class Coupon {
 
     // Getters and Setters
 }
-
-public enum CouponType {
-    percentage,
-    fixed_amount
-}

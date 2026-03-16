@@ -1,6 +1,7 @@
 package com.sonnguyen.base.service;
 
 import com.sonnguyen.base.model.Address;
+import com.sonnguyen.base.payload.request.AddressRequest;
 import com.sonnguyen.base.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,17 +14,17 @@ import java.util.List;
 public class AddressService {
     private final AddressRepository addressRepository;
 
-    public List<Address> list(Long userId) {
+    public List<Address> list(String userId) {
         return addressRepository.findByUserIdOrderByIsDefaultDescCreatedAtDesc(userId);
     }
 
-    public Address get(Long id, Long userId) {
+    public Address get(Long id, String userId) {
         return addressRepository.findByIdAndUserId(id, userId)
             .orElseThrow(() -> new RuntimeException("Address not found"));
     }
 
     @Transactional
-    public Address create(Long userId, AddressRequest req) {
+    public Address create(String userId, AddressRequest req) {
         // Validation cơ bản
         if (req.getResolvedFullName() == null || req.getPhone() == null) {
             throw new IllegalArgumentException("Missing required fields");
@@ -58,7 +59,7 @@ public class AddressService {
     }
 
     @Transactional
-    public Address update(Long id, Long userId, AddressRequest req) {
+    public Address update(Long id, String userId, AddressRequest req) {
         Address address = get(id, userId);
 
         if (req.getResolvedFullName() != null) address.setFullName(req.getResolvedFullName());
@@ -75,7 +76,7 @@ public class AddressService {
     }
 
     @Transactional
-    public void remove(Long id, Long userId) {
+    public void remove(Long id, String userId) {
         Address address = get(id, userId);
         boolean wasDefault = address.isDefault();
 
@@ -90,14 +91,14 @@ public class AddressService {
     }
 
     @Transactional
-    public Address setDefault(Long id, Long userId) {
+    public Address setDefault(Long id, String userId) {
         Address address = get(id, userId);
         addressRepository.unsetDefaultsByUserId(userId);
         address.setDefault(true);
         return addressRepository.save(address);
     }
 
-    public Address getDefault(Long userId) {
+    public Address getDefault(String userId) {
         return addressRepository.findByUserIdAndIsDefaultTrue(userId).orElse(null);
     }
 }

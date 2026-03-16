@@ -30,7 +30,3 @@ public class EmailSubscriber {
     @Enumerated(EnumType.STRING)
     private Source source;
 }
-
-public enum Source {
-    website, checkout, admin, import_source
-}

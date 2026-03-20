@@ -38,7 +38,6 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import AdminPanel from './pages/admin-panel';
 import AdminLayout from './pages/admin-panel/AdminLayout';
-import ProductsList from './pages/admin-panel/products/ProductsList';
 import ProductForm from './pages/admin-panel/products/ProductForm';
 import CategoryList from './pages/admin-panel/categories/CategoryList';
 import CategoryForm from './pages/admin-panel/categories/CategoryForm';

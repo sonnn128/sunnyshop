@@ -20,7 +20,7 @@ public class UploadController {
 	private final UploadService uploadService;
 
 	@PostMapping("/image")
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
 	public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
 		String imageUrl = uploadService.uploadImage(file);
 
@@ -35,7 +35,7 @@ public class UploadController {
 	}
 
 	@PostMapping("/images")
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
 	public ResponseEntity<?> uploadMultipleImages(@RequestParam("files") MultipartFile[] files) {
 		java.util.List<String> imageUrls = new java.util.ArrayList<>();
 

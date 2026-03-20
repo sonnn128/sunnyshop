@@ -19,7 +19,7 @@ const Login = () => {
   const toast = useToast();
 
   const handleLogin = (values) => {
-    const { username, password } = values;
+    const { username, password, remember: rememberUsername } = values;
     setFormError('');
     if (!username || !password) {
       setFormError('Vui lòng nhập tên đăng nhập và mật khẩu.');
@@ -36,18 +36,13 @@ const Login = () => {
         }
 
         try {
-          if (remember) {
-            if (user) localStorage.setItem('user', JSON.stringify(user));
-            if (token) localStorage.setItem('token', token);
-            // Lưu username để đăng nhập tương lai
+          if (user) localStorage.setItem('user', JSON.stringify(user));
+          if (token) localStorage.setItem('token', token);
+
+          if (rememberUsername) {
             try { localStorage.setItem('rememberedUsername', username); } catch (e) {}
           } else {
-            if (user) sessionStorage.setItem('user', JSON.stringify(user));
-            if (token) sessionStorage.setItem('token', token);
-            // Loại bỏ rememberedUsername đã lưu khi người dùng chọn không
             try { localStorage.removeItem('rememberedUsername'); } catch (e) {}
-            // Đảm bảo không có token/user cũ trong localStorage
-            try { localStorage.removeItem('user'); localStorage.removeItem('token'); } catch (e) {}
           }
         } catch (e) {
           console.error('Lỗi lưu trữ thông tin đăng nhập:', e);

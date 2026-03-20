@@ -12,7 +12,7 @@ const buildQueryString = (params = {}) => {
 
 export const getAnalyticsOverview = async (params = {}) => {
   const query = buildQueryString(params);
-  const response = await api.get(`/api/analytics/overview${query}`);
+  const response = await api.get(`/analytics/overview${query}`);
   const data = response?.data?.data || response?.data || {};
   return data;
 };

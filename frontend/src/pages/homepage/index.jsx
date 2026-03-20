@@ -62,7 +62,7 @@ const Homepage = () => {
     let mounted = true;
     (async () => {
       try {
-        const res = await API.get('/api/products?status=active&limit=200');
+        const res = await API.get('/products?status=active&limit=200', { skipAuth: true });
         const products = res?.data?.products || res?.data?.data || res?.data || [];
         if (!Array.isArray(products) || !mounted) return;
 

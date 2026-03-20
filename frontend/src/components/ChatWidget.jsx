@@ -29,6 +29,7 @@ const ChatWidget = () => {
   };
 
   const user = getCurrentUser();
+  const isAdminRole = ['admin', 'manager', 'staff'].includes(user?.role?.toLowerCase());
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -37,9 +38,9 @@ const ChatWidget = () => {
     }
   }, [messages]);
 
-  // Initialize socket connection ONCE
+  // Initialize socket connection only when chat is opened by customer/user role
   useEffect(() => {
-    if (!user) return;
+    if (!user || isAdminRole || !isOpen) return;
 
     console.log('🔌 Initializing socket connection...');
     const base = (BASE || 'http://localhost:8080');
@@ -47,7 +48,9 @@ const ChatWidget = () => {
       auth: {
         token: localStorage.getItem('token') || sessionStorage.getItem('token')
       },
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 2,
+      timeout: 5000
     });
 
     newSocket.on('connect', () => {
@@ -56,6 +59,11 @@ const ChatWidget = () => {
 
     newSocket.on('disconnect', (reason) => {
       console.log('❌ Socket disconnected:', reason);
+    });
+
+    newSocket.on('connect_error', () => {
+      // Backend may not have realtime chat enabled in some environments
+      newSocket.disconnect();
     });
 
     newSocket.on('new_message', (messageData) => {
@@ -80,8 +88,9 @@ const ChatWidget = () => {
     return () => {
       console.log('🔌 Cleaning up socket connection');
       newSocket.disconnect();
+      setSocket(null);
     };
-  }, [user?.id]); // Only recreate if user changes
+  }, [user?.id, isAdminRole, isOpen]);
 
   // Join conversation when chat opens and conversation exists
   useEffect(() => {
@@ -208,7 +217,7 @@ const ChatWidget = () => {
     return null;
   }
 
-  if (['admin', 'manager', 'staff'].includes(user.role?.toLowerCase())) {
+  if (isAdminRole) {
     return null;
   }
 

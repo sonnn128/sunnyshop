@@ -2,23 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../../../lib/api';
 import { useToast } from '../../../components/ui/ToastProvider';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
+import Button from '../../../components/ui/button';
+import Input from '../../../components/ui/input';
 import Textarea from '../../../components/ui/Textarea';
 import { Folder, Image as ImageIcon, X } from 'lucide-react';
-import { formatCategoriesWithHierarchy, normalizeCategoryId } from '../../../utils/categoryTree';
+import { uploadImage } from '../../../lib/uploadApi';
 
 const emptyTemplate = {
   name: '',
   slug: '',
   description: '',
-  parent_id: null,
   image_url: '',
-  is_active: true,
-  is_featured: false,
   sort_order: 0,
-  meta_title: '',
-  meta_description: '',
 };
 
 const CategoryForm = () => {
@@ -29,8 +24,9 @@ const CategoryForm = () => {
   const [loading, setLoading] = useState(!!id);
   const [form, setForm] = useState(emptyTemplate);
   const [errors, setErrors] = useState(null);
-  const [allCategories, setAllCategories] = useState([]);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [localImageFile, setLocalImageFile] = useState(null);
+  const [localImagePreview, setLocalImagePreview] = useState('');
 
   const update = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -47,7 +43,7 @@ const CategoryForm = () => {
     update('slug', slug);
   };
 
-  const handleImageUpload = async (file) => {
+  const handleImageUpload = (file) => {
     if (!file) return;
     if (!file.type.startsWith('image/')) {
       toast.push({ title: 'Lỗi', message: 'Chỉ chấp nhận file ảnh', type: 'error' });
@@ -58,51 +54,22 @@ const CategoryForm = () => {
       return;
     }
 
-    setUploadingImage(true);
-    try {
-      const fd = new FormData();
-      fd.append('image', file);
-      const res = await API.post('/api/uploads/image', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      const url = res?.data?.url;
-      if (url) {
-        update('image_url', url);
-        toast.push({ title: 'Thành công', message: 'Upload ảnh thành công', type: 'success' });
-      }
-    } catch (e) {
-      console.error('Upload error:', e);
-      toast.push({ title: 'Lỗi', message: 'Upload ảnh thất bại', type: 'error' });
-    } finally {
-      setUploadingImage(false);
+    if (localImagePreview && localImagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(localImagePreview);
     }
+
+    setLocalImageFile(file);
+    setLocalImagePreview(URL.createObjectURL(file));
+    toast.push({ title: 'Đã chọn ảnh', message: 'Ảnh sẽ được upload khi bấm Lưu danh mục', type: 'info' });
   };
 
-  // Fetch all categories (for parent select)
   useEffect(() => {
-    const currentId = id ? String(id) : null;
-    (async () => {
-      try {
-        const res = await API.get('/api/categories');
-        const cats = res?.data?.data || res?.data?.categories || res?.data || [];
-        const sortedCats = Array.isArray(cats)
-          ? [...cats].sort((a, b) => (a?.sort_order || 0) - (b?.sort_order || 0))
-          : [];
-        const formatted = formatCategoriesWithHierarchy(sortedCats);
-        setAllCategories(
-          currentId
-            ? formatted.filter(cat => (cat.normalizedId || String(cat._id || '')) !== currentId)
-            : formatted
-        );
-      } catch (e) {
-        console.error('Load categories error:', e);
-        if (e.response?.status === 404) {
-          console.warn('Categories API not available yet.');
-        }
-        setAllCategories([]);
+    return () => {
+      if (localImagePreview && localImagePreview.startsWith('blob:')) {
+        URL.revokeObjectURL(localImagePreview);
       }
-    })();
-  }, [id]);
+    };
+  }, [localImagePreview]);
 
   // Load category if editing
   useEffect(() => {
@@ -115,19 +82,15 @@ const CategoryForm = () => {
         const cat = res?.data?.data || res?.data?.category || res?.data;
         console.log('📝 Category data:', cat);
         if (cat) {
-          const normalizedParentId = normalizeCategoryId(cat.parent_id);
           setForm({
             name: cat.name || '',
             slug: cat.slug || '',
             description: cat.description || '',
-            parent_id: normalizedParentId,
             image_url: cat.image_url || '',
-            is_active: cat.is_active !== false,
-            is_featured: !!cat.is_featured,
             sort_order: cat.sort_order || 0,
-            meta_title: cat.meta_title || '',
-            meta_description: cat.meta_description || '',
           });
+          setLocalImageFile(null);
+          setLocalImagePreview('');
         }
       } catch (e) {
         console.error('Load category error:', e);
@@ -147,17 +110,23 @@ const CategoryForm = () => {
     setErrors(null);
     
     try {
+      let imageUrlToSave = form.image_url?.trim() || '';
+
+      if (localImageFile) {
+        setUploadingImage(true);
+        const uploadedUrl = await uploadImage(localImageFile);
+        if (!uploadedUrl) {
+          throw new Error('Không nhận được URL ảnh từ server');
+        }
+        imageUrlToSave = uploadedUrl;
+      }
+
       const toSend = {
         name: form.name?.trim() || '',
         slug: form.slug?.trim() || '',
         description: form.description?.trim() || '',
-        parent_id: form.parent_id || null,
-        image_url: form.image_url?.trim() || '',
-        is_active: !!form.is_active,
-        is_featured: !!form.is_featured,
+        image_url: imageUrlToSave,
         sort_order: Number(form.sort_order) || 0,
-        meta_title: form.meta_title?.trim() || '',
-        meta_description: form.meta_description?.trim() || '',
       };
 
       if (id) {
@@ -191,6 +160,7 @@ const CategoryForm = () => {
         type: 'error' 
       });
     } finally {
+      setUploadingImage(false);
       setLoading(false);
     }
   };
@@ -270,68 +240,44 @@ const CategoryForm = () => {
               </div>
             </div>
 
-            {/* Description & Parent - 2 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Textarea
-                  label="Mô tả"
-                  placeholder="Mô tả về danh mục..."
-                  rows={4}
-                  value={form.description || ''}
-                  onChange={(e) => update('description', e.target.value)}
-                  error={errors?.description}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Danh mục cha</label>
-                <select
-                  value={form.parent_id || ''}
-                  onChange={(e) => update('parent_id', e.target.value || null)}
-                  className="w-full px-3 py-2 border rounded-lg"
-                >
-                  <option value="">-- Không có (Danh mục gốc) --</option>
-                  {Array.isArray(allCategories) && allCategories.map(cat => {
-                    const optionValue = cat?.normalizedId || cat?._id || cat?.id;
-                    if (!optionValue) return null;
-                    return (
-                      <option
-                        key={optionValue}
-                        value={optionValue}
-                        title={cat?.displayLabel || cat?.name}
-                      >
-                        {cat?.indentedLabel || cat?.displayLabel || cat?.name}
-                      </option>
-                    );
-                  })}
-                </select>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Để tạo danh mục con (subcategory)
-                </p>
-              </div>
+            <div>
+              <Textarea
+                label="Mô tả"
+                placeholder="Mô tả về danh mục..."
+                rows={4}
+                value={form.description || ''}
+                onChange={(e) => update('description', e.target.value)}
+                error={errors?.description}
+              />
             </div>
           </div>
 
-          {/* === HÌNH ẢNH & TRẠNG THÁI === */}
+          {/* === HÌNH ẢNH === */}
           <div className="bg-card border rounded-lg p-6">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <ImageIcon size={20} className="text-primary" />
-              Hình ảnh & Trạng thái
+              Hình ảnh
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left: Image */}
-              <div>
+            <div>
                 {/* Current Image */}
-                {form.image_url && (
+                {(localImagePreview || form.image_url) && (
                   <div className="mb-3 relative inline-block">
                     <img
-                      src={form.image_url}
+                      src={localImagePreview || form.image_url}
                       alt={form.name}
                       className="w-40 h-40 object-cover rounded-lg border"
                     />
                     <button
                       type="button"
-                      onClick={() => update('image_url', '')}
+                      onClick={() => {
+                        update('image_url', '');
+                        setLocalImageFile(null);
+                        if (localImagePreview && localImagePreview.startsWith('blob:')) {
+                          URL.revokeObjectURL(localImagePreview);
+                        }
+                        setLocalImagePreview('');
+                      }}
                       className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
                     >
                       <X size={14} />
@@ -353,7 +299,7 @@ const CategoryForm = () => {
                     {uploadingImage ? 'Đang upload...' : 'Click để chọn ảnh'}
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    PNG, JPG, GIF (Max 5MB)
+                    PNG, JPG, GIF (Max 5MB) • Upload khi bấm Lưu danh mục
                   </div>
                 </label>
 
@@ -367,70 +313,6 @@ const CategoryForm = () => {
                     error={errors?.image_url}
                   />
                 </div>
-              </div>
-
-              {/* Right: Status */}
-              <div>
-                <label className="block text-sm font-medium mb-3">Trạng thái</label>
-                <div className="space-y-3">
-                  {/* Active */}
-                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-                    <input
-                      type="checkbox"
-                      checked={form.is_active}
-                      onChange={(e) => update('is_active', e.target.checked)}
-                      className="w-5 h-5"
-                    />
-                    <div>
-                      <div className="font-medium text-sm">Hoạt động</div>
-                      <div className="text-xs text-muted-foreground">
-                        Hiển thị trên website
-                      </div>
-                    </div>
-                  </label>
-
-                  {/* Featured */}
-                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-muted/50">
-                    <input
-                      type="checkbox"
-                      checked={form.is_featured}
-                      onChange={(e) => update('is_featured', e.target.checked)}
-                      className="w-5 h-5"
-                    />
-                    <div>
-                      <div className="font-medium text-sm">Nổi bật</div>
-                      <div className="text-xs text-muted-foreground">
-                        Ưu tiên trang chủ
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* === SEO === */}
-          <div className="bg-card border rounded-lg p-6">
-            <h3 className="text-lg font-semibold mb-4">SEO</h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Meta Title"
-                placeholder="SEO title..."
-                value={form.meta_title || ''}
-                onChange={(e) => update('meta_title', e.target.value)}
-                error={errors?.meta_title}
-                helper="Tiêu đề Google"
-              />
-              <Textarea
-                label="Meta Description"
-                placeholder="SEO description..."
-                rows={3}
-                value={form.meta_description || ''}
-                onChange={(e) => update('meta_description', e.target.value)}
-                error={errors?.meta_description}
-                helper="Mô tả Google"
-              />
             </div>
           </div>
 

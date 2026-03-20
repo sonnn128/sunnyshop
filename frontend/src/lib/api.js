@@ -17,11 +17,53 @@ const API = axios.create({
 });
 API.defaults.withCredentials = true; // send cookies (httpOnly token) to backend
 
+const normalizeApiPath = (url) => {
+  if (typeof url !== 'string') return url;
+  if (url.startsWith('/api/')) return url.slice(4);
+  if (url === '/api') return '/';
+  if (url.startsWith('api/')) return `/${url.slice(4)}`;
+  if (url === 'api') return '/';
+  return url;
+};
+
+const getStoredToken = () => {
+  try {
+    if (typeof window === 'undefined' || !window.localStorage) return null;
+
+    const directToken = localStorage.getItem('token')
+      || localStorage.getItem('accessToken')
+      || localStorage.getItem('authToken');
+    if (directToken) return directToken;
+
+    const authStoreRaw = localStorage.getItem('courtify-auth');
+    if (!authStoreRaw) return null;
+
+    const parsed = JSON.parse(authStoreRaw);
+    return parsed?.state?.accessToken || null;
+  } catch {
+    return null;
+  }
+};
+
 API.interceptors.request.use((config) => {
   try {
-    // safe access to localStorage in browser environment
-    const token = (typeof window !== 'undefined' && window.localStorage) ? localStorage.getItem('token') : null;
-    if (token) config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
+    config.url = normalizeApiPath(config.url);
+
+    if (config?.skipAuth) {
+      if (config.headers?.Authorization) {
+        delete config.headers.Authorization;
+      }
+      return config;
+    }
+
+    const token = getStoredToken();
+    if (token) {
+      const normalizedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`;
+      config.headers = { ...config.headers, Authorization: normalizedToken };
+    }
+    if (!token && config.headers?.Authorization) {
+      delete config.headers.Authorization;
+    }
   } catch (e) {
     // ignore in non-browser environments
   }
@@ -317,7 +359,7 @@ export const markMessagesAsRead = async (conversationId) => {
  */
 export const getRecommendations = async (params = {}) => {
   try {
-    const response = await API.get('/api/recommendations', { params });
+    const response = await API.get('/recommendations', { params, skipAuth: true });
     return response.data;
   } catch (error) {
     console.error('Error fetching recommendations:', error);
@@ -333,7 +375,7 @@ export const getRecommendations = async (params = {}) => {
  */
 export const getTrendingProducts = async (params = {}) => {
   try {
-    const response = await API.get('/api/recommendations/trending', { params });
+    const response = await API.get('/recommendations/trending', { params, skipAuth: true });
     return response.data;
   } catch (error) {
     console.error('Error fetching trending products:', error);

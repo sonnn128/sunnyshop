@@ -70,8 +70,8 @@ const ProductCatalog = () => {
       setLoading(true);
       try {
         const [productResult, categoryResult] = await Promise.allSettled([
-          API.get('/api/products?status=active&limit=200'),
-          API.get('/api/categories')
+          API.get('/products?status=active&limit=200', { skipAuth: true }),
+          API.get('/categories', { skipAuth: true })
         ]);
 
         if (productResult.status !== 'fulfilled') {

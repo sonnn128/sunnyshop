@@ -16,8 +16,26 @@ export const WishlistProvider = ({ children }) => {
   const [wishlistProductIds, setWishlistProductIds] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
+  const isWishlistSupportedRole = () => {
+    try {
+      const rawUser = localStorage.getItem('user');
+      const user = rawUser ? JSON.parse(rawUser) : null;
+      const role = (user?.role || 'customer').toLowerCase();
+      return role === 'customer' || role === 'user';
+    } catch {
+      return true;
+    }
+  };
+
   // Load wishlist from backend
   const loadWishlist = async () => {
+    if (!isWishlistSupportedRole()) {
+      setWishlistItems([]);
+      setWishlistProductIds(new Set());
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
       const response = await API.get('/wishlist');
@@ -33,7 +51,10 @@ export const WishlistProvider = ({ children }) => {
       
       console.log('[Wishlist Context] Loaded:', items.length, 'items');
     } catch (error) {
-      console.error('[Wishlist Context] Load error:', error);
+      const status = error?.response?.status;
+      if (status !== 401 && status !== 403) {
+        console.error('[Wishlist Context] Load error:', error);
+      }
       // If not authenticated, just set empty
       setWishlistItems([]);
       setWishlistProductIds(new Set());

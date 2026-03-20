@@ -140,11 +140,9 @@ export const getAdminUsers = async (filters = {}) => {
   const suffix = queryString ? `?${queryString}` : '';
 
   const paths = [
-    `/api/admin/users${suffix}`,
     `/admin/users${suffix}`,
-    `/api/users${suffix}`,
     `/users${suffix}`,
-    `/api/users/list${suffix}`
+    `/users/list${suffix}`
   ];
 
   let lastError = null;
@@ -153,6 +151,9 @@ export const getAdminUsers = async (filters = {}) => {
       const response = await api.get(path);
       return pickList(response);
     } catch (error) {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        throw error;
+      }
       if (error?.response?.status === 404) {
         console.warn(`Admin user listing endpoint missing at ${path}. Returning empty list.`);
         return {
@@ -176,9 +177,7 @@ export const getAdminUsers = async (filters = {}) => {
 
 export const getAdminUserById = async (userId) => {
   const paths = [
-    `/api/admin/users/${userId}`,
     `/admin/users/${userId}`,
-    `/api/users/${userId}`,
     `/users/${userId}`
   ];
 
@@ -191,6 +190,9 @@ export const getAdminUserById = async (userId) => {
         return normalizeUser(data);
       }
     } catch (error) {
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        throw error;
+      }
       if (error?.response?.status === 404) {
         console.warn(`Admin user ${userId} not found at ${path}.`);
         return null;
@@ -206,9 +208,7 @@ export const getAdminUserById = async (userId) => {
 
 export const createAdminUser = async (payload) => {
   const paths = [
-    '/api/admin/users',
     '/admin/users',
-    '/api/users',
     '/users'
   ];
 
@@ -230,9 +230,7 @@ export const createAdminUser = async (payload) => {
 
 export const updateAdminUser = async (userId, payload) => {
   const paths = [
-    `/api/admin/users/${userId}`,
     `/admin/users/${userId}`,
-    `/api/users/${userId}`,
     `/users/${userId}`
   ];
 
@@ -254,9 +252,7 @@ export const updateAdminUser = async (userId, payload) => {
 
 export const deleteAdminUser = async (userId) => {
   const paths = [
-    `/api/admin/users/${userId}`,
     `/admin/users/${userId}`,
-    `/api/users/${userId}`,
     `/users/${userId}`
   ];
 

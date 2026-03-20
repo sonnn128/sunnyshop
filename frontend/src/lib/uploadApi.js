@@ -1,4 +1,4 @@
-import api ;
+import api from './api';
 
 /**
  * Upload single image

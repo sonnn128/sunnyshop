@@ -20,7 +20,7 @@ const ChatList = ({ onSelectConversation }) => {
   const loadConversations = async () => {
     try {
       const params = filter !== 'all' ? { status: filter } : {};
-      const response = await API.get('/api/chat/conversations', { params });
+      const response = await API.get('/chat/conversations', { params });
       if (response.data?.success) {
         setConversations(response.data.data || []);
       }

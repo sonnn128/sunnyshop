@@ -1,8 +1,10 @@
 package com.chd.base.payload.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class AddressRequest {
 	private String label;
 	private String recipientName;
@@ -33,16 +35,8 @@ public class AddressRequest {
 		return isDefault != null && isDefault;
 	}
 
-	public String getLabel() {
-		return label;
-	}
-
 	public String getResolvedAddress1() {
 		return addressLine1;
-	}
-
-	public String getAddressLine2() {
-		return addressLine2;
 	}
 
 	public String getAddressLine2Snake() {
@@ -53,23 +47,4 @@ public class AddressRequest {
 		return district;
 	}
 
-	public String getCity() {
-		return city;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public String getProvinceCode() {
-		return provinceCode;
-	}
-
-	public String getDistrictCode() {
-		return districtCode;
-	}
-
-	public String getWardCode() {
-		return wardCode;
-	}
 }

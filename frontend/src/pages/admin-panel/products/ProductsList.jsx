@@ -8,6 +8,17 @@ import { Package, Search, Grid3x3, List, Trash2, CheckSquare, Square } from 'luc
 
 const ITEMS_PER_PAGE = 12;
 
+const normalizeProduct = (product = {}) => {
+  const normalizedId = product?._id ?? product?.id;
+  return {
+    ...product,
+    _id: normalizedId,
+    id: normalizedId,
+    sku: product?.sku || '',
+    images: Array.isArray(product?.images) ? product.images : []
+  };
+};
+
 const ProductsList = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +26,7 @@ const ProductsList = () => {
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false); // For bulk delete
   const [selectedIds, setSelectedIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('list'); // 'grid' or 'list'
   const [currentPage, setCurrentPage] = useState(1);
   const toast = useToast();
 
@@ -25,7 +36,18 @@ const ProductsList = () => {
       try {
         const res = await API.get('/products', { params: { limit: 200 } });
         if (mounted) {
-          setItems(res?.data?.products || []);
+          const responseData = res?.data?.data ?? res?.data;
+          const rawProducts = Array.isArray(responseData?.content)
+            ? responseData.content
+            : Array.isArray(responseData?.products)
+              ? responseData.products
+              : Array.isArray(res?.data?.products)
+                ? res.data.products
+                : Array.isArray(responseData)
+                  ? responseData
+                  : [];
+
+          setItems(rawProducts.map(normalizeProduct));
           setCurrentPage(1);
         }
       } catch (e) {
@@ -283,7 +305,7 @@ const ProductsList = () => {
 
           {/* Products Grid View */}
           {totalItems > 0 && viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {paginatedProducts.map(p => {
                 const primaryImage = getPrimaryImage(p);
                 const hasDiscount = p.original_price && p.original_price > p.price;
@@ -308,7 +330,7 @@ const ProductsList = () => {
                     </div>
 
                     {/* Product Image */}
-                    <div className="relative h-48 bg-muted">
+                    <div className="relative h-32 bg-muted">
                       {primaryImage ? (
                         <img
                           src={primaryImage}
@@ -317,7 +339,7 @@ const ProductsList = () => {
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <Package size={48} className="text-muted-foreground" />
+                          <Package size={32} className="text-muted-foreground" />
                         </div>
                       )}
                       
@@ -330,25 +352,25 @@ const ProductsList = () => {
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4">
+                    <div className="p-3">
                       {/* Name */}
-                      <h3 className="font-semibold text-sm mb-1 line-clamp-2 h-10">
+                      <h3 className="font-semibold text-xs mb-1 line-clamp-1">
                         {p.name}
                       </h3>
 
                       {/* SKU */}
-                      <p className="text-xs text-muted-foreground mb-2">
+                      <p className="text-[10px] text-muted-foreground mb-1">
                         SKU: {p.sku}
                       </p>
 
                       {/* Price */}
-                      <div className="mb-3">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-primary">
+                      <div className="mb-2">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-base font-bold text-primary">
                             {formatPrice(p.price)}
                           </span>
                           {hasDiscount && (
-                            <span className="text-xs text-muted-foreground line-through">
+                            <span className="text-[10px] text-muted-foreground line-through">
                               {formatPrice(p.original_price)}
                             </span>
                           )}
@@ -356,7 +378,7 @@ const ProductsList = () => {
                       </div>
 
                       {/* Stock & Sales */}
-                      <div className="grid grid-cols-2 gap-2 mb-3 text-xs">
+                      <div className="grid grid-cols-2 gap-2 mb-2 text-[10px]">
                         <div className="bg-muted px-2 py-1 rounded">
                           <span className="text-muted-foreground">Tồn:</span>
                           <span className={`ml-1 font-semibold ${
@@ -376,17 +398,22 @@ const ProductsList = () => {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex gap-2">
-                        <Link to={`/admin-panel/products/${p._id}`} className="flex-1">
-                          <Button variant="outline" size="sm" className="w-full">
+                      <div className="flex gap-1 flex-col">
+                        <Link to={`/admin-panel/products/${p._id}/detail`} className="w-full">
+                          <Button variant="secondary" size="xs" className="w-full text-xs">
+                            Chi tiết
+                          </Button>
+                        </Link>
+                        <Link to={`/admin-panel/products/${p._id}`} className="w-full">
+                          <Button variant="outline" size="xs" className="w-full text-xs">
                             Sửa
                           </Button>
                         </Link>
                         <Button 
                           variant="destructive" 
-                          size="sm" 
+                          size="xs" 
                           onClick={() => handleDelete(p._id)}
-                          className="flex-1"
+                          className="w-full text-xs"
                         >
                           Xóa
                         </Button>
@@ -401,12 +428,18 @@ const ProductsList = () => {
           {/* Products List View */}
           {totalItems > 0 && viewMode === 'list' && (
             <div className="space-y-3">
+              <div className="hidden md:grid grid-cols-[32px_72px_1.6fr_1fr_0.8fr_0.8fr_0.8fr_1fr] gap-3 px-4 text-xs text-muted-foreground">
+                <div />
+                <div>Ảnh</div>
+                <div>Tên / SKU</div>
+                <div>Trạng thái</div>
+                <div className="text-right">Giá</div>
+                <div className="text-right">Tồn</div>
+                <div className="text-right">Bán</div>
+                <div className="text-right">Hành động</div>
+              </div>
               {paginatedProducts.map(p => {
                 const primaryImage = getPrimaryImage(p);
-                const hasDiscount = p.original_price && p.original_price > p.price;
-                const discountPercent = hasDiscount 
-                  ? Math.round(((p.original_price - p.price) / p.original_price) * 100)
-                  : 0;
                 const isSelected = selectedIds.includes(p._id);
 
                 return (
@@ -414,17 +447,15 @@ const ProductsList = () => {
                     key={p._id} 
                     className={`bg-background border rounded-lg p-4 transition-all relative group ${isSelected ? 'ring-1 ring-primary border-primary bg-primary/5' : 'hover:shadow-md'}`}
                   >
-                    <div className="flex gap-4 items-center">
-                      {/* Checkbox */}
+                    <div className="grid grid-cols-[32px_72px_1.6fr_1fr_0.8fr_0.8fr_0.8fr_1fr] gap-3 items-center">
                       <button 
                          onClick={(e) => { e.preventDefault(); handleSelectOne(p._id); }}
                          className={`p-1 rounded transition-colors ${isSelected ? 'text-primary' : 'text-muted-foreground hover:bg-muted'}`}
                       >
-                         {isSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+                         {isSelected ? <CheckSquare size={18} /> : <Square size={18} />}
                       </button>
 
-                      {/* Image */}
-                      <div className="relative w-20 h-20 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
+                      <div className="relative w-16 h-16 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
                         {primaryImage ? (
                           <img
                             src={primaryImage}
@@ -433,65 +464,62 @@ const ProductsList = () => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <Package size={24} className="text-muted-foreground" />
+                            <Package size={20} className="text-muted-foreground" />
                           </div>
                         )}
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                          {/* Info */}
-                          <div className="flex-1 min-w-0">
-                             <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-base line-clamp-1">{p.name}</h3>
-                                {p.is_featured && (
-                                    <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-200">
-                                    TOP
-                                    </span>
-                                )}
-                             </div>
-                             <p className="text-xs text-muted-foreground mb-1">SKU: {p.sku}</p>
-                             <div className="flex items-center gap-2">
-                                <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded border ${
-                                    p.status === 'active' ? 'bg-green-50 text-green-700 border-green-200' :
-                                    p.status === 'out_of_stock' ? 'bg-red-50 text-red-700 border-red-200' :
-                                    'bg-gray-50 text-gray-700 border-gray-200'
-                                }`}>
-                                    {p.status === 'active' ? 'Active' : p.status === 'out_of_stock' ? 'Hết hàng' : 'Inactive'}
-                                </span>
-                             </div>
-                          </div>
-
-                          {/* Metrics */}
-                          <div className="flex items-center gap-6 text-sm">
-                             <div className="text-right min-w-[80px]">
-                                <span className="block text-xs text-muted-foreground">Giá</span>
-                                <span className="font-bold text-primary">{formatPrice(p.price)}</span>
-                             </div>
-                             <div className="text-right min-w-[60px]">
-                                <span className="block text-xs text-muted-foreground">Tồn</span>
-                                <span className={`${p.stock_quantity > 0 ? 'text-foreground' : 'text-red-600 font-bold'}`}>{p.stock_quantity}</span>
-                             </div>
-                          </div>
-
-                          {/* Actions */}
-                          <div className="flex gap-2">
-                            <Link to={`/admin-panel/products/${p._id}`}>
-                              <Button variant="ghost" size="sm">
-                                Sửa
-                              </Button>
-                            </Link>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => handleDelete(p._id)}
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-sm line-clamp-1">{p.name}</h3>
+                          {p.is_featured && (
+                            <span className="bg-amber-100 text-amber-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-200">
+                              TOP
+                            </span>
+                          )}
                         </div>
+                        <p className="text-xs text-muted-foreground">SKU: {p.sku}</p>
+                      </div>
+
+                      <div>
+                        <span className={`inline-block text-[10px] px-1.5 py-0.5 rounded border ${
+                          p.status === 'active' ? 'bg-green-50 text-green-700 border-green-200' :
+                          p.status === 'out_of_stock' ? 'bg-red-50 text-red-700 border-red-200' :
+                          'bg-gray-50 text-gray-700 border-gray-200'
+                        }`}>
+                          {p.status === 'active' ? 'Active' : p.status === 'out_of_stock' ? 'Hết hàng' : 'Inactive'}
+                        </span>
+                      </div>
+
+                      <div className="text-right text-sm font-semibold text-primary">
+                        {formatPrice(p.price)}
+                      </div>
+                      <div className="text-right text-sm">
+                        <span className={`${p.stock_quantity > 0 ? 'text-foreground' : 'text-red-600 font-bold'}`}>
+                          {p.stock_quantity}
+                        </span>
+                      </div>
+                      <div className="text-right text-sm">{p.sold_count || 0}</div>
+
+                      <div className="flex justify-end gap-2">
+                        <Link to={`/admin-panel/products/${p._id}/detail`}>
+                          <Button variant="ghost" size="sm">
+                            Chi tiết
+                          </Button>
+                        </Link>
+                        <Link to={`/admin-panel/products/${p._id}`}>
+                          <Button variant="ghost" size="sm">
+                            Sửa
+                          </Button>
+                        </Link>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => handleDelete(p._id)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
                       </div>
                     </div>
                   </div>

@@ -1,14 +1,18 @@
 package com.chd.base.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "categories")
 public class Category {
 

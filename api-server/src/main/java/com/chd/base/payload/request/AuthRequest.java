@@ -1,9 +1,13 @@
 package com.chd.base.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class AuthRequest {
 	@NotBlank(message = "Username is required")
 	private String username;

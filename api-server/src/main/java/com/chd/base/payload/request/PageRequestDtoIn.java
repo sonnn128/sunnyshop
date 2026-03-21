@@ -1,8 +1,10 @@
 package com.chd.base.payload.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class PageRequestDtoIn {
 	private int page = 1;
 	private int size = 10;

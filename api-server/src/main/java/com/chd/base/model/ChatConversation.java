@@ -1,15 +1,17 @@
 
 package com.chd.base.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "chat_conversations")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatConversation {
@@ -44,5 +46,4 @@ public class ChatConversation {
 	@Enumerated(EnumType.STRING)
 	private Priority priority;
 
-	// Getters and Setters
 }

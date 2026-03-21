@@ -19,7 +19,6 @@ public class BrandController {
 
 	private final BrandService brandService;
 
-	// Helper kiểm tra role giống Node.js
 	private boolean hasManagementAccess() {
 		User user = SecurityUtils.getCurrentUser();
 		return user.getRoles().stream()

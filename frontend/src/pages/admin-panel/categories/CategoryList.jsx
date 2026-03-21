@@ -22,8 +22,19 @@ const CategoryList = () => {
     try {
       const res = await API.get('/categories');
       const cats = res?.data?.data || res?.data?.categories || res?.data || [];
+      const normalizedCats = Array.isArray(cats)
+        ? cats.map((cat) => ({
+            ...cat,
+            _id: cat?._id ?? cat?.id,
+            image_url: cat?.image_url ?? cat?.imageUrl ?? '',
+            sort_order: cat?.sort_order ?? cat?.sortOrder ?? 0,
+            is_active: cat?.is_active ?? cat?.isActive ?? cat?.active ?? true,
+            is_featured: cat?.is_featured ?? cat?.isFeatured ?? cat?.featured ?? false,
+            parent_id: cat?.parent_id ?? cat?.parentId ?? cat?.parent ?? null,
+          }))
+        : [];
       const sortedCats = Array.isArray(cats)
-        ? [...cats].sort((a, b) => (a?.sort_order || 0) - (b?.sort_order || 0))
+        ? [...normalizedCats].sort((a, b) => (a?.sort_order || 0) - (b?.sort_order || 0))
         : [];
       setCategories(formatCategoriesWithHierarchy(sortedCats));
     } catch (e) {
@@ -243,6 +254,14 @@ const CategoryList = () => {
                 <div className="flex gap-2 pt-4 border-t">
                   <Button
                     size="sm"
+                    variant="secondary"
+                    onClick={() => navigate(`/admin-panel/categories/${cat._id}/detail`)}
+                    className="flex-1"
+                  >
+                    Chi tiết
+                  </Button>
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => navigate(`/admin-panel/categories/${cat._id}`)}
                     className="flex-1"
@@ -350,7 +369,15 @@ const CategoryList = () => {
                       </div>
 
                       {/* Right: Actions */}
-                      <div className="flex md:flex-col gap-2 md:min-w-[100px]">
+                      <div className="flex md:flex-col gap-2 md:min-w-[120px]">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => navigate(`/admin-panel/categories/${cat._id}/detail`)}
+                          className="flex-1 md:flex-none"
+                        >
+                          Chi tiết
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"

@@ -77,7 +77,7 @@ const CategoryForm = () => {
     
     (async () => {
       try {
-        const res = await API.get(`/api/categories/${id}`);
+        const res = await API.get(`/categories/${id}`);
         console.log('📝 Load category response:', res.data);
         const cat = res?.data?.data || res?.data?.category || res?.data;
         console.log('📝 Category data:', cat);
@@ -86,8 +86,8 @@ const CategoryForm = () => {
             name: cat.name || '',
             slug: cat.slug || '',
             description: cat.description || '',
-            image_url: cat.image_url || '',
-            sort_order: cat.sort_order || 0,
+            image_url: cat.image_url || cat.imageUrl || '',
+            sort_order: cat.sort_order || cat.sortOrder || 0,
           });
           setLocalImageFile(null);
           setLocalImagePreview('');

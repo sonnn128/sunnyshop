@@ -20,9 +20,6 @@ public class AddressController {
 
 	private final AddressService addressService;
 
-	/**
-	 * Helper để lấy UserId từ SecurityContext đã qua authentication
-	 */
 	private String getCurrentUserId() {
 		User user = SecurityUtils.getCurrentUser();
 		return user.getId();

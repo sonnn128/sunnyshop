@@ -1,7 +1,8 @@
 package com.chd.base.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -9,20 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Data
 @Entity
+@Getter
+@Setter
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
 	@Id
 	private String id;
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))

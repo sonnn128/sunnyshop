@@ -18,8 +18,10 @@ import AdminPanel from './pages/admin-panel';
 import AdminLayout from './pages/admin-panel/AdminLayout';
 import ProductsList from './pages/admin-panel/products/ProductsList';
 import ProductForm from './pages/admin-panel/products/ProductForm';
+import ProductDetailAdmin from './pages/admin-panel/products/ProductDetail';
 import CategoryList from './pages/admin-panel/categories/CategoryList';
 import CategoryForm from './pages/admin-panel/categories/CategoryForm';
+import CategoryDetailAdmin from './pages/admin-panel/categories/CategoryDetail';
 import BrandList from './pages/admin-panel/brands/BrandList';
 import BrandForm from './pages/admin-panel/brands/BrandForm';
 import ProductDetail from './pages/product-detail';
@@ -65,8 +67,10 @@ const Routes = () => {
   {/* Product and Category forms wrapped in AdminLayout */}
   <Route path='/admin-panel/products/new' element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
   <Route path='/admin-panel/products/:id' element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
+  <Route path='/admin-panel/products/:id/detail' element={<AdminRoute><AdminLayout activeTab="products"><ProductDetailAdmin /></AdminLayout></AdminRoute>} />
   <Route path='/admin-panel/categories/new' element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
   <Route path='/admin-panel/categories/:id' element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
+  <Route path='/admin-panel/categories/:id/detail' element={<AdminRoute><AdminLayout activeTab="categories"><CategoryDetailAdmin /></AdminLayout></AdminRoute>} />
   
   {/* Admin Brands Management */}
   <Route path='/admin-panel/brands/new' element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />

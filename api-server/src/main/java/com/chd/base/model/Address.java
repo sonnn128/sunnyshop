@@ -1,12 +1,20 @@
 package com.chd.base.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "addresses", indexes = {@Index(name = "idx_user_id", columnList = "user_id"),
 		@Index(name = "idx_user_default", columnList = "user_id, is_default")})
 public class Address {
@@ -63,149 +71,6 @@ public class Address {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
-
-	public Address() {
-	}
-
-	public Address(Long id, String userId, String label, String fullName, String phone, String addressLine1,
-			String addressLine2, String ward, String district, String city, String postalCode, String country,
-			boolean isDefault, boolean isBillingDefault, String provinceCode, String districtCode, String wardCode,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
-		this.id = id;
-		this.userId = userId;
-		this.label = label;
-		this.fullName = fullName;
-		this.phone = phone;
-		this.addressLine1 = addressLine1;
-		this.addressLine2 = addressLine2;
-		this.ward = ward;
-		this.district = district;
-		this.city = city;
-		this.postalCode = postalCode;
-		this.country = country;
-		this.isDefault = isDefault;
-		this.isBillingDefault = isBillingDefault;
-		this.provinceCode = provinceCode;
-		this.districtCode = districtCode;
-		this.wardCode = wardCode;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-	public String getLabel() {
-		return label;
-	}
-	public void setLabel(String label) {
-		this.label = label;
-	}
-	public String getFullName() {
-		return fullName;
-	}
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	public String getAddressLine1() {
-		return addressLine1;
-	}
-	public void setAddressLine1(String addressLine1) {
-		this.addressLine1 = addressLine1;
-	}
-	public String getAddressLine2() {
-		return addressLine2;
-	}
-	public void setAddressLine2(String addressLine2) {
-		this.addressLine2 = addressLine2;
-	}
-	public String getWard() {
-		return ward;
-	}
-	public void setWard(String ward) {
-		this.ward = ward;
-	}
-	public String getDistrict() {
-		return district;
-	}
-	public void setDistrict(String district) {
-		this.district = district;
-	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getPostalCode() {
-		return postalCode;
-	}
-	public void setPostalCode(String postalCode) {
-		this.postalCode = postalCode;
-	}
-	public String getCountry() {
-		return country;
-	}
-	public void setCountry(String country) {
-		this.country = country;
-	}
-	public boolean isDefault() {
-		return isDefault;
-	}
-	public void setDefault(boolean isDefault) {
-		this.isDefault = isDefault;
-	}
-	public boolean isBillingDefault() {
-		return isBillingDefault;
-	}
-	public void setBillingDefault(boolean isBillingDefault) {
-		this.isBillingDefault = isBillingDefault;
-	}
-	public String getProvinceCode() {
-		return provinceCode;
-	}
-	public void setProvinceCode(String provinceCode) {
-		this.provinceCode = provinceCode;
-	}
-	public String getDistrictCode() {
-		return districtCode;
-	}
-	public void setDistrictCode(String districtCode) {
-		this.districtCode = districtCode;
-	}
-	public String getWardCode() {
-		return wardCode;
-	}
-	public void setWardCode(String wardCode) {
-		this.wardCode = wardCode;
-	}
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
-	}
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
-	}
-	public void setUpdatedAt(LocalDateTime updatedAt) {
-		this.updatedAt = updatedAt;
-	}
 
 	// Virtual field tương đương full_address trong JS
 	@Transient

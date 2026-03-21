@@ -9,6 +9,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
+	boolean existsBySlugIgnoreCase(String slug);
+
+	java.util.Optional<Product> findBySlugIgnoreCase(String slug);
+
 	@Query("""
 			select p from Product p
 			where (:status is null or p.status = :status)

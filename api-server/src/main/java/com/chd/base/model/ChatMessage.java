@@ -1,15 +1,17 @@
 
 package com.chd.base.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "chat_messages")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {
@@ -38,5 +40,4 @@ public class ChatMessage {
 
 	private Date readAt;
 
-	// Getters and Setters
 }

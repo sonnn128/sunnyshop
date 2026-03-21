@@ -7,9 +7,9 @@ RUN mvn install -DskipTests=true
 FROM eclipse-temurin:17.0.8.1_1-jre-ubi9-minimal
 
 RUN unlink /etc/localtime;ln -s  /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
-COPY --from=build app/target/base-0.0.1-SNAPSHOT.jar /run/base-0.0.1-SNAPSHOT.jar
+COPY --from=build app/target/sunny-fashionshop-0.0.1-SNAPSHOT.jar /run/sunny-fashionshop-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
 ENV JAVA_OPTIONS="-Xmx2048m -Xms256m"
-ENTRYPOINT ["java", "-jar", "/run/base-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/run/sunny-fashionshop-0.0.1-SNAPSHOT.jar"]

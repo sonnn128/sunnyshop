@@ -672,8 +672,8 @@ const ProductForm = () => {
       try {
         const res = await API.get(`/products/${id}`);
         if (!mounted) return;
-        
-        const p = res?.data?.product || res?.data;
+		
+        const p = res?.data?.data || res?.data?.product || res?.data;
         if (p) {
           const normalizedCategoryId = pickCategoryId(p);
           // Map backend data to form - ensure schema compliance

@@ -1,15 +1,17 @@
 
 package com.chd.base.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "wishlist")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Wishlist {
@@ -39,5 +41,4 @@ public class Wishlist {
 	@Column(name = "price_when_added")
 	private BigDecimal priceWhenAdded;
 
-	// Getters and Setters
 }

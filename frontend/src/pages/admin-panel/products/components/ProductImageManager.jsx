@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Input from '../../../../components/ui/Input';
 import Button from '../../../../components/ui/Button';
-import API from '../../../../lib/api';
 import { useToast } from '../../../../components/ui/ToastProvider';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { uploadImage } from '../../../../lib/uploadApi';
 
 /**
  * ProductImageManager - Manage images array based on ProductMongo schema
@@ -31,14 +31,7 @@ const ProductImageManager = ({ images = [], onChange, error }) => {
 
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('image', file);
-      
-      const res = await API.post('/api/uploads/image', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      
-      const imageUrl = res?.data?.url;
+      const imageUrl = await uploadImage(file);
       if (imageUrl) {
         // Create new image object matching ProductMongo schema
         const newImage = {

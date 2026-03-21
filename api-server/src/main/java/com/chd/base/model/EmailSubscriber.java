@@ -1,13 +1,17 @@
 
 package com.chd.base.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "email_subscribers")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class EmailSubscriber {
 
 	@Id

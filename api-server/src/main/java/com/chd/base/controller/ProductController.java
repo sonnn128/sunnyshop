@@ -2,23 +2,28 @@ package com.chd.base.controller;
 
 import com.chd.base.model.Product;
 import com.chd.base.payload.response.ApiResponse;
-import com.chd.base.repository.CategoryRepository;
-import com.chd.base.repository.ProductRepository;
+import com.chd.base.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class ProductController {
 
-	private final ProductRepository productRepository;
-	private final CategoryRepository categoryRepository;
+	private final ProductService productService;
 
 	@GetMapping
 	public ResponseEntity<?> listProducts(@RequestParam(value = "page", defaultValue = "1") int page,
@@ -32,8 +37,7 @@ public class ProductController {
 		int size = Math.min(Math.max(limit, 1), 200);
 
 		Pageable pageable = PageRequest.of(pageIndex, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-		Page<Product> result = productRepository.searchProducts(status, isFeatured, categoryId, search, pageable);
+		Page<Product> result = productService.searchProducts(status, isFeatured, categoryId, search, pageable);
 
 		return ResponseEntity
 				.ok(ApiResponse.builder().success(true).message("Get products successfully").data(result).build());
@@ -41,10 +45,48 @@ public class ProductController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getProduct(@PathVariable Long id) {
-		return productRepository.findById(id)
-				.map(product -> ResponseEntity.ok(
-						ApiResponse.builder().success(true).message("Get product successfully").data(product).build()))
-				.orElseGet(() -> ResponseEntity.status(404)
-						.body(ApiResponse.builder().success(false).message("Product not found").build()));
+		Product product = productService.getById(id);
+		return ResponseEntity.ok(
+				ApiResponse.builder().success(true).message("Get product successfully").data(product).build());
+	}
+
+	@PostMapping
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
+	public ResponseEntity<?> createProduct(@RequestBody Map<String, Object> payload) {
+		Product saved = productService.create(payload);
+		Map<String, Object> data = new HashMap<>();
+		data.put("product", saved);
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(ApiResponse.builder().success(true).message("Create product successfully").data(data).build());
+	}
+
+	@PutMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
+	public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Map<String, Object> payload) {
+		Product saved = productService.update(id, payload);
+		Map<String, Object> data = new HashMap<>();
+		data.put("product", saved);
+		return ResponseEntity.ok(ApiResponse.builder().success(true).message("Update product successfully").data(data).build());
+	}
+
+	@PostMapping("/import-excel")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
+	public ResponseEntity<?> importExcel(@RequestBody Map<String, Object> payload) {
+		Object rawProducts = payload.get("products");
+		if (!(rawProducts instanceof List<?> list)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(ApiResponse.builder().success(false).message("Products payload is required").build());
+		}
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> products = (List<Map<String, Object>>) list;
+		Map<String, Object> result = productService.importProducts(products);
+		return ResponseEntity.ok(ApiResponse.builder().success(true).message("Import products successfully").data(result).build());
+	}
+
+	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'ROLE_ADMIN', 'ROLE_MANAGER')")
+	public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+		productService.delete(id);
+		return ResponseEntity.ok(ApiResponse.builder().success(true).message("Delete product successfully").build());
 	}
 }

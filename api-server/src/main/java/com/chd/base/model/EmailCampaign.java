@@ -1,15 +1,17 @@
 
 package com.chd.base.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "email_campaigns")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmailCampaign {
@@ -41,5 +43,4 @@ public class EmailCampaign {
 	@JoinColumn(name = "created_by", nullable = false)
 	private User createdBy;
 
-	// Getters and Setters
 }

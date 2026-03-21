@@ -1,14 +1,25 @@
 package com.chd.base.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "products")
 public class Product {
 	@Id
@@ -50,6 +61,11 @@ public class Product {
 	@JoinColumn(name = "brand_id")
 	private Brand brand;
 
+	@JsonManagedReference
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OrderBy("sortOrder ASC")
+	private List<ProductImage> images = new ArrayList<>();
+
 	@CreationTimestamp
 	@Column(updatable = false)
 	private LocalDateTime createdAt;
@@ -57,107 +73,15 @@ public class Product {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	public Product() {
-	}
-
-	public Product(Long id, String name, String slug, String description, BigDecimal price, BigDecimal salePrice,
-			Integer stockQuantity, Integer soldCount, String status, boolean featured, Category category, Brand brand,
-			LocalDateTime createdAt, LocalDateTime updatedAt) {
-		this.id = id;
-		this.name = name;
-		this.slug = slug;
-		this.description = description;
-		this.price = price;
-		this.salePrice = salePrice;
-		this.stockQuantity = stockQuantity;
-		this.soldCount = soldCount;
-		this.status = status;
-		this.featured = featured;
-		this.category = category;
-		this.brand = brand;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
-
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getSlug() {
-		return slug;
-	}
-	public void setSlug(String slug) {
-		this.slug = slug;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public BigDecimal getPrice() {
-		return price;
-	}
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
-	public BigDecimal getSalePrice() {
-		return salePrice;
-	}
-	public void setSalePrice(BigDecimal salePrice) {
-		this.salePrice = salePrice;
-	}
-	public Integer getStockQuantity() {
-		return stockQuantity;
-	}
-	public void setStockQuantity(Integer stockQuantity) {
-		this.stockQuantity = stockQuantity;
-	}
-	public Integer getSoldCount() {
-		return soldCount;
-	}
-	public void setSoldCount(Integer soldCount) {
-		this.soldCount = soldCount;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	public boolean isFeatured() {
-		return featured;
-	}
-	public void setFeatured(boolean featured) {
-		this.featured = featured;
-	}
 	public boolean isActive() {
 		return "active".equalsIgnoreCase(status);
 	}
-	public Category getCategory() {
-		return category;
-	}
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-	public Brand getBrand() {
-		return brand;
-	}
-	public void setBrand(Brand brand) {
-		this.brand = brand;
-	}
-	public LocalDateTime getCreatedAt() {
-		return createdAt;
-	}
-	public LocalDateTime getUpdatedAt() {
-		return updatedAt;
+	public void setImages(List<ProductImage> images) {
+		this.images.clear();
+		if (images == null) return;
+		for (ProductImage image : images) {
+			image.setProduct(this);
+			this.images.add(image);
+		}
 	}
 }

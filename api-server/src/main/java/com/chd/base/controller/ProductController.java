@@ -1,6 +1,7 @@
 package com.chd.base.controller;
 
 import com.chd.base.model.Product;
+import com.chd.base.payload.request.CreateProductRequest;
 import com.chd.base.payload.response.ApiResponse;
 import com.chd.base.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +52,20 @@ public class ProductController {
 
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
-	public ResponseEntity<?> createProduct(@RequestBody Map<String, Object> payload) {
+	public ResponseEntity<?> createProduct(@RequestBody CreateProductRequest request) {
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("name", request.getName());
+		payload.put("slug", request.getSlug());
+		payload.put("description", request.getDescription());
+		payload.put("price", request.getPrice());
+		payload.put("sale_price", request.getSalePrice());
+		payload.put("stock_quantity", request.getStockQuantity());
+		payload.put("status", request.getStatus());
+		payload.put("is_featured", request.isFeatured());
+		payload.put("category_id", request.getCategoryId());
+		payload.put("brand_id", request.getBrandId());
+		payload.put("images", request.getImages());
+		
 		Product saved = productService.create(payload);
 		Map<String, Object> data = new HashMap<>();
 		data.put("product", saved);

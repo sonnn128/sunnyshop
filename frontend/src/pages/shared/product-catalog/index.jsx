@@ -3,17 +3,16 @@ import { useSearchParams } from 'react-router-dom';
 import Header from '@/components/ui/Header';
 import SearchBar from './components/SearchBar';
 import FilterSidebar from './components/FilterSidebar';
-import SortDropdown from './components/SortDropdown';
+import CatalogToolbar from './components/CatalogToolbar';
+import CatalogPagination from './components/CatalogPagination';
 import ProductGrid from './components/ProductGrid';
 import { resolveQuickVariantSelection, summarizeVariantOptions } from '@/lib/productVariants';
 import QuickViewModal from './components/QuickViewModal';
-import Icon from '@/components/AppIcon';
-import Button from '@/components/ui/Button';
 import cart from '@/lib/cart';
 import API from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
 import { useWishlist } from '@/contexts/WishlistContext';
-import { formatCategoriesWithHierarchy, buildCategoryTree, normalizeCategoryId } from '@/utils/categoryTree';
+import { normalizeCategoryId, buildCategoryTree } from '@/utils/categoryTree';
 import Footer from '@/pages/shared/homepage/components/Footer';
 
 const ProductCatalog = () => {
@@ -215,9 +214,6 @@ const ProductCatalog = () => {
     setCurrentPage(1);
   }, [viewMode]);
 
-  const pageOptionsGrid = [8, 12, 16, 20];
-  const pageOptionsList = [6, 9, 12, 15, 18];
-  const pageOptions = viewMode === 'grid' ? pageOptionsGrid : pageOptionsList;
   const totalItems = filteredProducts.length;
   const actualTotalPages = Math.ceil(totalItems / itemsPerPage);
   const totalPages = actualTotalPages || 1;
@@ -225,30 +221,6 @@ const ProductCatalog = () => {
   const displayedProducts = filteredProducts.slice((clampedCurrentPage - 1) * itemsPerPage, clampedCurrentPage * itemsPerPage);
   const startItem = totalItems === 0 ? 0 : (clampedCurrentPage - 1) * itemsPerPage + 1;
   const endItem = totalItems === 0 ? 0 : Math.min(startItem + itemsPerPage - 1, totalItems);
-  const showPagination = actualTotalPages > 1;
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
-
-  const pageNumbers = (() => {
-    if (!showPagination) return [1];
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, index) => index + 1);
-    }
-    const pages = [1];
-    const start = Math.max(2, clampedCurrentPage - 1);
-    const end = Math.min(totalPages - 1, clampedCurrentPage + 1);
-    if (start > 2) pages.push('left-ellipsis');
-    for (let page = start; page <= end; page += 1) {
-      pages.push(page);
-    }
-    if (end < totalPages - 1) pages.push('right-ellipsis');
-    pages.push(totalPages);
-    return pages;
-  })();
 
   const categoryCounts = useMemo(() => {
     return products.reduce((acc, product) => {
@@ -609,9 +581,9 @@ const ProductCatalog = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
-      <div className="pt-16">
+      <div className="flex-1 pt-16">
         {/* Search Section */}
         <div className="bg-white py-16 lg:py-24 border-b border-slate-100">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -635,162 +607,79 @@ const ProductCatalog = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex gap-8">
-            {/* Filter Sidebar */}
-            <div className="hidden lg:block w-80 flex-shrink-0">
+          {/* Toolbar - Sort, View Mode, Items Per Page */}
+          <CatalogToolbar
+            viewMode={viewMode}
+            onViewModeChange={(mode) => { 
+              setViewMode(mode); 
+              setItemsPerPage(mode === 'grid' ? 12 : 9); 
+              setCurrentPage(1); 
+            }}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            itemsPerPage={itemsPerPage}
+            onItemsPerPageChange={(count) => { 
+              setItemsPerPage(count); 
+              setCurrentPage(1); 
+            }}
+            totalItems={totalItems}
+            onFilterToggle={() => setIsFilterOpen(true)}
+          />
+
+          <div className="flex gap-8 mt-8">
+            {/* Filter Sidebar - Hidden on mobile */}
+            <div className="hidden lg:block w-64 flex-shrink-0">
               <FilterSidebar
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 onClearFilters={handleClearFilters}
-                isOpen={false}
+                isOpen={true}
                 onClose={() => {}}
                 categoryOptions={filterCategoryOptions}
                 categoryTree={categoryTreeWithCounts}
+                isDesktop={true}
               />
             </div>
 
-            {/* Main Content */}
+            {/* Product Grid */}
             <div className="flex-1 min-w-0">
-              {/* Toolbar */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsFilterOpen(true)}
-                    className="lg:hidden"
-                  >
-                    <Icon name="Filter" size={16} className="mr-2" />
-                    Bộ lọc
-                  </Button>
-
-                  <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Icon name="Package" size={16} />
-                    <span>{totalItems} sản phẩm</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  {/* View Mode Toggle */}
-                  <div className="hidden sm:flex items-center space-x-1 bg-muted rounded-lg p-1">
-                    <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => { setViewMode('grid'); setItemsPerPage(12); setCurrentPage(1); }}
-                      className="w-8 h-8"
-                    >
-                      <Icon name="Grid3X3" size={16} />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => { setViewMode('list'); setItemsPerPage(9); setCurrentPage(1); }}
-                      className="w-8 h-8"
-                    >
-                      <Icon name="List" size={16} />
-                    </Button>
-                  </div>
-
-                  {/* Sort Dropdown */}
-                  <SortDropdown
-                    currentSort={sortBy}
-                    onSortChange={setSortBy}
-                  />
-
-                  {/* Items per page dropdown */}
-                  <select
-                    className="border rounded px-2 py-1 text-sm bg-background text-foreground"
-                    value={itemsPerPage}
-                    onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                  >
-                    {pageOptions.map(opt => (
-                      <option key={opt} value={opt}>{opt} / trang</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Product Grid */}
               <ProductGrid
                 products={displayedProducts}
                 loading={loading}
+                hasMore={hasMore}
+                onLoadMore={() => setCurrentPage(prev => prev + 1)}
                 onWishlistToggle={handleWishlistToggle}
                 onQuickView={handleQuickView}
                 onAddToCart={handleAddToCart}
                 viewMode={viewMode}
               />
 
-              {/* Pagination & End Message */}
-              {totalItems > 0 && (
-                <div className="flex flex-col items-center gap-4 mt-8">
-                  <p className="text-sm text-muted-foreground">
-                    Hiển thị {startItem}-{endItem} trong tổng số {totalItems} sản phẩm
-                  </p>
-                  {showPagination && (
-                    <div className="flex justify-center items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={clampedCurrentPage === 1}
-                        onClick={() => goToPage(clampedCurrentPage - 1)}
-                      >
-                        <Icon name="ChevronLeft" size={16} />
-                      </Button>
-                      {pageNumbers.map((page, index) => {
-                        if (typeof page === 'string') {
-                          return (
-                            <span key={`${page}-${index}`} className="px-2 text-sm text-muted-foreground">
-                              …
-                            </span>
-                          );
-                        }
-                        const isActive = page === clampedCurrentPage;
-                        return (
-                          <button
-                            key={page}
-                            className={`px-3 py-1 rounded border transition-colors ${
-                              isActive
-                                ? 'bg-accent text-white border-accent'
-                                : 'bg-muted text-foreground border-border hover:bg-muted/70'
-                            }`}
-                            onClick={() => goToPage(page)}
-                          >
-                            {page}
-                          </button>
-                        );
-                      })}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={clampedCurrentPage === totalPages}
-                        onClick={() => goToPage(clampedCurrentPage + 1)}
-                      >
-                        <Icon name="ChevronRight" size={16} />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-              {clampedCurrentPage === totalPages && totalItems > 0 && (
-                <div className="text-center text-muted-foreground mt-4 mb-8 text-sm">
-                  Đã xem hết danh sách sản phẩm
-                </div>
-              )}
+              {/* Pagination */}
+              <CatalogPagination
+                currentPage={clampedCurrentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                startItem={startItem}
+                endItem={endItem}
+                onPageChange={goToPage}
+              />
             </div>
           </div>
         </div>
       </div>
+
       {/* Mobile Filter Sidebar */}
-        <div className="lg:hidden">
-          <FilterSidebar
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={handleClearFilters}
-            isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-            categoryOptions={filterCategoryOptions}
-          />
-        </div>
+      <div className="lg:hidden">
+        <FilterSidebar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+          isOpen={isFilterOpen}
+          onClose={() => setIsFilterOpen(false)}
+          categoryOptions={filterCategoryOptions}
+        />
+      </div>
+
       {/* Quick View Modal */}
       <QuickViewModal
         product={quickViewProduct}
@@ -799,6 +688,7 @@ const ProductCatalog = () => {
         onAddToCart={handleAddToCart}
         onWishlistToggle={handleWishlistToggle}
       />
+
       <Footer />
     </div>
   );

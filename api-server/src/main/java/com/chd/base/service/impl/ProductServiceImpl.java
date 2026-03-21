@@ -58,6 +58,13 @@ public class ProductServiceImpl implements ProductService {
 		}
 
 		Product product = new Product();
+		product.setName(name.trim());
+		product.setSlug(slug.trim());
+		// Ensure new products default to "active" status if not explicitly set
+		String status = pickString(payload, "status", "status");
+		if (status == null || status.trim().isEmpty()) {
+			product.setStatus("active");
+		}
 		applyPayload(product, payload, price);
 
 		List<ProductImage> images = parseImages(payload.get("images"));

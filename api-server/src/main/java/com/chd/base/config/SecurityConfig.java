@@ -38,6 +38,11 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/api/v1/recommendations/**").permitAll()
 						// Cart endpoints - allow both authenticated and guest users
 						.requestMatchers("/api/v1/cart/**").permitAll()
+						// User authenticated endpoints (no special role required)
+						.requestMatchers("/api/v1/auth/me").authenticated()
+						.requestMatchers("/api/v1/wishlist/**").authenticated()
+						.requestMatchers("/api/v1/orders/user**").authenticated()
+						.requestMatchers("/api/v1/user/orders**").authenticated()
 						// Protected endpoints - @PreAuthorize annotations handle specific role/authority checks
 						.requestMatchers("/api/v1/dashboard/**").authenticated()
 						.requestMatchers("/api/v1/chat/**").authenticated()

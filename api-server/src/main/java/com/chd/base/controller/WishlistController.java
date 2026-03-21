@@ -3,18 +3,23 @@ package com.chd.base.controller;
 
 import com.chd.base.model.Wishlist;
 import com.chd.base.service.WishlistService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/wishlist")
+@RequiredArgsConstructor
 public class WishlistController {
 
 	private final WishlistService wishlistService;
 
-	public WishlistController(WishlistService wishlistService) {
-		this.wishlistService = wishlistService;
+	private String getCurrentUsername() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication != null ? authentication.getName() : null;
 	}
 
 	@PostMapping
@@ -29,8 +34,8 @@ public class WishlistController {
 
 	@GetMapping
 	public List<Wishlist> getMyWishlist() {
-		// Mocking for now, in reality should use SecurityContext to get userId
-		return wishlistService.getUserWishlist("mock-user-id");
+		String userId = getCurrentUsername();
+		return wishlistService.getUserWishlist(userId);
 	}
 
 	@GetMapping("/user/{userId}")

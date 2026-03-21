@@ -113,12 +113,12 @@ const AddressBook = () => {
   const [wards, setWards] = React.useState([]);
 
   React.useEffect(() => {
-    // fetch nested provinces/districts/wards once
+    // fetch nested provinces/districts/wards from backend API
     let mounted = true;
     (async () => {
       try {
-        const res = await fetch('https://provinces.open-api.vn/api/?depth=3');
-        const data = await res.json();
+        const res = await API.get('/addresses/locations/provinces');
+        const data = res?.data;
         if (mounted && Array.isArray(data)) setLocations(data);
       } catch (e) {
         console.error('Failed to load locations', e);

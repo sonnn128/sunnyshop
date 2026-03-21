@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import API from '@/lib/api';
 import { Card, Button, Space, Table, Input, Popconfirm, Tag, Row, Col } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import { getProvinceName, getDistrictName, getWardName } from '@/data/vietnamAddresses';
+import { getProvinceName, getDistrictName, getWardName, preloadVietnamAddresses } from '@/data/vietnamAddresses';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const AddressList = () => {
@@ -42,6 +42,8 @@ const AddressList = () => {
   };
 
   useEffect(() => {
+    // Preload Vietnam addresses data
+    preloadVietnamAddresses();
     fetchAddresses();
   }, []);
 

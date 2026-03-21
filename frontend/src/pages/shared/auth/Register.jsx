@@ -12,14 +12,14 @@ const Register = () => {
   const toast = useToast();
 
   const handleRegister = (values) => {
-    const { email, password, confirmPassword } = values;
+    const { username, email, password, confirmPassword } = values;
     setFormError('');
     if (password !== confirmPassword) {
       setFormError('Mật khẩu xác nhận không khớp.');
       return;
     }
     setLoading(true);
-    API.post('/api/auth/register', { email, password })
+    API.post('/api/auth/register', { username, password })
       .then(res => {
         const loginData = res.data?.data || res.data;
         const { user, token } = loginData;
@@ -35,7 +35,7 @@ const Register = () => {
       console.error('Register error:', err);
       const status = err?.response?.status;
       if (status === 409) {
-        setFormError('Email này đã được sử dụng. Vui lòng dùng email khác hoặc đăng nhập.');
+        setFormError('Username hoặc email này đã được sử dụng. Vui lòng dùng khác hoặc đăng nhập.');
       } else if (status === 400 || status === 422) {
         setFormError(err?.response?.data?.message || 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
       } else {
@@ -89,6 +89,22 @@ const Register = () => {
                 {formError}
               </div>
             )}
+
+            <Form.Item 
+              name="username" 
+              label={<span className="text-sm uppercase font-bold tracking-[0.2em] text-slate-400">Username</span>}
+              rules={[
+                { required: true, message: 'Vui lòng nhập username!' },
+                { min: 3, message: 'Username phải có ít nhất 3 ký tự!' },
+                { pattern: /^[a-zA-Z0-9_]+$/, message: 'Username chỉ chứa chữ, số và dấu gạch dưới!' }
+              ]}
+              className="mb-6"
+            >
+              <Input
+                placeholder="NHẬP USERNAME CỦA BẠN"
+                className="w-full bg-transparent border-t-0 border-x-0 border-b border-slate-200 py-3 px-2 text-base font-bold tracking-widest text-slate-900 placeholder-slate-300 focus:outline-none focus:border-slate-900 focus:shadow-none hover:border-slate-400 transition-colors rounded-none"
+              />
+            </Form.Item>
 
             <Form.Item 
               name="email" 

@@ -3,16 +3,18 @@ package com.chd.base.service.impl;
 
 import com.chd.base.exception.CommonException;
 import com.chd.base.service.UploadService;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @Slf4j
@@ -20,7 +22,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UploadServiceImpl implements UploadService {
 
-	private final Cloudinary cloudinary;
+	@Value("${app.upload.dir:uploads}")
+	private String uploadDir;
 
 	@Override
 	public String uploadImage(MultipartFile file) {
@@ -41,24 +44,30 @@ public class UploadServiceImpl implements UploadService {
 		}
 
 		try {
-			// Generate unique public_id
-			String publicId = "product_" + UUID.randomUUID().toString();
+			// Create upload directory if it doesn't exist
+			Path uploadPath = Paths.get(uploadDir);
+			if (!Files.exists(uploadPath)) {
+				Files.createDirectories(uploadPath);
+			}
 
-			// Upload to cloudinary with options
-			Map<String, Object> uploadResult = cloudinary.uploader().upload(file.getBytes(),
-					ObjectUtils.asMap(
-							"public_id", publicId,
-							"folder", "sunny-fashion",
-							"resource_type", "image"
-					));
+			// Generate unique filename
+			String originalFilename = file.getOriginalFilename();
+			String fileExtension = originalFilename != null 
+				? originalFilename.substring(originalFilename.lastIndexOf(".")) 
+				: ".jpg";
+			String uniqueFilename = "IMG_" + UUID.randomUUID().toString() + fileExtension;
 
-			// Return secure URL
-			String secureUrl = (String) uploadResult.get("secure_url");
-			log.info("Image uploaded successfully: {}", secureUrl);
-			return secureUrl;
+			// Save file to disk
+			Path filePath = uploadPath.resolve(uniqueFilename);
+			Files.write(filePath, file.getBytes());
+
+			// Return URL for accessing the image
+			String imageUrl = "/uploads/" + uniqueFilename;
+			log.info("Image uploaded successfully: {}", imageUrl);
+			return imageUrl;
 
 		} catch (IOException e) {
-			log.error("Error uploading image to Cloudinary", e);
+			log.error("Error uploading image", e);
 			throw new CommonException("Failed to upload image: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

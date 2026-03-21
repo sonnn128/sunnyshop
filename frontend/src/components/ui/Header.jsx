@@ -18,6 +18,7 @@ const Header = () => {
     { name: 'Trang chủ', path: '/homepage', icon: 'Home' },
     { name: 'Sản phẩm', path: '/product-catalog', icon: 'ShoppingBag' },
     // cart handled via action icon (do not include in primary list to avoid duplication)
+    { name: 'Đơn hàng', path: '/user-dashboard/orders', icon: 'Package' },
     { name: 'Tài khoản', path: '/user-dashboard', icon: 'User' },
   ];
 

@@ -1,5 +1,4 @@
 import React from "react";
-import { Check, Minus } from "lucide-react";
 import { cn } from '@/utils/cn';
 
 const Checkbox = React.forwardRef(({
@@ -13,6 +12,7 @@ const Checkbox = React.forwardRef(({
     description,
     error,
     size = "default",
+    onChange,
     ...props
 }, ref) => {
     // Generate unique ID if not provided
@@ -21,8 +21,14 @@ const Checkbox = React.forwardRef(({
     // Size variants
     const sizeClasses = {
         sm: "h-4 w-4",
-        default: "h-4 w-4",
-        lg: "h-5 w-5"
+        default: "h-5 w-5",
+        lg: "h-6 w-6"
+    };
+
+    const iconClasses = {
+        sm: "h-2.5 w-2.5",
+        default: "h-3 w-3",
+        lg: "h-3.5 w-3.5"
     };
 
     return (
@@ -32,7 +38,8 @@ const Checkbox = React.forwardRef(({
                     type="checkbox"
                     ref={ref}
                     id={checkboxId}
-                    checked={checked}
+                    checked={checked || false}
+                    onChange={onChange}
                     disabled={disabled}
                     required={required}
                     className="sr-only"
@@ -42,19 +49,36 @@ const Checkbox = React.forwardRef(({
                 <label
                     htmlFor={checkboxId}
                     className={cn(
-                        "peer shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground cursor-pointer transition-colors",
+                        "peer shrink-0 rounded-md border-2 border-slate-300 bg-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer transition-all duration-200 flex items-center justify-center hover:border-slate-400",
                         sizeClasses?.[size],
-                        checked && "bg-primary text-primary-foreground border-primary",
-                        indeterminate && "bg-primary text-primary-foreground border-primary",
-                        error && "border-destructive",
-                        disabled && "cursor-not-allowed opacity-50"
+                        checked && "bg-blue-600 border-blue-600 text-white",
+                        indeterminate && "bg-blue-600 border-blue-600 text-white",
+                        error && "border-destructive bg-red-50",
+                        disabled && "cursor-not-allowed opacity-50 bg-slate-100",
+                        "min-w-fit"
                     )}
                 >
                     {checked && !indeterminate && (
-                        <Check className="h-3 w-3 text-current flex items-center justify-center" />
+                        <svg
+                            className="w-4/5 h-4/5"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                        >
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
                     )}
                     {indeterminate && (
-                        <Minus className="h-3 w-3 text-current flex items-center justify-center" />
+                        <svg
+                            className="w-4/5 h-4/5"
+                            viewBox="0 0 24 24"
+                            fill="white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            aria-hidden="true"
+                        >
+                            <path d="M19 13H5v-2h14v2z" />
+                        </svg>
                     )}
                 </label>
             </div>
@@ -64,8 +88,8 @@ const Checkbox = React.forwardRef(({
                         <label
                             htmlFor={checkboxId}
                             className={cn(
-                                "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer",
-                                error ? "text-destructive" : "text-foreground"
+                                "text-sm font-semibold leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-slate-900",
+                                error ? "text-destructive" : ""
                             )}
                         >
                             {label}

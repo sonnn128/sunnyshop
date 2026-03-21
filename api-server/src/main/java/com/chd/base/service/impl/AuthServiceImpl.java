@@ -20,11 +20,11 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-	@Value("${jwt.EXPIRATION_TIME:3600000}")
-	private int JWT_EXPIRATION_TIME;
+	@Value("${jwt.EXPIRATION_TIME:315360000000}")
+	private long JWT_EXPIRATION_TIME;
 
-	@Value("${jwt.EXPIRATION_TIME_REMEMBER_ME:3600000}")
-	private int JWT_EXPIRATION_TIME_REMEMBER_ME;
+	@Value("${jwt.EXPIRATION_TIME_REMEMBER_ME:315360000000}")
+	private long JWT_EXPIRATION_TIME_REMEMBER_ME;
 	private final AuthenticationManager authenticationManager;
 	private final JwtService jwtService;
 	private final UserRepository userRepository;

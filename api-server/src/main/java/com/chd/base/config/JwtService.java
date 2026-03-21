@@ -33,14 +33,14 @@ public class JwtService {
 		return claimsResolver.apply(claims);
 	}
 	
-	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, int timeToLive) {
+	public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long timeToLive) {
 		return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + timeToLive))
 				.signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
 	}
 
-	public String generateToken(UserDetails userDetails, int timeToLive) {
+	public String generateToken(UserDetails userDetails, long timeToLive) {
 		Map<String, Object> claims = new HashMap<>();
 		claims.put("authorities",
 				userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));

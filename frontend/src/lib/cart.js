@@ -3,6 +3,10 @@ import API, { API_ENABLED } from './api';
 
 const STORAGE_KEY = 'cart_v1';
 const SESSION_KEY = 'cart_session_v1';
+const CART_FETCH_TTL_MS = 3000;
+
+let inFlightCartFetch = null;
+let lastCartFetchAt = 0;
 
 // Global reference for auth context access from non-React code
 let getAuthStatus = () => {
@@ -101,20 +105,45 @@ function checkIsLoggedIn() {
   }
 }
 
-async function fetchCart() {
+async function fetchCart(options = {}) {
+  const force = !!options?.force;
   // If user is logged-in, return server cart; otherwise return session cart
   const isLoggedIn = getAuthStatus();
 
   if (isLoggedIn) {
     if (!API_ENABLED) return _readLocal();
+    const now = Date.now();
+    if (!force && inFlightCartFetch) {
+      return inFlightCartFetch;
+    }
+
+    if (!force && now - lastCartFetchAt < CART_FETCH_TTL_MS) {
+      const cached = _readLocal();
+      _dispatch(cached);
+      return cached;
+    }
+
+    inFlightCartFetch = (async () => {
+      try {
+        const res = await API.get('/api/cart');
+        const cart = res?.data?.cart || { items: [] };
+        _writeLocal(cart);
+        _dispatch(cart);
+        return cart;
+      } catch (e) {
+        // if server fails, fallback to local cached copy
+        const cached = _readLocal();
+        _dispatch(cached);
+        return cached;
+      } finally {
+        lastCartFetchAt = Date.now();
+        inFlightCartFetch = null;
+      }
+    })();
+
     try {
-      const res = await API.get('/api/cart');
-      const cart = res?.data?.cart || { items: [] };
-      _writeLocal(cart);
-      _dispatch(cart);
-      return cart;
-    } catch (e) {
-      // if server fails, fallback to local cached copy
+      return await inFlightCartFetch;
+    } catch {
       return _readLocal();
     }
   }

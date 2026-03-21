@@ -104,30 +104,48 @@ export const getUserOrders = async (options = {}) => {
   const suffix = query.toString() ? `?${query.toString()}` : '';
   const tryPaths = [
     // Prefer the dedicated user endpoint (always returns orders for the current user only)
-    // Keep both common variants in case the server exposes one or the other
-    `/api/orders/user${suffix}`,
     `/orders/user${suffix}`,
-    `/api/user/orders${suffix}`,
+    // Backward-compatible endpoint in some deployments
     `/user/orders${suffix}`,
     // Fallback to general orders endpoints (admin or user-scoped depending on server-side auth)
-    `/api/orders${suffix}`,
     `/orders${suffix}`
   ];
   let lastErr = null;
   let emptyResult = [];
+
+  const extractOrderList = (payload) => {
+    if (Array.isArray(payload)) return payload;
+    if (!payload || typeof payload !== 'object') return [];
+
+    const candidates = [
+      payload.orders,
+      payload.data,
+      payload.data?.orders,
+      payload.data?.content,
+      payload.content,
+      payload.list,
+      payload.results,
+      payload.items,
+    ];
+
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate)) return candidate;
+    }
+
+    return [];
+  };
+
   for (const path of tryPaths) {
     try {
       const response = await api.get(path);
-      const list = (response?.data?.orders)
-        || (response?.data?.data?.orders)
-        || (response?.data?.list)
-        || (response?.data?.results)
-        || (response?.data?.items)
-        || response?.data
-        || [];
+      const list = extractOrderList(response?.data);
       if (Array.isArray(list)) {
         const normalized = list.map(normalizeOrder);
-        const pagination = response?.data?.pagination || response?.data?.meta || null;
+        const pagination = response?.data?.pagination
+          || response?.data?.meta
+          || response?.data?.data?.pagination
+          || response?.data?.data?.meta
+          || null;
         // If API returns pagination, return object with orders + pagination for the client to consume
         if (pagination) return { orders: normalized, pagination };
         if (normalized.length > 0) {

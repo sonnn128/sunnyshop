@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/brands")
@@ -18,11 +20,21 @@ import java.util.Map;
 public class BrandController {
 
 	private final BrandService brandService;
+	private static final Set<String> MANAGEMENT_ROLES = Set.of(
+			"ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF",
+			"ADMIN", "MANAGER", "STAFF",
+			"admin", "manager", "staff");
 
 	private boolean hasManagementAccess() {
 		User user = SecurityUtils.getCurrentUser();
+		if (user == null || user.getRoles() == null || user.getRoles().isEmpty()) {
+			return false;
+		}
 		return user.getRoles().stream()
-				.anyMatch(r -> Arrays.asList("ROLE_ADMIN", "ROLE_MANAGER", "ROLE_STAFF").contains(r.getId()));
+				.map(r -> r.getId() == null ? "" : r.getId().trim())
+				.anyMatch(role -> MANAGEMENT_ROLES.contains(role)
+						|| MANAGEMENT_ROLES.contains(role.toUpperCase(Locale.ROOT))
+						|| MANAGEMENT_ROLES.contains(role.toLowerCase(Locale.ROOT)));
 	}
 
 	@GetMapping
@@ -63,8 +75,13 @@ public class BrandController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> remove(@PathVariable Long id) {
 		User user = SecurityUtils.getCurrentUser();
+		if (user == null || user.getRoles() == null || user.getRoles().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Forbidden"));
+		}
 		boolean hasAccess = user.getRoles().stream()
-				.anyMatch(r -> Arrays.asList("ROLE_ADMIN", "ROLE_MANAGER").contains(r.getId()));
+				.map(r -> r.getId() == null ? "" : r.getId().trim())
+				.anyMatch(role -> Arrays.asList("ROLE_ADMIN", "ROLE_MANAGER", "ADMIN", "MANAGER", "admin", "manager")
+						.contains(role));
 		if (!hasAccess) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Forbidden"));
 		}

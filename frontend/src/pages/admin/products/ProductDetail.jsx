@@ -159,7 +159,7 @@ const ProductDetail = () => {
               </div>
               <div>
                 <p className="text-muted-foreground">Gia goc</p>
-                <p className="font-semibold">{formatPrice(product.sale_price || product.original_price)}</p>
+                <p className="font-semibold">{formatPrice(product.sale_price ?? product.salePrice ?? product.original_price ?? product.originalPrice)}</p>
               </div>
               <div>
                 <p className="text-muted-foreground">Ton kho</p>

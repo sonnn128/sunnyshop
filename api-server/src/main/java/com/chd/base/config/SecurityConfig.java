@@ -26,6 +26,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						// Public endpoints
 						.requestMatchers("/api/v1/auth/register", 
 							"/api/v1/auth/login", 

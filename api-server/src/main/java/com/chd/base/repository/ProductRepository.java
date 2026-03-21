@@ -15,7 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 	@Query("""
 			select p from Product p
-			where (:status is null or p.status = :status)
+			where (coalesce(:status, '') = '' or lower(trim(p.status)) = lower(trim(:status)))
 			  and (:featured is null or p.featured = :featured)
 			  and (:categoryId is null or p.category.id = :categoryId)
 			  and (

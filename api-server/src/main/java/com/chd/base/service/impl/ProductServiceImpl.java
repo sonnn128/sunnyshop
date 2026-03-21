@@ -152,6 +152,7 @@ public class ProductServiceImpl implements ProductService {
 		}
 		product.setSalePrice(pickBigDecimal(payload, "sale_price", "salePrice",
 				pickBigDecimal(payload, "original_price", "originalPrice", product.getSalePrice())));
+		product.setCostPrice(pickBigDecimal(payload, "cost_price", "costPrice", product.getCostPrice()));
 		if (payload.containsKey("stock_quantity") || payload.containsKey("stockQuantity")) {
 			product.setStockQuantity(pickInt(payload, "stock_quantity", "stockQuantity", product.getStockQuantity()));
 		}

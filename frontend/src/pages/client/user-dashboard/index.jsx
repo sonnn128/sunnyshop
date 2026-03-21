@@ -108,17 +108,11 @@ const UserDashboard = () => {
           // ignore wishlist fetch error
         }
         
-        let points = 0;
-        try {
-          const p = await API.get('/api/loyalty');
-          points = p?.data?.points || p?.data || 0;
-        } catch (e) {}
-        
         setUserStats({ 
           totalOrders: total, 
           pendingOrders: pending, 
           wishlistItems: wishlistCount, 
-          loyaltyPoints: points 
+          loyaltyPoints: 0 
         });
       } catch (e) {
         console.error('Error fetching user stats:', e);

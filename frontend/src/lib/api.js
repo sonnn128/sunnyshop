@@ -70,6 +70,39 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
+// Add response interceptor to handle 401 Unauthorized
+API.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Token is expired or invalid
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          // Clear all possible token storages
+          localStorage.removeItem('token');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          localStorage.removeItem('courtify-auth');
+          
+          // Optionally emit an event that other parts of the app can listen to
+          // or redirect to login page if we are in browser
+          const currentPath = window.location.pathname;
+          // Don't redirect if already on login or layout pages without auth guard
+          if (!currentPath.includes('/login') && !currentPath.includes('/auth')) {
+             window.location.href = '/login?session_expired=true';
+          }
+        }
+      } catch (e) {
+        console.error('Error handling 401:', e);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 /**
  * Get all orders with pagination and filtering
  * @param {Object} params - Query parameters

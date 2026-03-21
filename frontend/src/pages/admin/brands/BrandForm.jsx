@@ -10,6 +10,7 @@ const emptyTemplate = {
   name: '',
   slug: '',
   logo_url: '',
+  website: '',
   description: '',
   is_active: true
 };
@@ -39,9 +40,10 @@ const BrandForm = () => {
         setForm({
           name: data.name || '',
           slug: data.slug || '',
-          logo_url: data.logo_url || '',
+          logo_url: data.logo_url || data.logoUrl || '',
+          website: data.website || '',
           description: data.description || '',
-          is_active: data.is_active !== false
+          is_active: (data.is_active ?? data.isActive) !== false
         });
       }
     } catch (e) {
@@ -198,6 +200,17 @@ const BrandForm = () => {
               value={form.logo_url}
               onChange={(e) => handleChange('logo_url', e.target.value)}
               placeholder="https://example.com/logo.png"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1">
+              Website URL
+            </label>
+            <Input
+              value={form.website}
+              onChange={(e) => handleChange('website', e.target.value)}
+              placeholder="https://example.com"
             />
           </div>
 

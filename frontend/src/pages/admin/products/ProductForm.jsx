@@ -115,7 +115,7 @@ const normalizeVariantForSave = (variant, index, productType) => {
     name: variant.name || (resolvedAttributeKey === 'size' ? 'Size' : resolvedAttributeKey === 'color' ? 'Color' : resolvedAttributeKey),
     value: resolvedValue,
     price_adjustment: Number(variant.price_adjustment) || 0,
-    stock_quantity: Number(variant.stock_quantity || variant.stock) || 0,
+    stock_quantity: Number(variant.stock_quantity ?? variant.stockQuantity ?? variant.stock) || 0,
     image_url: variant.image_url?.trim() || '',
     sort_order: typeof variant.sort_order === 'number' ? variant.sort_order : index,
     is_active: variant.is_active !== false,
@@ -693,7 +693,13 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
           const normalizedCategoryId = pickCategoryId(p);
           // Map backend data to form - ensure schema compliance
           // 3NF: Extract brand_id from populated brand_id object or direct string
-          const brandId = p.brand_id?._id || p.brand_id || '';
+          const brandIdRaw = p.brand_id?._id
+            || p.brand_id?.id
+            || p.brand_id
+            || p.brand?.id
+            || p.brand?._id
+            || '';
+          const brandId = brandIdRaw !== null && brandIdRaw !== undefined ? String(brandIdRaw) : '';
 
           const normalizedVariants = Array.isArray(p.variants)
             ? p.variants.map((variant, variantIndex) => {
@@ -721,7 +727,7 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
               })
             : [];
 
-          const recomputedStock = normalizedVariants.reduce((sum, v) => sum + (Number(v.stock_quantity || v.stock || 0) || 0), 0);
+          const recomputedStock = normalizedVariants.reduce((sum, v) => sum + (Number(v.stock_quantity ?? v.stockQuantity ?? v.stock ?? 0) || 0), 0);
 
           setForm({
             // Basic
@@ -730,14 +736,14 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
             description: p.description || '',
             short_description: p.short_description || '',
             sku: p.sku || '',
-            brand: p.brand || p.brand_id?.name || '', // Legacy field
+            brand: p.brand?.name || p.brand || p.brand_id?.name || '', // Legacy field
             brand_id: brandId, // 3NF: Reference to Brand collection
             product_type: p.product_type || 'clothing',
             
             // Pricing
             price: Number(p.price) || 0,
-            original_price: Number(p.original_price) || 0,
-            cost_price: Number(p.cost_price) || 0,
+            original_price: Number(p.original_price ?? p.sale_price ?? p.salePrice ?? p.originalPrice) || 0,
+            cost_price: Number(p.cost_price ?? p.costPrice) || 0,
             
             // Inventory
             min_stock_level: Number(p.min_stock_level) || 5,
@@ -754,7 +760,9 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
             images: normalizeImagesForForm(p.images),
             variants: normalizedVariants,
             // If variants exist, make product-level stock the sum of them
-            stock_quantity: normalizedVariants.length ? recomputedStock : Number(p.stock_quantity) || 0,
+            stock_quantity: normalizedVariants.length
+              ? recomputedStock
+              : Number(p.stock_quantity ?? p.stockQuantity) || 0,
           });
         }
       } catch (e) {
@@ -842,16 +850,17 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
       short_description: payload.short_description || '',
       sku: payload.sku?.trim() || '',
       brand: payload.brand?.trim() || '', // Legacy field
-      brand_id: payload.brand_id || null, // 3NF: Reference to Brand collection
+      brand_id: payload.brand_id ? Number(payload.brand_id) || payload.brand_id : null, // 3NF: Reference to Brand collection
       product_type: productType,
       
       // Pricing
       price: Number(payload.price) || 0,
-      original_price: Number(payload.original_price) || 0,
-      cost_price: Number(payload.cost_price) || 0,
+      original_price: Number(payload.original_price ?? payload.sale_price ?? payload.salePrice ?? payload.originalPrice) || 0,
+      sale_price: Number(payload.original_price ?? payload.sale_price ?? payload.salePrice ?? payload.originalPrice) || 0,
+      cost_price: Number(payload.cost_price ?? payload.costPrice) || 0,
       
       // Inventory
-      stock_quantity: Number(payload.stock_quantity) || 0,
+      stock_quantity: Number(payload.stock_quantity ?? payload.stockQuantity) || 0,
       min_stock_level: Number(payload.min_stock_level) || 5,
       
       // Status
@@ -1124,19 +1133,23 @@ const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
               <div>
                 <label className="block text-sm font-medium mb-2">Thương hiệu</label>
                 <select
-                  value={form.brand_id || ''}
+                  value={form.brand_id ? String(form.brand_id) : ''}
                   onChange={(e) => {
-                    const selectedBrandId = e.target.value;
-                    const selectedBrand = brands.find(b => b._id === selectedBrandId);
+                    const selectedBrandId = e.target.value ? String(e.target.value) : '';
+                    const selectedBrand = brands.find((brandItem) => String(brandItem?._id ?? brandItem?.id) === selectedBrandId);
                     update('brand_id', selectedBrandId);
                     update('brand', selectedBrand?.name || ''); // Sync legacy field
                   }}
                   className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400"
                 >
                   <option value="">-- Chọn thương hiệu --</option>
-                  {Array.isArray(brands) && brands.filter(b => b.is_active !== false).map(brand => (
-                    <option key={brand._id} value={brand._id}>{brand.name}</option>
-                  ))}
+                  {Array.isArray(brands) && brands.filter(b => (b.is_active ?? b.isActive) !== false).map(brand => {
+                    const optionId = brand?._id ?? brand?.id;
+                    if (optionId === null || optionId === undefined) return null;
+                    return (
+                      <option key={String(optionId)} value={String(optionId)}>{brand.name}</option>
+                    );
+                  })}
                 </select>
               </div>
             </div>

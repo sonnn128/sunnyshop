@@ -24,8 +24,13 @@ const Homepage = () => {
     const price = p.price ?? p.sale_price ?? p.final_price ?? 0;
     const originalPrice = p.original_price ?? p.compare_at_price ?? null;
     const image = Array.isArray(p.images)
-      ? (p.images[0]?.image_url || p.images[0])
-      : (p.image_url || p.image || '');
+      ? (() => {
+          const firstImage = p.images[0];
+          if (!firstImage) return '';
+          if (typeof firstImage === 'string') return firstImage;
+          return firstImage.image_url || firstImage.imageUrl || firstImage.url || '';
+        })()
+      : (p.image_url || p.imageUrl || p.image || '');
     const rating = p.rating ?? p.average_rating ?? 0;
     const reviews = p.reviewCount ?? p.reviews_count ?? (Array.isArray(p.reviews) ? p.reviews.length : 0) ?? 0;
     const createdAt = p.created_at || p.createdAt;
@@ -63,7 +68,16 @@ const Homepage = () => {
     (async () => {
       try {
         const res = await API.get('/products?status=active&limit=200', { skipAuth: true });
-        const products = res?.data?.products || res?.data?.data || res?.data || [];
+        const payload = res?.data?.data ?? res?.data;
+        const products = Array.isArray(payload?.content)
+          ? payload.content
+          : Array.isArray(payload?.products)
+            ? payload.products
+            : Array.isArray(res?.data?.products)
+              ? res.data.products
+              : Array.isArray(payload)
+                ? payload
+                : [];
         if (!Array.isArray(products) || !mounted) return;
 
         // Featured: prefer flagged, else top rated

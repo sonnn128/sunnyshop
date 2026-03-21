@@ -1,6 +1,7 @@
 package com.chd.base.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +20,12 @@ public class CreateProductRequest {
     private BigDecimal price;
     
     @JsonProperty("sale_price")
+    @JsonAlias({"original_price"})
     private BigDecimal salePrice;
+
+    @JsonProperty("cost_price")
+    @JsonAlias({"costPrice"})
+    private BigDecimal costPrice;
     
     @JsonProperty("stock_quantity")
     private Integer stockQuantity;

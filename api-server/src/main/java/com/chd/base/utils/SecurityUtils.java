@@ -10,7 +10,10 @@ public class SecurityUtils {
 			return null;
 		}
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (principal instanceof UserDetails) {
+		if (principal instanceof com.chd.base.model.CustomUserDetails) {
+			return ((com.chd.base.model.CustomUserDetails) principal).getUser();
+		}
+		if (principal instanceof User) {
 			return (User) principal;
 		}
 		return null;

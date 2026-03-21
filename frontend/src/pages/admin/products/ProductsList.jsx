@@ -1,21 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import API from '@/lib/api';
+import { Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/components/ui/ToastProvider';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import ProductForm from './ProductForm';
-import { Package, Search, Grid3x3, List, Trash2, CheckSquare, Square } from 'lucide-react';
+import { Package, Grid3x3, List, Trash2, CheckSquare, Square } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 12;
 
 const normalizeProduct = (product = {}) => {
   const normalizedId = product?._id ?? product?.id;
+  const normalizedStockQuantity = Number(product?.stock_quantity ?? product?.stockQuantity ?? 0) || 0;
+  const normalizedMinStockLevel = Number(product?.min_stock_level ?? product?.minStockLevel ?? 5) || 5;
+  const normalizedOriginalPrice = Number(product?.original_price ?? product?.sale_price ?? product?.salePrice ?? product?.originalPrice ?? 0) || 0;
+  const normalizedCostPrice = Number(product?.cost_price ?? product?.costPrice ?? 0) || 0;
   return {
     ...product,
     _id: normalizedId,
     id: normalizedId,
     sku: product?.sku || '',
-    images: Array.isArray(product?.images) ? product.images : []
+    images: Array.isArray(product?.images) ? product.images : [],
+    stock_quantity: normalizedStockQuantity,
+    min_stock_level: normalizedMinStockLevel,
+    original_price: normalizedOriginalPrice,
+    cost_price: normalizedCostPrice
   };
 };
 
@@ -234,36 +244,25 @@ const ProductsList = () => {
       </div>
 
       {/* Search + Actions */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-        <div className="flex items-center gap-2 w-full md:max-w-2xl">
-          {totalItems > 0 && (
-            <div className="flex items-center mr-2">
-              <button
-                onClick={() => handleSelectAllPage(paginatedProducts)}
-                className={`p-2 rounded-md hover:bg-muted ${isPageSelected ? 'text-primary' : 'text-muted-foreground'}`}
-                title={isPageSelected ? "Bỏ chọn tất cả trang này" : "Chọn tất cả trang này"}
-              >
-                {isPageSelected ? <CheckSquare size={20} /> : <Square size={20} />}
-              </button>
-              <span className="text-sm text-muted-foreground hidden md:block">
-                {isPageSelected ? 'Bỏ chọn' : 'Chọn tất cả'}
-              </span>
-            </div>
-          )}
-
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-            <input
-              type="text"
-              placeholder="Tìm kiếm theo tên hoặc SKU..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
+      <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4">
+        <div className="flex-1 min-w-0 md:max-w-2xl">
+          <Input
+            size="large"
+            allowClear
+            placeholder="Tìm kiếm theo tên hoặc SKU..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            prefix={<SearchOutlined style={{ color: '#64748b', fontSize: 16 }} />}
+            style={{
+              borderRadius: 10,
+              borderColor: '#cbd5e1',
+              height: 44,
+              boxShadow: '0 1px 2px rgba(15, 23, 42, 0.06)'
+            }}
+          />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 md:ml-auto">
           {selectedIds.length > 0 && (
             <Button
               variant="destructive"
@@ -456,7 +455,15 @@ const ProductsList = () => {
           {totalItems > 0 && viewMode === 'list' && (
             <div className="space-y-3">
               <div className="hidden md:grid grid-cols-[32px_72px_1.6fr_1fr_0.8fr_0.8fr_0.8fr_1fr] gap-3 px-4 text-xs text-muted-foreground">
-                <div />
+                <div>
+                  <button
+                    onClick={() => handleSelectAllPage(paginatedProducts)}
+                    className={`p-1 rounded transition-colors ${isPageSelected ? 'text-primary' : 'text-muted-foreground hover:bg-muted'}`}
+                    title={isPageSelected ? 'Bỏ chọn tất cả trang này' : 'Chọn tất cả trang này'}
+                  >
+                    {isPageSelected ? <CheckSquare size={18} /> : <Square size={18} />}
+                  </button>
+                </div>
                 <div>Ảnh</div>
                 <div>Tên / SKU</div>
                 <div>Trạng thái</div>

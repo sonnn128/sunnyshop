@@ -81,7 +81,16 @@ const ProductCatalog = () => {
         const productRes = productResult.value;
         const categoryRes = categoryResult.status === 'fulfilled' ? categoryResult.value : null;
 
-        const items = productRes?.data?.products || productRes?.data || [];
+        const productPayload = productRes?.data?.data ?? productRes?.data;
+        const items = Array.isArray(productPayload?.content)
+          ? productPayload.content
+          : Array.isArray(productPayload?.products)
+            ? productPayload.products
+            : Array.isArray(productRes?.data?.products)
+              ? productRes.data.products
+              : Array.isArray(productPayload)
+                ? productPayload
+                : [];
         const rawCategories = categoryRes
           ? (categoryRes?.data?.categories || categoryRes?.data?.data || categoryRes?.data || [])
           : [];
@@ -120,6 +129,10 @@ const ProductCatalog = () => {
             || (typeof primaryCategory === 'object' ? (primaryCategory?.name || primaryCategory?.title) : null)
             || null;
 
+          const normalizedBrandName = typeof p?.brand === 'object'
+            ? (p?.brand?.name || '')
+            : (p?.brand || p?.vendor || '');
+
           return {
             id: p._id || p.id || String(idx),
             name: p.name,
@@ -128,7 +141,7 @@ const ProductCatalog = () => {
             primaryImage,
             price: p.price || p.salePrice || p.original_price || 0,
             originalPrice: p.original_price || p.originalPrice || null,
-            brand: p.brand || p.vendor || null,
+            brand: normalizedBrandName,
             category: normalizedCategory,
             categoryName: normalizedCategoryName,
             stock: p.stock_quantity || p.stock || 0,
@@ -351,7 +364,7 @@ const ProductCatalog = () => {
       const normalizedQuery = searchQuery?.toLowerCase();
       filtered = filtered?.filter(product =>
         product?.name?.toLowerCase()?.includes(normalizedQuery) ||
-        product?.brand?.toLowerCase()?.includes(normalizedQuery) ||
+        String(product?.brand || '').toLowerCase().includes(normalizedQuery) ||
         product?.categoryName?.toLowerCase()?.includes(normalizedQuery)
       );
     }
@@ -369,11 +382,15 @@ const ProductCatalog = () => {
       });
     }
 
+    const hasCategoryFilterMatch = expandedCategoryFilterSet.size === 0
+      || filtered.some(product => expandedCategoryFilterSet.has(product?.category));
+
     Object.entries(filters)?.forEach(([filterType, values]) => {
       if (values?.length > 0) {
         filtered = filtered?.filter(product => {
           switch (filterType) {
             case 'category':
+              if (!hasCategoryFilterMatch) return true;
               return expandedCategoryFilterSet.size > 0
                 ? expandedCategoryFilterSet.has(product?.category)
                 : values?.includes(product?.category);

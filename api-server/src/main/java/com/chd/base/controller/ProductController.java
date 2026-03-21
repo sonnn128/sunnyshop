@@ -59,6 +59,8 @@ public class ProductController {
 		payload.put("description", request.getDescription());
 		payload.put("price", request.getPrice());
 		payload.put("sale_price", request.getSalePrice());
+		payload.put("original_price", request.getSalePrice());
+		payload.put("cost_price", request.getCostPrice());
 		payload.put("stock_quantity", request.getStockQuantity());
 		payload.put("status", request.getStatus());
 		payload.put("is_featured", request.isFeatured());

@@ -6,6 +6,24 @@
 
 import api from './api';
 
+const normalizeBrand = (brand = {}) => ({
+  ...brand,
+  _id: brand?._id ?? brand?.id,
+  id: brand?.id ?? brand?._id,
+  logo_url: brand?.logo_url ?? brand?.logoUrl ?? '',
+  is_active: brand?.is_active ?? brand?.isActive ?? brand?.active ?? true,
+  sort_order: brand?.sort_order ?? brand?.sortOrder ?? 0,
+});
+
+const normalizeBrandPayload = (data = {}) => ({
+  ...data,
+  logo_url: data?.logo_url ?? data?.logoUrl ?? '',
+  is_active: data?.is_active ?? data?.isActive ?? true,
+  active: data?.is_active ?? data?.isActive ?? true,
+  sort_order: data?.sort_order ?? data?.sortOrder ?? 0,
+  website: data?.website ?? ''
+});
+
 /**
  * Lấy danh sách brands
  * @param {Object} options - Tùy chọn filter
@@ -27,7 +45,8 @@ export async function getBrands(options = {}) {
   const url = query ? `/brands?${query}` : '/brands';
   
   const response = await api.get(url);
-  return response.data?.brands || [];
+  const brands = response.data?.brands || [];
+  return Array.isArray(brands) ? brands.map(normalizeBrand) : [];
 }
 
 /**
@@ -37,7 +56,8 @@ export async function getBrands(options = {}) {
  */
 export async function getBrand(idOrSlug) {
   const response = await api.get(`/brands/${idOrSlug}`);
-  return response.data?.brand || null;
+  const brand = response.data?.brand || null;
+  return brand ? normalizeBrand(brand) : null;
 }
 
 /**
@@ -50,8 +70,9 @@ export async function getBrand(idOrSlug) {
  * @returns {Promise<Object>} - Brand đã tạo
  */
 export async function createBrand(data) {
-  const response = await api.post('/brands', data);
-  return response.data?.brand || null;
+  const response = await api.post('/brands', normalizeBrandPayload(data));
+  const brand = response.data?.brand || null;
+  return brand ? normalizeBrand(brand) : null;
 }
 
 /**
@@ -61,8 +82,9 @@ export async function createBrand(data) {
  * @returns {Promise<Object>} - Brand đã cập nhật
  */
 export async function updateBrand(id, data) {
-  const response = await api.put(`/brands/${id}`, data);
-  return response.data?.brand || null;
+  const response = await api.put(`/brands/${id}`, normalizeBrandPayload(data));
+  const brand = response.data?.brand || null;
+  return brand ? normalizeBrand(brand) : null;
 }
 
 /**
@@ -82,7 +104,8 @@ export async function deleteBrand(id) {
  */
 export async function toggleBrandActive(id) {
   const response = await api.patch(`/brands/${id}/toggle-active`);
-  return response.data?.brand || null;
+  const brand = response.data?.brand || null;
+  return brand ? normalizeBrand(brand) : null;
 }
 
 export default {

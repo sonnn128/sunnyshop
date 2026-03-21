@@ -174,7 +174,7 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
               </div>
             </div>
 
-            <Divider type="vertical" style={{ height: '32px' }} />
+            <div style={{ width: '1px', height: '32px', background: '#e2e8f0' }} />
 
             <Dropdown menu={{ items: userMenuItems }} trigger={['click']}>
               <Avatar

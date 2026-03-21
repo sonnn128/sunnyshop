@@ -40,6 +40,14 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	public ApiResponse getGuestCart() {
+		// Return empty cart for guest users
+		return ApiResponse.builder().success(true).message("Get cart successfully")
+				.data(new CartDto(List.of(), 0, BigDecimal.ZERO)).build();
+	}
+
+	@Override
 	@Transactional
 	public ApiResponse addItem(User user, Long productId, Long variantId, int quantity) {
 		Product product = productRepository.findById(productId).orElse(null);

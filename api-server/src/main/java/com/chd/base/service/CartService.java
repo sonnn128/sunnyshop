@@ -6,6 +6,8 @@ import com.chd.base.payload.response.ApiResponse;
 public interface CartService {
 
 	ApiResponse getCart(User user);
+	
+	ApiResponse getGuestCart();
 
 	ApiResponse addItem(User user, Long productId, Long variantId, int quantity);
 

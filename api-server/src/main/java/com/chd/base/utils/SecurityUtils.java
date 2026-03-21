@@ -6,15 +6,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SecurityUtils {
 
 	public static User getCurrentUser() {
+		if (!isAuthenticated()) {
+			return null;
+		}
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails) {
 			return (User) principal;
 		}
-		throw new IllegalStateException("No authenticated user found");
+		return null;
 	}
 
 	public static boolean isAuthenticated() {
 		return SecurityContextHolder.getContext().getAuthentication() != null
-				&& SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+				&& SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+				&& !(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof String
+					&& "anonymousUser".equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
 	}
 }

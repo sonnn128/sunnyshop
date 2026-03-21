@@ -11,4 +11,5 @@ public interface CategoryService {
 	Category create(Map<String, Object> payload);
 	Category update(Long id, Map<String, Object> payload);
 	void delete(Long id);
+	String generateSlug(String name, Long excludeId);
 }

@@ -3,6 +3,8 @@ package com.chd.base.config;
 import com.chd.base.model.Role;
 import com.chd.base.model.User;
 import com.chd.base.repository.RoleRepository;
+import com.chd.base.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -13,18 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Initializes application data on startup.
- * Creates default ADMIN role and administrative user if not exists.
- */
 @Component
+@RequiredArgsConstructor
 public class DataInitializer implements ApplicationListener<ContextRefreshedEvent> {
 
-	@Autowired
-	private RoleRepository roleRepository;
-
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final RoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
 	@Override
 	@Transactional
@@ -40,15 +37,15 @@ public class DataInitializer implements ApplicationListener<ContextRefreshedEven
 
 		// Create default admin user if not exists
 		// Note: Uncomment when UserRepository is available
-		// User existingUser = userRepository.findByUsername("admin").orElse(null);
-		// if (existingUser == null) {
-		//     User adminUser = new User();
-		//     adminUser.setUsername("admin");
-		//     adminUser.setPassword(passwordEncoder.encode("admin"));
-		//     Set<Role> roles = new HashSet<>();
-		//     roles.add(adminRole);
-		//     adminUser.setRoles(roles);
-		//     userRepository.save(adminUser);
-		// }
+		 User existingUser = userRepository.findByUsername("admin");
+		 if (existingUser == null) {
+		     User adminUser = new User();
+		     adminUser.setUsername("admin");
+		     adminUser.setPassword(passwordEncoder.encode("admin"));
+		     Set<Role> roles = new HashSet<>();
+		     roles.add(adminRole);
+		     adminUser.setRoles(roles);
+		     userRepository.save(adminUser);
+		 }
 	}
 }

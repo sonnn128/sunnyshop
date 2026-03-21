@@ -8,7 +8,8 @@ import store from './store';
 import App from './App';
 import './index.css';
 import './styles/index.css';
-import { ConfigProvider, theme as antdTheme } from 'antd';
+import { ConfigProvider } from 'antd';
+import antdTheme from './config/antdTheme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,15 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <I18nProvider>
-            <ConfigProvider
-              theme={{
-                token: {
-                  colorPrimary: '#2563eb',
-                  borderRadius: 8,
-                  fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif',
-                },
-              }}
-            >
+            <ConfigProvider theme={antdTheme}>
               <App />
             </ConfigProvider>
           </I18nProvider>

@@ -145,7 +145,7 @@ const DebugAuth = () => {
                 🔐 Go to Login
               </button>
               <button
-                onClick={() => navigate('/admin-panel')}
+                onClick={() => navigate('/admin')}
                 className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
               >
                 🎛️ Try Admin Panel

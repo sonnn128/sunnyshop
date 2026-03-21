@@ -36,6 +36,8 @@ public class SecurityConfig {
 						.requestMatchers(HttpMethod.GET, "/api/v1/categories/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/brands/**").permitAll()
 						.requestMatchers(HttpMethod.GET, "/api/v1/recommendations/**").permitAll()
+						// Cart endpoints - allow both authenticated and guest users
+						.requestMatchers("/api/v1/cart/**").permitAll()
 						// Protected endpoints - @PreAuthorize annotations handle specific role/authority checks
 						.requestMatchers("/api/v1/dashboard/**").authenticated()
 						.requestMatchers("/api/v1/chat/**").authenticated()

@@ -34,6 +34,17 @@ public class CategoryController {
 				.message("Get category successfully").data(category).build());
 	}
 
+	@GetMapping("/generate-slug")
+	public ResponseEntity<?> generateSlug(
+			@RequestParam String name,
+			@RequestParam(required = false) Long excludeId) {
+		String slug = categoryService.generateSlug(name, excludeId);
+		Map<String, String> data = new HashMap<>();
+		data.put("slug", slug);
+		return ResponseEntity.ok(ApiResponse.builder().success(true)
+				.message("Slug generated successfully").data(data).build());
+	}
+
 	@PostMapping
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'STAFF', 'ROLE_ADMIN', 'ROLE_MANAGER', 'ROLE_STAFF')")
 	public ResponseEntity<?> create(@RequestBody Map<String, Object> payload) {

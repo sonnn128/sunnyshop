@@ -24,34 +24,34 @@ import VenuesPage from '@/pages/VenuesPage';
 import { AppLayout } from '@/components/layout/AppLayout';
 
 // ===== E-Commerce Pages (Frontend-Template) =====
-import Homepage from './pages/homepage';
-import ProductCatalog from './pages/product-catalog';
-import ProductDetail from './pages/product-detail';
-import ShoppingCart from './pages/shopping-cart';
-import OrderConfirmation from './pages/order-confirmation';
-import UserOrderDetail from './pages/order-detail';
-import UserOrders from './pages/user-orders';
-import UserDashboard from './pages/user-dashboard';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import ForgotPassword from './pages/auth/ForgotPassword';
-import ResetPassword from './pages/auth/ResetPassword';
-import AdminPanel from './pages/admin-panel';
-import AdminLayout from './pages/admin-panel/AdminLayout';
-import ProductForm from './pages/admin-panel/products/ProductForm';
-import CategoryList from './pages/admin-panel/categories/CategoryList';
-import CategoryForm from './pages/admin-panel/categories/CategoryForm';
-import BrandList from './pages/admin-panel/brands/BrandList';
-import BrandForm from './pages/admin-panel/brands/BrandForm';
-import OrdersList from './pages/admin-panel/orders/OrdersList';
-import OrderDetail from './pages/admin-panel/orders/OrderDetail';
-import OrdersDashboard from './pages/admin-panel/orders/OrdersDashboard';
-import UsersList from './pages/admin-panel/users/UsersList';
-import UserForm from './pages/admin-panel/users/UserForm';
-import VNPayCallback from './pages/payment/vnpay/callback';
-import NotFound from './pages/NotFound';
-import Forbidden from './pages/Forbidden';
-import DebugAuth from './pages/DebugAuth';
+import Homepage from './pages/shared/homepage';
+import ProductCatalog from './pages/shared/product-catalog';
+import ProductDetail from './pages/shared/product-detail';
+import ShoppingCart from './pages/client/shopping-cart';
+import OrderConfirmation from './pages/client/order-confirmation';
+import UserOrderDetail from './pages/client/order-detail';
+import UserOrders from './pages/client/user-orders';
+import UserDashboard from './pages/client/user-dashboard';
+import Login from './pages/shared/auth/Login';
+import Register from './pages/shared/auth/Register';
+import ForgotPassword from './pages/shared/auth/ForgotPassword';
+import ResetPassword from './pages/shared/auth/ResetPassword';
+import AdminPanel from './pages/admin';
+import AdminLayout from './pages/admin/AdminLayout';
+import ProductForm from './pages/admin/products/ProductForm';
+import CategoryList from './pages/admin/categories/CategoryList';
+import CategoryForm from './pages/admin/categories/CategoryForm';
+import BrandList from './pages/admin/brands/BrandList';
+import BrandForm from './pages/admin/brands/BrandForm';
+import OrdersList from './pages/admin/orders/OrdersList';
+import OrderDetail from './pages/admin/orders/OrderDetail';
+import OrdersDashboard from './pages/admin/orders/OrdersDashboard';
+import UsersList from './pages/admin/users/UsersList';
+import UserForm from './pages/admin/users/UserForm';
+import VNPayCallback from './pages/client/payment/vnpay/callback';
+import NotFound from './pages/shared/errors/NotFound';
+import Forbidden from './pages/shared/errors/Forbidden';
+import DebugAuth from './pages/shared/DebugAuth';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -129,19 +129,19 @@ function App() {
               } />
 
               {/* Admin Panel */}
-              <Route path="/admin-panel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
-              <Route path="/admin-panel/products/new" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/products/:id" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/categories/new" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/categories/:id" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/brands/new" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/brands/:id" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/orders" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrdersList /></React.Suspense></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/orders/dashboard" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrdersDashboard /></React.Suspense></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/orders/:orderId" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrderDetail /></React.Suspense></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/users" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UsersList /></React.Suspense></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/users/new" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UserForm /></React.Suspense></AdminLayout></AdminRoute>} />
-              <Route path="/admin-panel/users/:userId" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UserForm /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+              <Route path="/admin/products/new" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/products/:id" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/categories/new" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/categories/:id" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/brands/new" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/brands/:id" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrdersList /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin/orders/dashboard" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrdersDashboard /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin/orders/:orderId" element={<AdminRoute><AdminLayout activeTab="orders"><React.Suspense fallback={<div>Loading...</div>}><OrderDetail /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin/users" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UsersList /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin/users/new" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UserForm /></React.Suspense></AdminLayout></AdminRoute>} />
+              <Route path="/admin/users/:userId" element={<AdminRoute><AdminLayout activeTab="users"><React.Suspense fallback={<div>Loading...</div>}><UserForm /></React.Suspense></AdminLayout></AdminRoute>} />
 
               {/* Misc */}
               <Route path="/forbidden" element={<Forbidden />} />

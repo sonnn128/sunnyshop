@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
-import { Card, Button, Space, Table, Input, message, Popconfirm, Tag, Row, Col } from 'antd';
+import API from '@/lib/api';
+import { Card, Button, Space, Table, Input, Popconfirm, Tag, Row, Col } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
-import { getProvinceName, getDistrictName, getWardName } from '../../../data/vietnamAddresses';
+import { getProvinceName, getDistrictName, getWardName } from '@/data/vietnamAddresses';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const AddressList = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,8 +22,18 @@ const AddressList = () => {
       setAddresses(Array.isArray(addrs) ? addrs : []);
     } catch (e) {
       console.error('Load addresses error:', e);
-      if (e.response?.status !== 404) {
-        message.error('Không tải được danh sách địa chỉ');
+      if (e.response?.status === 403) {
+        toast.push({
+          title: 'Không có quyền',
+          message: 'Bạn không có quyền truy cập danh sách địa chỉ ở tài khoản hiện tại.',
+          type: 'warning'
+        });
+      } else if (e.response?.status !== 404) {
+        toast.push({
+          title: 'Lỗi',
+          message: 'Không tải được danh sách địa chỉ',
+          type: 'error'
+        });
       }
       setAddresses([]);
     } finally {
@@ -36,11 +48,15 @@ const AddressList = () => {
   const handleDelete = async (id) => {
     try {
       await API.delete(`/addresses/${id}`);
-      message.success('Xóa địa chỉ thành công');
+      toast.push({ title: 'Thành công', message: 'Xóa địa chỉ thành công', type: 'success' });
       fetchAddresses();
     } catch (e) {
       console.error('Delete error:', e);
-      message.error(e.response?.data?.message || 'Xóa địa chỉ thất bại');
+      toast.push({
+        title: 'Lỗi',
+        message: e.response?.data?.message || 'Xóa địa chỉ thất bại',
+        type: 'error'
+      });
     }
   };
 

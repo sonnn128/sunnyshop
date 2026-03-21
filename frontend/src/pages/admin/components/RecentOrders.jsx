@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { getAllOrders } from '../../../lib/orderApi';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
+import { getAllOrders } from '@/lib/orderApi';
 
 const RecentOrders = () => {
   const navigate = useNavigate();

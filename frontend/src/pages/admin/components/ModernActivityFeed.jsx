@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Icon from '../../../components/AppIcon';
-import API from '../../../lib/api';
-import { cn } from '../../../lib/utils';
+import Icon from '@/components/AppIcon';
+import API from '@/lib/api';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useI18n } from '../../../i18n';
+import { useI18n } from '@/i18n';
 
 const ModernActivityFeed = ({ className }) => {
   const [activities, setActivities] = useState([]);

@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input } from 'antd';
-import API from '../../lib/api';
-import { useToast } from '../../components/ui/ToastProvider';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const Register = () => {
   const [loading, setLoading] = useState(false);

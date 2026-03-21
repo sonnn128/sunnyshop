@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Header from '../../components/ui/Header';
-import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import Header from '@/components/ui/Header';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ProfileSection from './components/ProfileSection';
 import OrderHistory from './components/OrderHistory';
@@ -10,9 +10,9 @@ import AddressBook from './components/AddressBook';
 import AccountSettings from './components/AccountSettings';
 import LoyaltyProgram from './components/LoyaltyProgram';
 import Checkout from '../checkout';
-import API from '../../lib/api';
-import { getUserOrders } from '../../lib/orderApi';
-import { useRole } from '../../hooks/useRole';
+import API from '@/lib/api';
+import { getUserOrders } from '@/lib/orderApi';
+import { useRole } from '@/hooks/useRole';
 
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');

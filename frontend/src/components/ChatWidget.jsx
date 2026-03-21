@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import API, { API_URL, BASE } from '../lib/api';
+import API, { API_URL, BASE } from '@/lib/api';
 import { useToast } from './ui/ToastProvider';
 import Icon from './AppIcon';
 

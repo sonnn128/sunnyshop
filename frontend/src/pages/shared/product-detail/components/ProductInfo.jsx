@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import cart from '../../../lib/cart';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { useWishlist } from '../../../contexts/WishlistContext';
-import Icon from '../../../components/AppIcon';
-import { validateStockForSelection } from '../../../lib/productVariants';
+import cart from '@/lib/cart';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useWishlist } from '@/contexts/WishlistContext';
+import Icon from '@/components/AppIcon';
+import { validateStockForSelection } from '@/lib/productVariants';
 
 const UNAVAILABLE_STATUSES = ['inactive', 'out_of_stock', 'archived'];
 const buildVariantKey = (size, color) => `${size || ''}_${color || ''}`;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
+import Image from '@/components/AppImage';
+import Icon from '@/components/AppIcon';
 
 const RecentlyViewed = ({ products }) => {
   const formatPrice = (price) => {

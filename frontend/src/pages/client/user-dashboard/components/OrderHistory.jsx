@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserOrders, updateOrderStatus } from '../../../lib/orderApi';
-import API from '../../../lib/api'; // Import API
+import { getUserOrders, updateOrderStatus } from '@/lib/orderApi';
+import API from '@/lib/api'; // Import API
 
 const OrderHistory = () => {
   const navigate = useNavigate();

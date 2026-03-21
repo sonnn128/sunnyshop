@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
 
 const PromotionalBanners = () => {
   const mainPromo = {

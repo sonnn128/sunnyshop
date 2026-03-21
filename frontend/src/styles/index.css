@@ -6,17 +6,15 @@ body {
   padding: 0;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background:
-    radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.16), transparent 55%),
-    radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.18), transparent 55%),
-    #020617;
-  color: #e5e7eb;
+    radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.08), transparent 52%),
+    radial-gradient(circle at 100% 100%, rgba(167, 139, 250, 0.08), transparent 52%),
+    #f8fafc;
+  color: #0f172a;
 }
 
 * {
   box-sizing: border-box;
-  line-height: normal;
   font-family: inherit;
-  margin: unset;
 }
 
 /* Card-like containers used across e-commerce pages */

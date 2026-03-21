@@ -1,5 +1,5 @@
 import React from 'react';
-import { cn } from '../../utils/cn';
+import { cn } from '@/utils/cn';
 
 const Textarea = ({ label, value, onChange, description, className, error, required }) => {
   const id = `textarea-${Math.random().toString(36).substr(2,6)}`;

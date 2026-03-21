@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
+import API from '@/lib/api';
 import { Card, Button, Space, Row, Col, Spin, Divider, Tag, Image as AntImage, Descriptions, Empty } from 'antd';
 import { ArrowLeftOutlined, EditOutlined, FolderOutlined, CalendarOutlined } from '@ant-design/icons';
 
@@ -25,7 +25,7 @@ const CategoryDetail = () => {
     let mounted = true;
     (async () => {
       try {
-        const res = await API.get(`/api/categories/${id}`);
+        const res = await API.get(`/categories/${id}`);
         const data = res?.data?.data ?? res?.data?.category ?? res?.data;
         if (mounted) {
           setCategory(data ? normalizeCategory(data) : null);
@@ -269,7 +269,10 @@ const CategoryDetail = () => {
               {/* Action Buttons */}
               <Divider />
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              onClick={() => navigate('/admin?tab=categories')}>
+                <Button
+                  size="large"
+                  onClick={() => navigate('/admin?tab=categories')}
+                >
                   Quay lại
                 </Button>
                 <Button 

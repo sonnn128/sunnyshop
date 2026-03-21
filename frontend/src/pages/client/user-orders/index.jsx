@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
-import Header from '../../components/ui/Header';
-import Button from '../../components/ui/Button';
-import Icon from '../../components/AppIcon';
+import Header from '@/components/ui/Header';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/AppIcon';
 import { Link } from 'react-router-dom';
-import { getUserOrders } from '../../lib/orderApi';
+import { getUserOrders } from '@/lib/orderApi';
 
 const UserOrders = () => {
   const [orders, setOrders] = useState([]);

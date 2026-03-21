@@ -1,7 +1,7 @@
 import React from 'react';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Image from '@/components/AppImage';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 
 const StylingTips = ({ product, stylingTips }) => {
   return (

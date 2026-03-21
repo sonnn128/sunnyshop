@@ -1,8 +1,8 @@
 import React from 'react';
-import Icon from '../../../components/AppIcon';
-import { cn } from '../../../lib/utils';
+import Icon from '@/components/AppIcon';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { useI18n } from '../../../i18n';
+import { useI18n } from '@/i18n';
 
 const ModernStatsCard = ({ title, value, change, changeType, icon }) => {
   const { t } = useI18n();

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
-import { getTopSellingProducts } from '../../../lib/orderApi';
+import Image from '@/components/AppImage';
+import Icon from '@/components/AppIcon';
+import { getTopSellingProducts } from '@/lib/orderApi';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TopProducts = () => {

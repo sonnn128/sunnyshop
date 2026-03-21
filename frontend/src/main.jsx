@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { I18nProvider } from "./i18n";
 import store from "./store";
 import App from "./App";
+import "./styles/tailwind.css";
 import "./index.css";
 import "./styles/index.css";
 import { ConfigProvider } from "antd";

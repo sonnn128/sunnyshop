@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Icon from '../../../components/AppIcon';
-import API from '../../../lib/api';
+import Icon from '@/components/AppIcon';
+import API from '@/lib/api';
 
 const ActivityFeed = () => {
   const [activities, setActivities] = useState([]);

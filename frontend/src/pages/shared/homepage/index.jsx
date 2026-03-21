@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../../components/ui/Header';
+import Header from '@/components/ui/Header';
 import HeroSection from './components/HeroSection';
 import FeaturedCategories from './components/FeaturedCategories';
 import ProductCarousel from './components/ProductCarousel';
 import PromotionalBanners from './components/PromotionalBanners';
 import SocialProof from './components/SocialProof';
 import Footer from './components/Footer';
-import ProductRecommendations from '../../components/ProductRecommendations';
-import API from '../../lib/api';
-import { summarizeVariantOptions } from '../../lib/productVariants';
+import ProductRecommendations from '@/components/ProductRecommendations';
+import API from '@/lib/api';
+import { summarizeVariantOptions } from '@/lib/productVariants';
 
 const Homepage = () => {
   // API-backed product lists

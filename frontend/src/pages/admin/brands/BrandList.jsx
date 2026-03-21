@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '../../../components/ui/ToastProvider';
-import Button from '../../../components/ui/Button';
-import ConfirmModal from '../../../components/ui/ConfirmModal';
-import { getBrands, deleteBrand, toggleBrandActive } from '../../../lib/brandApi';
+import { useToast } from '@/components/ui/ToastProvider';
+import Button from '@/components/ui/Button';
+import ConfirmModal from '@/components/ui/ConfirmModal';
+import { getBrands, deleteBrand, toggleBrandActive } from '@/lib/brandApi';
 import { Briefcase, Plus, Pencil, Trash2, Search, Grid3x3, List, ToggleLeft, ToggleRight } from 'lucide-react';
 
 const BrandList = () => {
@@ -97,9 +97,9 @@ const BrandList = () => {
   return (
     <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="text-left">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-foreground flex items-center justify-start gap-2 text-left">
             <Briefcase className="w-6 h-6 text-accent" />
             Quản lý Thương hiệu
           </h1>
@@ -107,18 +107,10 @@ const BrandList = () => {
             {filteredBrands.length} thương hiệu
           </p>
         </div>
-        
-        <Button 
-          onClick={() => navigate('/admin/brands/new')}
-          className="flex items-center gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Thêm thương hiệu
-        </Button>
       </div>
 
-      {/* Search and View Toggle */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Search + Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <input
@@ -129,21 +121,30 @@ const BrandList = () => {
             className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
           />
         </div>
+
+        <Button 
+          onClick={() => navigate('/admin/brands/new')}
+          className="flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Thêm thương hiệu
+        </Button>
+      </div>
         
-        <div className="flex items-center gap-2 border border-border rounded-lg p-1">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded ${viewMode === 'grid' ? 'bg-accent text-white' : 'text-muted-foreground hover:bg-muted'}`}
-          >
-            <Grid3x3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`p-2 rounded ${viewMode === 'list' ? 'bg-accent text-white' : 'text-muted-foreground hover:bg-muted'}`}
-          >
-            <List className="w-4 h-4" />
-          </button>
-        </div>
+      {/* View Toggle */}
+      <div className="flex items-center gap-2 border border-border rounded-lg p-1 w-fit">
+        <button
+          onClick={() => setViewMode('grid')}
+          className={`p-2 rounded ${viewMode === 'grid' ? 'bg-accent text-white' : 'text-muted-foreground hover:bg-muted'}`}
+        >
+          <Grid3x3 className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={`p-2 rounded ${viewMode === 'list' ? 'bg-accent text-white' : 'text-muted-foreground hover:bg-muted'}`}
+        >
+          <List className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Brands Grid/List */}

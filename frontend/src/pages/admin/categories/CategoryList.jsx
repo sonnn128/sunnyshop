@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
-import { useToast } from '../../../components/ui/ToastProvider';
-import Button from '../../../components/ui/Button';
-import ConfirmModal from '../../../components/ui/ConfirmModal';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
+import Button from '@/components/ui/Button';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import { Folder, Plus, Pencil, Trash2, Search, Grid3x3, List, Table } from 'lucide-react';
-import { formatCategoriesWithHierarchy } from '../../../utils/categoryTree';
+import { formatCategoriesWithHierarchy } from '@/utils/categoryTree';
 
 const CategoryList = () => {
   const navigate = useNavigate();
@@ -97,13 +97,19 @@ const CategoryList = () => {
       })
     : [];
 
+  const totalCategories = Array.isArray(categories) ? categories.length : 0;
+  const activeCategories = Array.isArray(categories)
+    ? categories.filter((cat) => cat?.is_active).length
+    : 0;
+  const inactiveCategories = Math.max(0, totalCategories - activeCategories);
+
   return (
     <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="mb-6 text-left">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
+            <h1 className="text-3xl font-bold flex items-center justify-start gap-2 text-left">
               <Folder className="text-primary" />
               Quản lý Danh mục
             </h1>
@@ -111,24 +117,45 @@ const CategoryList = () => {
               Tổng cộng {categories.length} danh mục
             </p>
           </div>
-          <Button onClick={() => navigate('/admin/categories/new')}>
-            <Plus size={18} />
-            Thêm danh mục
-          </Button>
         </div>
 
-        {/* Search & View Toggle */}
-        <div className="flex flex-col md:flex-row gap-3 mb-6">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <div className="rounded-xl border border-slate-200 bg-white/80 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-slate-500">Tổng danh mục</p>
+            <p className="mt-1 text-2xl font-bold text-slate-900">{totalCategories}</p>
+          </div>
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-emerald-700">Đang hoạt động</p>
+            <p className="mt-1 text-2xl font-bold text-emerald-700">{activeCategories}</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+            <p className="text-xs uppercase tracking-wide text-slate-600">Không hoạt động</p>
+            <p className="mt-1 text-2xl font-bold text-slate-700">{inactiveCategories}</p>
+          </div>
+        </div>
+
+        {/* Search + Actions */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
             <input
               type="text"
               placeholder="Tìm kiếm danh mục..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg"
+              className="w-full h-11 pl-10 pr-4 border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-300"
             />
           </div>
+
+          <Button onClick={() => navigate('/admin/categories/new')} className="md:self-end">
+            <Plus size={18} />
+            Thêm danh mục
+          </Button>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex gap-2 mb-6">
           <div className="flex gap-2">
             <button
               onClick={() => setViewMode('table')}

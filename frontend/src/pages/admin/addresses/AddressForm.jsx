@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
+import API from '@/lib/api';
 import { Form, Input, Button, Card, Select, Row, Col, Spin, message, Switch } from 'antd';
 import { ArrowLeftOutlined, SaveOutlined } from '@ant-design/icons';
-import { getProvinces, getDistrictsByProvince, getWardsByDistrict } from '../../../data/vietnamAddresses';
+import { getProvinces, getDistrictsByProvince, getWardsByDistrict } from '@/data/vietnamAddresses';
 
 const AddressForm = () => {
   const { id } = useParams();

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Button from '../../components/ui/Button';
-import Icon from '../../components/AppIcon';
-import Header from '../../components/ui/Header';
-import Modal from '../../components/ui/Modal'; // Import Modal
-import API from '../../lib/api';
-import { getUserOrderById } from '../../lib/orderApi';
-import { useToast } from '../../components/ui/ToastProvider'; // Use Toast
-import usePaymentSocket from '../../hooks/usePaymentSocket'; // Import socket hook
+import Button from '@/components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Header from '@/components/ui/Header';
+import Modal from '@/components/ui/Modal'; // Import Modal
+import API from '@/lib/api';
+import { getUserOrderById } from '@/lib/orderApi';
+import { useToast } from '@/components/ui/ToastProvider'; // Use Toast
+import usePaymentSocket from '@/hooks/usePaymentSocket'; // Import socket hook
 
 const OrderDetail = () => {
   const { orderId } = useParams();

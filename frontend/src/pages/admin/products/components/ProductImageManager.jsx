@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Input from '../../../../components/ui/Input';
-import Button from '../../../../components/ui/Button';
-import { useToast } from '../../../../components/ui/ToastProvider';
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { uploadImage } from '../../../../lib/uploadApi';
+import { uploadImage } from '@/lib/uploadApi';
 
 /**
  * ProductImageManager - Manage images array based on ProductMongo schema

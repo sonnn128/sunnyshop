@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import cart from '../../lib/cart'
+import cart from '@/lib/cart'
 import { useSearchParams } from 'react-router-dom';
-import Header from '../../components/ui/Header';
+import Header from '@/components/ui/Header';
 import ProductImageGallery from './components/ProductImageGallery';
 import ProductInfo from './components/ProductInfo';
 import ProductTabs from './components/ProductTabs';
 import RelatedProducts from './components/RelatedProducts';
 import StylingTips from './components/StylingTips';
 import RecentlyViewed from './components/RecentlyViewed';
-import Icon from '../../components/AppIcon';
-import API from '../../lib/api';
-import { useToast } from '../../components/ui/ToastProvider';
-import ProductRecommendations from '../../components/ProductRecommendations';
+import Icon from '@/components/AppIcon';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
+import ProductRecommendations from '@/components/ProductRecommendations';
 
 const ProductDetail = () => {
   const [searchParams] = useSearchParams();

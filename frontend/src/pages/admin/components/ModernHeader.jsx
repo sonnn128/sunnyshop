@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Icon from '../../../components/AppIcon';
-import { cn } from '../../../lib/utils';
+import Icon from '@/components/AppIcon';
+import { cn } from '@/lib/utils';
 
 const ModernHeader = ({ collapsed, user, roleLabels }) => {
   const navigate = useNavigate();

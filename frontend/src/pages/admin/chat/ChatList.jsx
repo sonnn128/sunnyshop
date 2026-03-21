@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import API from '../../../lib/api';
-import { useToast } from '../../../components/ui/ToastProvider';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const ChatList = ({ onSelectConversation }) => {
   const [conversations, setConversations] = useState([]);

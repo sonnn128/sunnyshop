@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import Header from '../../components/ui/Header';
+import Header from '@/components/ui/Header';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '../../components/ui/ToastProvider';
-import { createOrder as createOrderApi } from '../../lib/orderApi';
+import { useToast } from '@/components/ui/ToastProvider';
+import { createOrder as createOrderApi } from '@/lib/orderApi';
 import { useSelector, useDispatch } from 'react-redux';
-import { clearCart } from '../../store/slices/cartSlice';
-import { validateCoupon } from '../../lib/api';
-import { getAddresses, getDefaultAddress, formatAddress, formatShortAddress } from '../../lib/addressApi';
+import { clearCart } from '@/store/slices/cartSlice';
+import { validateCoupon } from '@/lib/api';
+import { getAddresses, getDefaultAddress, formatAddress, formatShortAddress } from '@/lib/addressApi';
 
 const Checkout = ({ embedded = false }) => {
   const navigate = useNavigate();

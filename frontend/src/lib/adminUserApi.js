@@ -140,8 +140,8 @@ export const getAdminUsers = async (filters = {}) => {
   const suffix = queryString ? `?${queryString}` : '';
 
   const paths = [
-    `/admin/users${suffix}`,
     `/users${suffix}`,
+    `/admin/users${suffix}`,
     `/users/list${suffix}`
   ];
 
@@ -151,27 +151,34 @@ export const getAdminUsers = async (filters = {}) => {
       const response = await api.get(path);
       return pickList(response);
     } catch (error) {
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
+      if (error?.response?.status === 401) {
         throw error;
       }
+      if (error?.response?.status === 403) {
+        lastError = error;
+        continue;
+      }
       if (error?.response?.status === 404) {
-        console.warn(`Admin user listing endpoint missing at ${path}. Returning empty list.`);
-        return {
-          users: [],
-          pagination: {
-            currentPage: filters.page || 1,
-            totalPages: 1,
-            totalItems: 0,
-            perPage: filters.limit || 0
-          }
-        };
+        lastError = error;
+        continue;
       }
       lastError = error;
       continue;
     }
   }
 
-  console.error('Failed to fetch admin users from all known endpoints.', lastError);
+  if (lastError?.response?.status === 403 || lastError?.response?.status === 404) {
+    return {
+      users: [],
+      pagination: {
+        currentPage: filters.page || 1,
+        totalPages: 1,
+        totalItems: 0,
+        perPage: filters.limit || 0
+      }
+    };
+  }
+
   throw lastError;
 };
 

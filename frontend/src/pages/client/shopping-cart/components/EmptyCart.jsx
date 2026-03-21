@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 
 const EmptyCart = () => {
   const suggestedCategories = [

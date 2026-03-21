@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import API from '../../../lib/api';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
+import API from '@/lib/api';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
 import { Link } from 'react-router-dom';
-import ConfirmModal from '../../../components/ui/ConfirmModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import { Package, Search, Grid3x3, List, Trash2, CheckSquare, Square } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 12;
@@ -193,9 +193,9 @@ const ProductsList = () => {
   return (
     <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div className="mb-6 text-left">
         <div>
-          <h2 className="text-2xl font-semibold flex items-center gap-2">
+          <h2 className="text-2xl font-semibold flex items-center justify-start gap-2 text-left">
             <Package className="text-primary" />
             Quản lý sản phẩm
           </h2>
@@ -208,11 +208,42 @@ const ProductsList = () => {
             )}
           </p>
         </div>
-        
+      </div>
+
+      {/* Search + Actions */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <div className="flex items-center gap-2 w-full md:max-w-2xl">
+          {totalItems > 0 && (
+            <div className="flex items-center mr-2">
+              <button
+                onClick={() => handleSelectAllPage(paginatedProducts)}
+                className={`p-2 rounded-md hover:bg-muted ${isPageSelected ? 'text-primary' : 'text-muted-foreground'}`}
+                title={isPageSelected ? "Bỏ chọn tất cả trang này" : "Chọn tất cả trang này"}
+              >
+                {isPageSelected ? <CheckSquare size={20} /> : <Square size={20} />}
+              </button>
+              <span className="text-sm text-muted-foreground hidden md:block">
+                {isPageSelected ? 'Bỏ chọn' : 'Chọn tất cả'}
+              </span>
+            </div>
+          )}
+
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo tên hoặc SKU..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
         <div className="flex gap-2">
           {selectedIds.length > 0 && (
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={() => setShowBulkDeleteConfirm(true)}
               className="flex items-center gap-2 animate-in fade-in zoom-in duration-200"
             >
@@ -226,34 +257,8 @@ const ProductsList = () => {
         </div>
       </div>
 
-      {/* Search Bar & View Toggle */}
-      <div className="flex flex-col md:flex-row gap-3 mb-6 items-center">
-        {/* Select All Checkbox for Page */}
-        {totalItems > 0 && (
-          <div className="flex items-center mr-2">
-             <button
-              onClick={() => handleSelectAllPage(paginatedProducts)}
-              className={`p-2 rounded-md hover:bg-muted ${isPageSelected ? 'text-primary' : 'text-muted-foreground'}`}
-              title={isPageSelected ? "Bỏ chọn tất cả trang này" : "Chọn tất cả trang này"}
-             >
-                {isPageSelected ? <CheckSquare size={20} /> : <Square size={20} />}
-             </button>
-             <span className="text-sm text-muted-foreground hidden md:block">
-                {isPageSelected ? 'Bỏ chọn' : 'Chọn tất cả'}
-             </span>
-          </div>
-        )}
-
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={18} />
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tên hoặc SKU..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
+      {/* View Toggle */}
+      <div className="flex gap-2 mb-6">
         <div className="flex gap-2">
           <button
             onClick={() => setViewMode('grid')}

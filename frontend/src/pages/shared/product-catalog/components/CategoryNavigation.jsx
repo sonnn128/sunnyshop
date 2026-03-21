@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 
 const DEFAULT_CATEGORY = { id: 'all', name: 'Tất cả', icon: 'Grid3X3', count: 0 };
 const MAX_VISIBLE = 6;

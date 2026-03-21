@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import API from '../../lib/api';
-import { useToast } from '../../components/ui/ToastProvider';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import { LockOutlined, MailOutlined, SafetyCertificateOutlined } from '@ant-design/icons';

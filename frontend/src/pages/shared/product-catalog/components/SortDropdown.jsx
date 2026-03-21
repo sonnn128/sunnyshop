@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 
 const SortDropdown = ({ currentSort, onSortChange }) => {
   const [isOpen, setIsOpen] = useState(false);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Icon from '../../../components/AppIcon';
-import { cn } from '../../../lib/utils';
+import Icon from '@/components/AppIcon';
+import { cn } from '@/lib/utils';
 
 const ModernSidebar = ({ tabs, activeTab, onTabChange, collapsed, setCollapsed }) => {
   const navigate = useNavigate();

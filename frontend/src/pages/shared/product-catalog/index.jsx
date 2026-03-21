@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import Header from '../../components/ui/Header';
+import Header from '@/components/ui/Header';
 import SearchBar from './components/SearchBar';
 import FilterSidebar from './components/FilterSidebar';
 import SortDropdown from './components/SortDropdown';
 import ProductGrid from './components/ProductGrid';
-import { resolveQuickVariantSelection, summarizeVariantOptions } from '../../lib/productVariants';
+import { resolveQuickVariantSelection, summarizeVariantOptions } from '@/lib/productVariants';
 import QuickViewModal from './components/QuickViewModal';
-import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
-import cart from '../../lib/cart';
-import API from '../../lib/api';
-import { useToast } from '../../components/ui/ToastProvider';
-import { useWishlist } from '../../contexts/WishlistContext';
-import { formatCategoriesWithHierarchy, buildCategoryTree, normalizeCategoryId } from '../../utils/categoryTree';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import cart from '@/lib/cart';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { formatCategoriesWithHierarchy, buildCategoryTree, normalizeCategoryId } from '@/utils/categoryTree';
+import Footer from '@/pages/shared/homepage/components/Footer';
 
 const ProductCatalog = () => {
   const toast = useToast();
@@ -798,6 +799,7 @@ const ProductCatalog = () => {
         onAddToCart={handleAddToCart}
         onWishlistToggle={handleWishlistToggle}
       />
+      <Footer />
     </div>
   );
 };

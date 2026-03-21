@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import Button from '../../components/ui/Button';
-import Icon from '../../components/AppIcon';
-import { getUserOrderById } from '../../lib/orderApi';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/AppIcon';
+import { getUserOrderById } from '@/lib/orderApi';
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();

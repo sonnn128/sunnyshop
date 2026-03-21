@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
-import API, { API_ENABLED } from '../../lib/api';
-import cart from '../../lib/cart';
-import { useWishlist } from '../../contexts/WishlistContext';
+import API, { API_ENABLED } from '@/lib/api';
+import cart from '@/lib/cart';
+import { useWishlist } from '@/contexts/WishlistContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -115,7 +115,7 @@ const Header = () => {
       }
       // storage events across tabs: helper writes 'cart_v1' and 'cart_v1_ts'
       if (e.key && (e.key.startsWith?.('cart_v1') || e.key === 'cart')) refreshCart();
-      if (e.key && (e.key.startsWith?.('wishlist') || e.type === 'wishlist:updated')) refreshWishlist();
+      if (e.key && (e.key.startsWith?.('wishlist') || e.type === 'wishlist:updated')) return;
     };
   // storage event for other tabs
   window.addEventListener('storage', onStorage);

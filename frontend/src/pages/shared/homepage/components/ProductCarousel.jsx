@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
-import cart from '../../../lib/cart';
-import API from '../../../lib/api';
-import { resolveQuickVariantSelection } from '../../../lib/productVariants';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
+import cart from '@/lib/cart';
+import API from '@/lib/api';
+import { resolveQuickVariantSelection } from '@/lib/productVariants';
 
 const ProductCarousel = ({ title, subtitle, products, sectionId }) => {
   const toast = useToast();

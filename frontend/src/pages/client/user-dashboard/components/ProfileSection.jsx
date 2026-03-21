@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import API from '../../../lib/api';
-import { useToast } from '../../../components/ui/ToastProvider';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const ProfileSection = () => {
   const [isEditing, setIsEditing] = useState(false);

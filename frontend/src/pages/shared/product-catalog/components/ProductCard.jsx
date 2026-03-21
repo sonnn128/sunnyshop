@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
-import { useWishlist } from '../../../contexts/WishlistContext';
-import { summarizeVariantOptions } from '../../../lib/productVariants';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { summarizeVariantOptions } from '@/lib/productVariants';
 
 const normalizeSizeValue = (size) => {
   if (!size) return '';

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useToast } from '../../../components/ui/ToastProvider';
-import API from '../../../lib/api';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
+import API from '@/lib/api';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 
 /**
  * Component xử lý callback từ VNPay sau khi người dùng hoàn tất thanh toán

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getRecommendations, getTrendingProducts } from '../lib/api';
-import ProductCard from '../pages/product-catalog/components/ProductCard';
-import cart from '../lib/cart';
-import { useToast } from '../components/ui/ToastProvider';
-import API from '../lib/api';
-import { resolveQuickVariantSelection, summarizeVariantOptions } from '../lib/productVariants';
+import { getRecommendations, getTrendingProducts } from '@/lib/api';
+import ProductCard from '@/pages/shared/product-catalog/components/ProductCard';
+import cart from '@/lib/cart';
+import { useToast } from '@/components/ui/ToastProvider';
+import API from '@/lib/api';
+import { resolveQuickVariantSelection, summarizeVariantOptions } from '@/lib/productVariants';
 
 const ProductRecommendations = ({
   userId,

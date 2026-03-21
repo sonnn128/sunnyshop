@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Button, Space, Divider } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined, UserOutlined, DashboardOutlined, ShoppingBagOutlined, PackageOutlined, FolderTreeOutlined, GlobalOutlined, MapPinOutlined, MessageOutlined, BarChartOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons';
+import { Layout, Menu, Avatar, Dropdown, Button, Divider } from 'antd';
+import { MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined, UserOutlined, DashboardOutlined, ShoppingCartOutlined, InboxOutlined, UnorderedListOutlined, GlobalOutlined, EnvironmentOutlined, MessageOutlined, BarChartOutlined, TeamOutlined, SettingOutlined } from '@ant-design/icons';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRole } from '../../hooks/useRole';
-import { useAuthStore } from '../../store/auth.store';
+import { useRole } from '@/hooks/useRole';
+import { useAuthStore } from '@/store/auth.store';
 import { useNavigate } from 'react-router-dom';
+import './modern-admin.css';
 
 const { Sider, Header, Content } = Layout;
 
@@ -28,11 +29,11 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
 
   const iconMap = {
     LayoutDashboard: <DashboardOutlined />,
-    ShoppingBag: <ShoppingBagOutlined />,
-    Package: <PackageOutlined />,
-    FolderTree: <FolderTreeOutlined />,
+    ShoppingBag: <ShoppingCartOutlined />,
+    Package: <InboxOutlined />,
+    FolderTree: <UnorderedListOutlined />,
     Globe: <GlobalOutlined />,
-    MapPin: <MapPinOutlined />,
+    MapPin: <EnvironmentOutlined />,
     MessageCircle: <MessageOutlined />,
     BarChart3: <BarChartOutlined />,
     Users: <TeamOutlined />,
@@ -59,6 +60,8 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
     onClick: () => onTabChange(tab.id)
   }));
 
+  const activeTabLabel = tabs.find(tab => tab.id === activeTab)?.label || 'Quản trị';
+
   const userMenuItems = [
     {
       label: 'Hồ sơ',
@@ -78,20 +81,30 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
       danger: true,
       onClick: () => {
         logout();
-        navigate('/login');
+        try {
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          localStorage.removeItem('rememberedUsername');
+          sessionStorage.removeItem('user');
+          sessionStorage.removeItem('token');
+        } catch (e) {
+          // ignore storage errors
+        }
+        navigate('/homepage');
       }
     }
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout className="modern-admin-shell" style={{ minHeight: '100vh' }}>
       <Sider
         trigger={null}
         collapsible
         collapsed={collapsed}
         width={280}
+        collapsedWidth={88}
+        className="modern-admin-sider"
         style={{
-          background: 'linear-gradient(135deg, #1890ff 0%, #135ba1 100%)',
           overflow: 'auto',
           height: '100vh',
           position: 'fixed',
@@ -101,62 +114,62 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
           zIndex: 100
         }}
       >
-        <div style={{ padding: '24px 16px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ fontSize: collapsed ? '16px' : '24px', fontWeight: 'bold', color: 'white' }}>
-            {collapsed ? 'C' : 'Courtify'}
+        <div className="modern-admin-brand">
+          <div className="modern-admin-brand-title" style={{ fontSize: collapsed ? '16px' : '24px' }}>
+            {collapsed ? 'SS' : 'SunnyShop'}
           </div>
-          {!collapsed && <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', marginTop: '4px' }}>Admin Panel</div>}
+          {!collapsed && <div className="modern-admin-brand-subtitle">Management</div>}
         </div>
 
         <Menu
           mode="inline"
           selectedKeys={[activeTab]}
           items={menuItems}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            marginTop: '16px'
-          }}
-          itemLabelRender={(item) => (
-            <span style={{ color: 'white', fontSize: '14px' }}>{item}</span>
-          )}
-          theme="dark"
+          className="modern-admin-menu"
+          style={{ border: 'none', marginTop: '16px' }}
+          theme="light"
         />
       </Sider>
 
       <Layout
         style={{
-          marginLeft: collapsed ? 80 : 280,
+          marginLeft: collapsed ? 88 : 280,
           transition: 'margin-left 0.3s'
         }}
       >
         <Header
+          className="modern-admin-header"
           style={{
-            background: 'white',
-            padding: '0 24px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            height: 64,
+            height: 72,
             position: 'sticky',
             top: 0,
             zIndex: 50
           }}
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ fontSize: '16px' }}
-          />
+          <div className="modern-admin-header-left">
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ fontSize: '16px' }}
+              className="modern-admin-collapse-btn"
+            />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
+            <div className="modern-admin-title-wrap">
+              <div className="modern-admin-page-title">{activeTabLabel}</div>
+              <div className="modern-admin-page-subtitle">Bảng điều khiển quản trị</div>
+            </div>
+          </div>
+
+          <div className="modern-admin-header-right">
+            <div className="modern-admin-user-meta" style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a' }}>
                 {currentUser.name}
               </div>
-              <div style={{ fontSize: '12px', color: '#666' }}>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>
                 {roleLabels[role]} • {new Date().toLocaleDateString('vi-VN')}
               </div>
             </div>
@@ -168,23 +181,19 @@ const ModernAdminLayout = ({ children, activeTab, onTabChange }) => {
                 size={40}
                 src={currentUser.avatar}
                 icon={!currentUser.avatar && <UserOutlined />}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: 'pointer', border: '2px solid #e2e8f0' }}
               />
             </Dropdown>
           </div>
         </Header>
 
         <Content
-          style={{
-            margin: '24px 24px',
-            padding: '24px',
-            background: '#f5f5f5',
-            borderRadius: '8px',
-            minHeight: 'calc(100vh - 112px)'
-          }}
+          className="modern-admin-content"
+          style={{ minHeight: 'calc(100vh - 112px)' }}
         >
           <AnimatePresence mode="wait">
             <motion.div
+              className="modern-admin-content-inner"
               key={activeTab}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

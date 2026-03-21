@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import API from '../../../lib/api';
-import Modal from '../../../components/ui/Modal';
-import { useToast } from '../../../components/ui/ToastProvider';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import API from '@/lib/api';
+import Modal from '@/components/ui/Modal';
+import { useToast } from '@/components/ui/ToastProvider';
 import { useNavigate } from 'react-router-dom';
 
 const AccountSettings = () => {

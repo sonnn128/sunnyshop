@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
-import { uploadImage } from '../../../lib/uploadApi';
+import API from '@/lib/api';
+import { uploadImage } from '@/lib/uploadApi';
 import { Form, Input, Button, Card, Space, Row, Col, InputNumber, message, Upload, Image as AntImage, Spin } from 'antd';
 import { FolderOutlined, PictureOutlined, ArrowLeftOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 

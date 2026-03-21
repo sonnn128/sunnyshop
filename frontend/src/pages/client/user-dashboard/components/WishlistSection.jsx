@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
-import ConfirmModal from '../../../components/ui/ConfirmModal';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { useWishlist } from '../../../contexts/WishlistContext';
-import cart from '../../../lib/cart';
-import API from '../../../lib/api';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
+import ConfirmModal from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useWishlist } from '@/contexts/WishlistContext';
+import cart from '@/lib/cart';
+import API from '@/lib/api';
 
 const WishlistSection = () => {
   const toast = useToast();

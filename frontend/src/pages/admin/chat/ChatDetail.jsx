@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
-import API, { API_URL } from '../../../lib/api';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
+import API, { API_URL } from '@/lib/api';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
 import { useSelector } from 'react-redux';
 
 const ChatDetail = ({ conversation, onBack }) => {

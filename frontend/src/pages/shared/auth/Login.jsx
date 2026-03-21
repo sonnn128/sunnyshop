@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Checkbox } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import API from '../../lib/api';
-import { useToast } from '../../components/ui/ToastProvider';
+import API from '@/lib/api';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const Login = () => {
   const [username, setUsername] = useState(() => {

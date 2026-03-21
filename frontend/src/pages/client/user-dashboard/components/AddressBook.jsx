@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import API from '../../../lib/api';
+import API from '@/lib/api';
 import { 
   getAddresses, 
   createAddress, 
   updateAddress, 
   deleteAddress, 
   setDefaultAddress 
-} from '../../../lib/addressApi';
-import { useToast } from '../../../components/ui/ToastProvider';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Modal from '../../../components/ui/Modal';
+} from '@/lib/addressApi';
+import { useToast } from '@/components/ui/ToastProvider';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Modal from '@/components/ui/Modal';
 
 const AddressBook = () => {
   const toast = useToast();

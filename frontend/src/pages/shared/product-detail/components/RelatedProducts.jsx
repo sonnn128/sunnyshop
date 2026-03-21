@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
-import cart from '../../../lib/cart';
-import API from '../../../lib/api';
-import { resolveQuickVariantSelection, summarizeVariantOptions } from '../../../lib/productVariants';
+import Image from '@/components/AppImage';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
+import cart from '@/lib/cart';
+import API from '@/lib/api';
+import { resolveQuickVariantSelection, summarizeVariantOptions } from '@/lib/productVariants';
 
 const RelatedProducts = ({ products, title = "Sản phẩm liên quan" }) => {
   const toast = useToast();

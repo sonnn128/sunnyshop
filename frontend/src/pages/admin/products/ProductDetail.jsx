@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import API from '../../../lib/api';
-import Button from '../../../components/ui/button';
-import { useToast } from '../../../components/ui/ToastProvider';
+import API from '@/lib/api';
+import Button from '@/components/ui/button';
+import { useToast } from '@/components/ui/ToastProvider';
 import { ArrowLeft, Package, Pencil, Tag } from 'lucide-react';
 
 const normalizeProduct = (product = {}) => {

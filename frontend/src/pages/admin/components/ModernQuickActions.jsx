@@ -1,7 +1,7 @@
 import React from 'react';
-import Icon from '../../../components/AppIcon';
+import Icon from '@/components/AppIcon';
 import { useNavigate } from 'react-router-dom';
-import { cn } from '../../../lib/utils';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 const ModernQuickActions = ({ className }) => {

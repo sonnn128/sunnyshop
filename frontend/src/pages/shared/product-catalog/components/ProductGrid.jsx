@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
-import Button from '../../../components/ui/Button';
-import Icon from '../../../components/AppIcon';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/AppIcon';
 
 const ProductGrid = ({ 
   products, 

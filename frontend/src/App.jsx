@@ -41,6 +41,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import ProductForm from './pages/admin/products/ProductForm';
 import CategoryList from './pages/admin/categories/CategoryList';
 import CategoryForm from './pages/admin/categories/CategoryForm';
+import CategoryDetail from './pages/admin/categories/CategoryDetail';
 import BrandList from './pages/admin/brands/BrandList';
 import BrandForm from './pages/admin/brands/BrandForm';
 import OrdersList from './pages/admin/orders/OrdersList';
@@ -133,6 +134,7 @@ function App() {
               <Route path="/admin/products/new" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/products/:id" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/categories/new" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
+              <Route path="/admin/categories/:id/detail" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryDetail /></AdminLayout></AdminRoute>} />
               <Route path="/admin/categories/:id" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/brands/new" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/brands/:id" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />

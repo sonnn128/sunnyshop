@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
-import Button from '../../../components/ui/Button';
-import { useToast } from '../../../components/ui/ToastProvider';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
+import Button from '@/components/ui/Button';
+import { useToast } from '@/components/ui/ToastProvider';
 
 const QuickViewModal = ({ product, isOpen, onClose, onAddToCart, onWishlistToggle }) => {
   const [selectedSize, setSelectedSize] = useState(product?.availableSizes?.[0] || '');

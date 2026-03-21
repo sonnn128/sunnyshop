@@ -17,12 +17,12 @@ import {
   YAxis,
   Sector
 } from 'recharts';
-import Button from '../../../components/ui/Button';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
+import Button from '@/components/ui/Button';
+import Icon from '@/components/AppIcon';
+import Image from '@/components/AppImage';
 import ModernStatsCard from './ModernStatsCard';
-import { getAnalyticsOverview } from '../../../lib/analyticsApi';
-import { cn } from '../../../lib/utils';
+import { getAnalyticsOverview } from '@/lib/analyticsApi';
+import { cn } from '@/lib/utils';
 
 const RANGE_OPTIONS = [
   { value: '30d', label: '30 ngày' },

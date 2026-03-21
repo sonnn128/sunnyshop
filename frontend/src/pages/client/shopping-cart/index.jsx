@@ -1,21 +1,21 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useSelector, useDispatch } from 'react-redux'
-import cart from '../../lib/cart'
-import API, { API_ENABLED } from '../../lib/api';
-import * as orderApiService from '../../lib/orderApi';
-import Header from '../../components/ui/Header';
-import Icon from '../../components/AppIcon';
-import Button from '../../components/ui/Button';
+import cart from '@/lib/cart'
+import API, { API_ENABLED } from '@/lib/api';
+import * as orderApiService from '@/lib/orderApi';
+import Header from '@/components/ui/Header';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
 import CartItem from './components/CartItem';
 import OrderSummary from './components/OrderSummary';
 import SavedForLater from './components/SavedForLater';
 import CheckoutModal from './components/CheckoutModal';
 import EmptyCart from './components/EmptyCart';
-import { useToast } from '../../components/ui/ToastProvider';
-import { useWishlist } from '../../contexts/WishlistContext';
-import { useAuth } from '../../contexts/AuthContext';
-import ConfirmModal from '../../components/ui/ConfirmModal';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useWishlist } from '@/contexts/WishlistContext';
+import { useAuth } from '@/contexts/AuthContext';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import { useNavigate } from 'react-router-dom';
 
 const normalizeColorValue = (color) => {

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useRole } from '../../hooks/useRole';
-import API from '../../lib/api';
+import { useRole } from '@/hooks/useRole';
+import API from '@/lib/api';
 import { Row, Col, Card, Button, Space, Statistic, Spin, Empty, Tag, Divider } from 'antd';
 import { DownloadOutlined, PlusOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';

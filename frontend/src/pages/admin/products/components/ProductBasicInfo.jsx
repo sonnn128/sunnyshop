@@ -1,6 +1,6 @@
 import React from 'react';
-import Input from '../../../../components/ui/Input';
-import Textarea from '../../../../components/ui/Textarea';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
 import { Package, FileText, Hash, Link as LinkIcon } from 'lucide-react';
 
 /**

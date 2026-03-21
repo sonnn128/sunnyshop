@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import usePaymentSocket from '../../../hooks/usePaymentSocket';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Select from '../../../components/ui/Select';
-import { Checkbox } from '../../../components/ui/Checkbox';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { useAuth } from '../../../contexts/AuthContext';
-import UserService from '../../../lib/user';
-import { getAddresses as getAddressesApi, createAddress as createAddressApi, setDefaultAddress as setDefaultAddressApi } from '../../../lib/addressApi';
-import API from '../../../lib/api';
-import cart from '../../../lib/cart';
+import usePaymentSocket from '@/hooks/usePaymentSocket';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useAuth } from '@/contexts/AuthContext';
+import UserService from '@/lib/user';
+import { getAddresses as getAddressesApi, createAddress as createAddressApi, setDefaultAddress as setDefaultAddressApi } from '@/lib/addressApi';
+import API from '@/lib/api';
+import cart from '@/lib/cart';
 
 // Helper function to normalize addresses from server format to frontend format
 // Similar to the one in AddressBook.jsx

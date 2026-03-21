@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import API from '../lib/api';
+import API from '@/lib/api';
 
 // Tạo context
 export const AuthContext = createContext(null);

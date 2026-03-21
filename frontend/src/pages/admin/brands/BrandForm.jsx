@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useToast } from '../../../components/ui/ToastProvider';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import { getBrand, createBrand, updateBrand } from '../../../lib/brandApi';
+import { useToast } from '@/components/ui/ToastProvider';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import { getBrand, createBrand, updateBrand } from '@/lib/brandApi';
 import { Briefcase, Save, ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
 
 const emptyTemplate = {

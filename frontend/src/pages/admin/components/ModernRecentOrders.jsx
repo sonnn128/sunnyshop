@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { getAllOrders } from '../../../lib/orderApi';
-import { cn } from '../../../lib/utils';
+import Icon from '@/components/AppIcon';
+import { useToast } from '@/components/ui/ToastProvider';
+import { getAllOrders } from '@/lib/orderApi';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ModernRecentOrders = () => {

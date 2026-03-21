@@ -1,8 +1,8 @@
 import React, { useState, useEffect, memo } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import { Checkbox } from '../../../components/ui/Checkbox';
-import { getBrands } from '../../../lib/brandApi';
+import Icon from '@/components/AppIcon';
+import Button from '@/components/ui/Button';
+import { Checkbox } from '@/components/ui/Checkbox';
+import { getBrands } from '@/lib/brandApi';
 // memo is attached above with main React import
 
 const FilterSidebar = ({ filters, onFilterChange, onClearFilters, isOpen, onClose, categoryOptions = [], categoryTree = [] }) => {

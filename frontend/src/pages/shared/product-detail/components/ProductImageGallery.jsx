@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
+import Image from '@/components/AppImage';
+import Icon from '@/components/AppIcon';
 
 const ProductImageGallery = ({ images, productName }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

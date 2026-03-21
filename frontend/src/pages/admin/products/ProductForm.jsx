@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import API from '../../../lib/api';
-import { getBrands } from '../../../lib/brandApi';
-import { useToast } from '../../../components/ui/ToastProvider';
-import { useRole } from '../../../hooks/useRole';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Textarea from '../../../components/ui/Textarea';
+import API from '@/lib/api';
+import { getBrands } from '@/lib/brandApi';
+import { useToast } from '@/components/ui/ToastProvider';
+import { useRole } from '@/hooks/useRole';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Textarea from '@/components/ui/Textarea';
 import { Package, DollarSign, Image as ImageIcon, X, Activity, Star, Upload, Download } from 'lucide-react';
 import ProductImageManager from './components/ProductImageManager';
 import * as XLSX from 'xlsx';
-import { formatCategoriesWithHierarchy, normalizeCategoryId } from '../../../utils/categoryTree';
+import { formatCategoriesWithHierarchy, normalizeCategoryId } from '@/utils/categoryTree';
 
 /**
  * Empty template matching ProductMongo.js schema exactly
@@ -203,6 +203,20 @@ const slugify = (value = '') => {
     .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+};
+
+const formatNumberVi = (value) => {
+  if (value === null || value === undefined || value === '') return '';
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) return '';
+  return new Intl.NumberFormat('vi-VN').format(numeric);
+};
+
+const parseNumberVi = (value) => {
+  if (value === null || value === undefined) return 0;
+  const normalized = String(value).replace(/[^\d]/g, '');
+  if (!normalized) return 0;
+  return Number(normalized);
 };
 
 const defaultVariantTemplate = {
@@ -1041,6 +1055,7 @@ const ProductForm = () => {
                   onChange={(e) => update('name', e.target.value)}
                   error={errors?.name}
                   required
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
               <div>
@@ -1051,6 +1066,7 @@ const ProductForm = () => {
                   onChange={(e) => update('slug', e.target.value)}
                   error={errors?.slug}
                   required
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
                 <button
                   type="button"
@@ -1071,6 +1087,7 @@ const ProductForm = () => {
                   value={form.sku || ''}
                   onChange={(e) => update('sku', e.target.value)}
                   error={errors?.sku}
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
               <div>
@@ -1081,7 +1098,7 @@ const ProductForm = () => {
                     const value = e.target.value || '';
                     update('category_id', value);
                   }}
-                  className="w-full px-3 py-2 border rounded-lg bg-background"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400"
                 >
                   <option value="">-- Chọn danh mục --</option>
                   {Array.isArray(categoryOptions) && categoryOptions.map(cat => {
@@ -1109,7 +1126,7 @@ const ProductForm = () => {
                     update('brand_id', selectedBrandId);
                     update('brand', selectedBrand?.name || ''); // Sync legacy field
                   }}
-                  className="w-full px-3 py-2 border rounded-lg bg-background"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400"
                 >
                   <option value="">-- Chọn thương hiệu --</option>
                   {Array.isArray(brands) && brands.filter(b => b.is_active !== false).map(brand => (
@@ -1129,6 +1146,7 @@ const ProductForm = () => {
                   value={form.short_description || ''}
                   onChange={(e) => update('short_description', e.target.value)}
                   error={errors?.short_description}
+                  className="border-slate-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                 />
               </div>
               <div>
@@ -1139,6 +1157,7 @@ const ProductForm = () => {
                   value={form.description || ''}
                   onChange={(e) => update('description', e.target.value)}
                   error={errors?.description}
+                  className="border-slate-300 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                 />
               </div>
             </div>
@@ -1156,37 +1175,44 @@ const ProductForm = () => {
               <div>
                 <Input
                   label="Giá bán (VNĐ)"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="0"
-                  value={form.price || ''}
-                  onChange={(e) => update('price', Number(e.target.value))}
+                  value={formatNumberVi(form.price)}
+                  onChange={(e) => update('price', parseNumberVi(e.target.value))}
                   error={errors?.price}
                   required
                   min={0}
+                  helper={form.price ? `${formatNumberVi(form.price)} VND` : ''}
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
               <div>
                 <Input
                   label="Giá gốc (VNĐ)"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="0"
-                  value={form.original_price || ''}
-                  onChange={(e) => update('original_price', Number(e.target.value))}
+                  value={formatNumberVi(form.original_price)}
+                  onChange={(e) => update('original_price', parseNumberVi(e.target.value))}
                   error={errors?.original_price}
                   min={0}
-                  helper={discountPercent > 0 ? `Giảm ${discountPercent}%` : ''}
+                  helper={discountPercent > 0 ? `Giảm ${discountPercent}% • ${formatNumberVi(form.original_price)} VND` : (form.original_price ? `${formatNumberVi(form.original_price)} VND` : '')}
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
               <div>
                 <Input
                   label="Giá vốn (VNĐ)"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="0"
-                  value={form.cost_price || ''}
-                  onChange={(e) => update('cost_price', Number(e.target.value))}
+                  value={formatNumberVi(form.cost_price)}
+                  onChange={(e) => update('cost_price', parseNumberVi(e.target.value))}
                   error={errors?.cost_price}
                   min={0}
-                  helper="Để tính lợi nhuận"
+                  helper={form.cost_price ? `${formatNumberVi(form.cost_price)} VND` : 'Để tính lợi nhuận'}
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
             </div>
@@ -1204,6 +1230,7 @@ const ProductForm = () => {
                   error={errors?.stock_quantity}
                   required
                   min={0}
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
               <div>
@@ -1216,6 +1243,7 @@ const ProductForm = () => {
                   error={errors?.min_stock_level}
                   min={0}
                   helper="Cảnh báo khi tồn kho < giá trị này"
+                  className="border-slate-300 bg-white shadow-sm focus-visible:ring-slate-300"
                 />
               </div>
             </div>
@@ -1270,7 +1298,7 @@ const ProductForm = () => {
                           <select
                             value={variant.name || 'Size'}
                             onChange={(e) => updateVariant(idx, 'name', e.target.value)}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                           >
                             <option value="Size">Size</option>
                             <option value="Màu sắc">Màu sắc</option>
@@ -1286,7 +1314,7 @@ const ProductForm = () => {
                             placeholder="VD: S, M, L hoặc Đỏ, Xanh"
                             value={variant.value || ''}
                             onChange={(e) => updateVariant(idx, 'value', e.target.value)}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                           />
                         </div>
 
@@ -1297,7 +1325,7 @@ const ProductForm = () => {
                             placeholder="VD: AT-NAM-001-M"
                             value={variant.sku || ''}
                             onChange={(e) => updateVariant(idx, 'sku', e.target.value)}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                           />
                         </div>
 
@@ -1308,7 +1336,7 @@ const ProductForm = () => {
                             placeholder="0"
                             value={variant.stock_quantity || ''}
                             onChange={(e) => updateVariant(idx, 'stock_quantity', Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                             min={0}
                           />
                         </div>
@@ -1316,14 +1344,15 @@ const ProductForm = () => {
                         <div>
                           <label className="block text-sm font-medium mb-1">Chênh lệch giá (VNĐ)</label>
                           <input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
                             placeholder="0"
-                            value={variant.price_adjustment || ''}
-                            onChange={(e) => updateVariant(idx, 'price_adjustment', Number(e.target.value))}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            value={formatNumberVi(variant.price_adjustment)}
+                            onChange={(e) => updateVariant(idx, 'price_adjustment', parseNumberVi(e.target.value))}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                           />
                           <p className="text-xs text-muted-foreground mt-1">
-                            Giá cuối: {((form.price || 0) + (variant.price_adjustment || 0)).toLocaleString()} VNĐ
+                            Giá cuối: {formatNumberVi((form.price || 0) + (variant.price_adjustment || 0))} VND
                           </p>
                         </div>
 
@@ -1334,7 +1363,7 @@ const ProductForm = () => {
                             placeholder="https://..."
                             value={variant.image_url || ''}
                             onChange={(e) => updateVariant(idx, 'image_url', e.target.value)}
-                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300"
                           />
                         </div>
                       </div>

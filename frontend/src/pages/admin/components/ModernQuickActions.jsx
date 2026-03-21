@@ -8,7 +8,7 @@ const ModernQuickActions = ({ className }) => {
   const navigate = useNavigate();
   
   const actions = [
-    { id: 1, title: 'Thêm mới', description: 'Tạo sản phẩm', icon: "Plus", color: "slate", onClick: () => navigate('/admin/products/new') },
+    { id: 1, title: 'Thêm mới', description: 'Tạo sản phẩm', icon: "Plus", color: "slate", onClick: () => navigate('/admin?tab=products&create=1') },
     { id: 2, title: 'Bộ sưu tập', description: 'Quản lý danh mục', icon: "Folder", color: "slate", onClick: () => navigate('/admin?tab=categories') },
     { id: 3, title: 'Vận chuyển', description: 'Luồng đơn hàng', icon: "Package", color: "slate", onClick: () => navigate('/admin?tab=orders') },
     { id: 4, title: 'Danh bạ', description: 'Cơ sở thành viên', icon: "Users", color: "slate", onClick: () => navigate('/admin?tab=users') }

@@ -2,58 +2,15 @@ import React, { useState } from 'react';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/components/ui/ToastProvider';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
-import { uploadImage } from '@/lib/uploadApi';
+import { X, Image as ImageIcon } from 'lucide-react';
 
 /**
  * ProductImageManager - Manage images array based on ProductMongo schema
  * Schema: { image_url, alt_text, sort_order, is_primary }
  */
 const ProductImageManager = ({ images = [], onChange, error }) => {
-  const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const toast = useToast();
-
-  const handleFileUpload = async (file) => {
-    if (!file) return;
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.push({ title: 'Lỗi', message: 'Chỉ cho phép upload file ảnh', type: 'error' });
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.push({ title: 'Lỗi', message: 'Kích thước ảnh không được vượt quá 5MB', type: 'error' });
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const imageUrl = await uploadImage(file);
-      if (imageUrl) {
-        // Create new image object matching ProductMongo schema
-        const newImage = {
-          image_url: imageUrl,
-          alt_text: '',
-          sort_order: images.length,
-          is_primary: images.length === 0 // First image is primary
-        };
-        onChange([...images, newImage]);
-        toast.push({ title: 'Thành công', message: 'Upload ảnh thành công', type: 'success' });
-      }
-    } catch (error) {
-      console.error('Image upload error:', error);
-      toast.push({ 
-        title: 'Lỗi', 
-        message: error?.response?.data?.message || 'Upload ảnh thất bại', 
-        type: 'error' 
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleAddImageByUrl = () => {
     const url = imageUrl.trim();
@@ -127,7 +84,7 @@ const ProductImageManager = ({ images = [], onChange, error }) => {
 
   return (
     <div className="space-y-4">
-      {/* Upload Button */}
+      {/* URL only */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-col md:flex-row gap-2">
           <Input
@@ -140,25 +97,6 @@ const ProductImageManager = ({ images = [], onChange, error }) => {
             Thêm từ URL
           </Button>
         </div>
-
-        <div className="flex items-center gap-4">
-        <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
-          <Upload size={18} />
-          <span>{uploading ? 'Đang tải...' : 'Tải ảnh lên'}</span>
-          <input 
-            type="file" 
-            accept="image/*" 
-            className="hidden" 
-            onChange={(e) => handleFileUpload(e.target.files?.[0])}
-            disabled={uploading}
-          />
-        </label>
-        {uploading && (
-          <div className="text-sm text-muted-foreground">
-            <div className="animate-pulse">Đang upload...</div>
-          </div>
-        )}
-        </div>
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -168,7 +106,7 @@ const ProductImageManager = ({ images = [], onChange, error }) => {
         <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
           <ImageIcon size={48} className="mx-auto text-muted-foreground mb-2" />
           <p className="text-muted-foreground">Chưa có ảnh nào</p>
-          <p className="text-sm text-muted-foreground mt-1">Upload ảnh để bắt đầu</p>
+          <p className="text-sm text-muted-foreground mt-1">Dán URL ảnh để bắt đầu</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -251,7 +189,7 @@ const ProductImageManager = ({ images = [], onChange, error }) => {
       <div className="text-sm text-muted-foreground space-y-1">
         <p>• Ảnh đầu tiên sẽ tự động là ảnh chính</p>
         <p>• Sử dụng nút ↑↓ để sắp xếp thứ tự hiển thị</p>
-        <p>• Kích thước tối đa: 5MB</p>
+        <p>• Chỉ sử dụng liên kết URL ảnh</p>
       </div>
     </div>
   );

@@ -126,7 +126,7 @@ const AdminPanel = () => {
                 <Button icon={<DownloadOutlined />} size="large">
                   Xuất báo cáo
                 </Button>
-                <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/admin/products/new')}>
+                <Button type="primary" icon={<PlusOutlined />} size="large" onClick={() => navigate('/admin?tab=products&create=1')}>
                   Thêm sản phẩm
                 </Button>
               </Space>

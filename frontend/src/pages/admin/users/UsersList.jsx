@@ -212,7 +212,7 @@ const UsersList = () => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-bold flex items-center gap-2">
             <UsersIcon className="text-primary" />
             Quản lý người dùng
           </h1>

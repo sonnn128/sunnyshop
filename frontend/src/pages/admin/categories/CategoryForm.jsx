@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '@/lib/api';
-import { uploadImage } from '@/lib/uploadApi';
-import { Form, Input, Button, Card, Space, Row, Col, InputNumber, message, Upload, Image as AntImage, Spin } from 'antd';
-import { FolderOutlined, PictureOutlined, ArrowLeftOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, Space, Row, Col, InputNumber, message, Image as AntImage, Spin } from 'antd';
+import { FolderOutlined, ArrowLeftOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 
-const CategoryForm = () => {
-  const { id } = useParams();
+const CategoryForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
+  const { id: routeId } = useParams();
+  const id = entityId || routeId;
   const navigate = useNavigate();
   const [form] = Form.useForm();
   
   const [loading, setLoading] = useState(!!id);
   const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [localImageFile, setLocalImageFile] = useState(null);
-  const [localImagePreview, setLocalImagePreview] = useState('');
   const [imageUrl, setImageUrl] = useState('');
 
   // Load category if editing
@@ -78,28 +75,7 @@ const CategoryForm = () => {
     }
   };
 
-  const handleImageUpload = async (info) => {
-    const file = info.file;
-    if (!file.type.startsWith('image/')) {
-      message.error('Chỉ chấp nhận file ảnh');
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      message.error('File quá lớn (max 5MB)');
-      return;
-    }
-
-    setLocalImageFile(file);
-    setLocalImagePreview(URL.createObjectURL(file));
-    message.info('Ảnh sẽ được upload khi bấm "Lưu danh mục"');
-  };
-
   const handleRemoveImage = () => {
-    if (localImagePreview?.startsWith('blob:')) {
-      URL.revokeObjectURL(localImagePreview);
-    }
-    setLocalImageFile(null);
-    setLocalImagePreview('');
     setImageUrl('');
   };
 
@@ -107,23 +83,11 @@ const CategoryForm = () => {
     setSaving(true);
     
     try {
-      let imageUrlToSave = imageUrl;
-
-      // Upload image if there's a new file
-      if (localImageFile) {
-        setUploadingImage(true);
-        const uploadedUrl = await uploadImage(localImageFile);
-        if (!uploadedUrl) {
-          throw new Error('Không nhận được URL ảnh từ server');
-        }
-        imageUrlToSave = uploadedUrl;
-      }
-
       const toSend = {
         name: values.name?.trim() || '',
         slug: values.slug?.trim() || '',
         description: values.description?.trim() || '',
-        image_url: imageUrlToSave,
+        image_url: imageUrl?.trim() || '',
         sort_order: values.sort_order || 0,
       };
 
@@ -134,8 +98,12 @@ const CategoryForm = () => {
         await API.post('/api/categories', toSend);
         message.success('Tạo danh mục mới thành công');
       }
-      
-      navigate('/admin?tab=categories');
+
+      if (embedded) {
+        onSuccess?.();
+      } else {
+        navigate('/admin?tab=categories');
+      }
     } catch (e) {
       console.error('Save error:', e);
       const errorMessage = e.response?.data?.message || 'Lưu danh mục thất bại';
@@ -171,7 +139,11 @@ const CategoryForm = () => {
             }
             
             message.success(`Slug đã tồn tại. Hệ thống đã tự động tạo slug mới: ${newSlug}`);
-            navigate('/admin?tab=categories');
+            if (embedded) {
+              onSuccess?.();
+            } else {
+              navigate('/admin?tab=categories');
+            }
             return;
           }
         } catch (retryErr) {
@@ -182,7 +154,6 @@ const CategoryForm = () => {
         message.error(errorMessage);
       }
     } finally {
-      setUploadingImage(false);
       setSaving(false);
     }
   };
@@ -196,9 +167,10 @@ const CategoryForm = () => {
   }
 
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ padding: embedded ? '0' : '24px' }}>
+      <div style={{ maxWidth: embedded ? '100%' : '900px', margin: '0 auto' }}>
         {/* Header Card */}
+        {!embedded && (
         <Card 
           style={{ marginBottom: '24px' }}
           title={
@@ -222,9 +194,14 @@ const CategoryForm = () => {
             {id ? 'Cập nhật thông tin danh mục hiện có' : 'Tạo một danh mục mới cho sản phẩm'}
           </p>
         </Card>
+        )}
 
         {/* Form */}
-        <Card>
+        <Card
+          bordered={!embedded}
+          style={embedded ? { border: 'none', boxShadow: 'none', background: 'transparent' } : undefined}
+          bodyStyle={embedded ? { padding: 0 } : undefined}
+        >
           <Form
             form={form}
             layout="vertical"
@@ -232,7 +209,7 @@ const CategoryForm = () => {
             autoComplete="off"
           >
             {/* Thông Tin Cơ Bản */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: embedded ? '16px' : '24px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', borderBottom: '1px solid #f0f0f0', paddingBottom: '12px' }}>
                 📋 Thông Tin Cơ Bản
               </h3>
@@ -300,18 +277,18 @@ const CategoryForm = () => {
             </div>
 
             {/* Hình Ảnh */}
-            <div style={{ marginBottom: '24px' }}>
+            <div style={{ marginBottom: embedded ? '12px' : '24px' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px', borderBottom: '1px solid #f0f0f0', paddingBottom: '12px' }}>
                 🖼️ Hình Ảnh
               </h3>
 
               {/* Image Preview */}
-              {(localImagePreview || imageUrl) && (
+              {imageUrl && (
                 <div style={{ marginBottom: '16px' }}>
                   <AntImage
                     width={120}
                     height={120}
-                    src={localImagePreview || imageUrl}
+                    src={imageUrl}
                     alt={form.getFieldValue('name')}
                     preview
                     style={{ borderRadius: '8px', border: '1px solid #d9d9d9' }}
@@ -330,32 +307,7 @@ const CategoryForm = () => {
                 </div>
               )}
 
-              {/* Upload */}
-              <Form.Item label="Tải Ảnh Lên">
-                <Upload
-                  beforeUpload={handleImageUpload}
-                  maxCount={1}
-                  accept="image/*"
-                  listType="picture"
-                >
-                  <Button 
-                    type="dashed" 
-                    size="large" 
-                    style={{ width: '100%' }}
-                    icon={<PictureOutlined />}
-                  >
-                    Click để chọn ảnh
-                  </Button>
-                </Upload>
-                <div style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
-                  PNG, JPG, GIF (Max 5MB) • Upload khi bấm "Lưu danh mục"
-                </div>
-              </Form.Item>
-
-              {/* Or URL */}
-              <Form.Item
-                label="Hoặc Nhập URL Ảnh"
-              >
+              <Form.Item label="URL Ảnh">
                 <Input 
                   placeholder="https://example.com/image.jpg" 
                   size="large"
@@ -366,15 +318,23 @@ const CategoryForm = () => {
             </div>
 
             {/* Actions */}
-            <Row justify="end" gutter={[12, 12]} style={{ marginTop: '32px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-              <Col>
-                <Button 
-                  size="large"
-                  onClick={() => navigate('/admin?tab=categories')}
-                >
-                  <ArrowLeftOutlined /> Hủy
-                </Button>
-              </Col>
+            <Row justify="end" gutter={[12, 12]} style={{ marginTop: embedded ? '16px' : '32px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
+              {!embedded && (
+                <Col>
+                  <Button 
+                    size="large"
+                    onClick={() => {
+                      if (embedded) {
+                        onCancel?.();
+                      } else {
+                        navigate('/admin?tab=categories');
+                      }
+                    }}
+                  >
+                    <ArrowLeftOutlined /> Hủy
+                  </Button>
+                </Col>
+              )}
               <Col>
                 <Button 
                   type="primary" 

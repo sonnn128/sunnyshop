@@ -131,9 +131,7 @@ function App() {
 
               {/* Admin Panel */}
               <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />
-              <Route path="/admin/products/new" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/products/:id" element={<AdminRoute><AdminLayout activeTab="products"><ProductForm /></AdminLayout></AdminRoute>} />
-              <Route path="/admin/categories/new" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/categories/:id/detail" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryDetail /></AdminLayout></AdminRoute>} />
               <Route path="/admin/categories/:id" element={<AdminRoute><AdminLayout activeTab="categories"><CategoryForm /></AdminLayout></AdminRoute>} />
               <Route path="/admin/brands/new" element={<AdminRoute><AdminLayout activeTab="brands"><BrandForm /></AdminLayout></AdminRoute>} />

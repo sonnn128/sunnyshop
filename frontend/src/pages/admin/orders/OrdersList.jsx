@@ -285,9 +285,15 @@ const OrdersList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4 lg:mb-0">Quản lý Đơn hàng</h1>
-        <div className="flex space-x-2">
+      <div className="mb-2 text-left">
+        <h1 className="text-2xl font-bold">Quản lý Đơn hàng</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Tổng cộng {pagination.totalItems} đơn hàng
+        </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button 
             variant="outline"
             size="sm"

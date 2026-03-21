@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import API from '@/lib/api';
 import { useToast } from '@/components/ui/ToastProvider';
 import Button from '@/components/ui/Button';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+import CategoryForm from './CategoryForm';
 import { Folder, Plus, Pencil, Trash2, Search, Grid3x3, List, Table } from 'lucide-react';
 import { formatCategoriesWithHierarchy } from '@/utils/categoryTree';
 
 const CategoryList = () => {
-  const navigate = useNavigate();
   const toast = useToast();
   
   const [categories, setCategories] = useState([]);
@@ -16,6 +15,9 @@ const CategoryList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('table'); // 'grid', 'list', or 'table' - table is default
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, category: null });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editCategoryId, setEditCategoryId] = useState(null);
+  const [detailCategory, setDetailCategory] = useState(null);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -61,6 +63,13 @@ const CategoryList = () => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('create') === '1') {
+      setIsCreateModalOpen(true);
+    }
+  }, []);
+
   const handleDelete = async () => {
     if (!deleteModal.category) return;
     
@@ -82,6 +91,16 @@ const CategoryList = () => {
     } finally {
       setDeleteModal({ isOpen: false, category: null });
     }
+  };
+
+  const handleCreateSuccess = async () => {
+    setIsCreateModalOpen(false);
+    await fetchCategories();
+  };
+
+  const handleEditSuccess = async () => {
+    setEditCategoryId(null);
+    await fetchCategories();
   };
 
   const filteredCategories = Array.isArray(categories) 
@@ -148,7 +167,7 @@ const CategoryList = () => {
             />
           </div>
 
-          <Button onClick={() => navigate('/admin/categories/new')} className="md:self-end">
+          <Button onClick={() => setIsCreateModalOpen(true)} className="md:self-end">
             <Plus size={18} />
             Thêm danh mục
           </Button>
@@ -214,7 +233,7 @@ const CategoryList = () => {
                 : 'Bắt đầu bằng cách thêm danh mục đầu tiên'}
             </p>
             {!searchTerm && (
-              <Button onClick={() => navigate('/admin/categories/new')}>
+              <Button onClick={() => setIsCreateModalOpen(true)}>
                 <Plus size={18} />
                 Thêm danh mục
               </Button>
@@ -293,7 +312,7 @@ const CategoryList = () => {
                   <Button
                     size="sm"
                     variant="secondary"
-                    onClick={() => navigate(`/admin/categories/${cat._id}/detail`)}
+                    onClick={() => setDetailCategory(cat)}
                     className="flex-1"
                   >
                     Chi tiết
@@ -301,7 +320,7 @@ const CategoryList = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => navigate(`/admin/categories/${cat._id}`)}
+                    onClick={() => setEditCategoryId(cat._id)}
                     className="flex-1"
                   >
                     <Pencil size={16} />
@@ -399,7 +418,7 @@ const CategoryList = () => {
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => navigate(`/admin/categories/${cat._id}/detail`)}
+                          onClick={() => setDetailCategory(cat)}
                           title="Xem chi tiết"
                         >
                           Chi tiết
@@ -407,7 +426,7 @@ const CategoryList = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => navigate(`/admin/categories/${cat._id}`)}
+                          onClick={() => setEditCategoryId(cat._id)}
                           title="Chỉnh sửa"
                         >
                           <Pencil size={16} />
@@ -520,7 +539,7 @@ const CategoryList = () => {
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => navigate(`/admin/categories/${cat._id}/detail`)}
+                          onClick={() => setDetailCategory(cat)}
                           className="flex-1 md:flex-none"
                         >
                           Chi tiết
@@ -528,7 +547,7 @@ const CategoryList = () => {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => navigate(`/admin/categories/${cat._id}`)}
+                          onClick={() => setEditCategoryId(cat._id)}
                           className="flex-1 md:flex-none"
                         >
                           <Pencil size={16} />
@@ -571,6 +590,135 @@ const CategoryList = () => {
           confirmText="Xóa"
           variant="danger"
         />
+
+        {isCreateModalOpen && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setIsCreateModalOpen(false)}
+          >
+            <div
+              className="w-full max-w-4xl max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Thêm danh mục mới</h2>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <CategoryForm
+                embedded
+                onSuccess={handleCreateSuccess}
+                onCancel={() => setIsCreateModalOpen(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {detailCategory && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setDetailCategory(null)}
+          >
+            <div
+              className="w-full max-w-3xl max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Chi tiết danh mục</h2>
+                <button
+                  type="button"
+                  onClick={() => setDetailCategory(null)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {detailCategory.image_url && (
+                  <img
+                    src={detailCategory.image_url}
+                    alt={detailCategory.name}
+                    className="w-full max-h-72 object-cover rounded-lg border border-border"
+                  />
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Tên danh mục</p>
+                    <p className="font-semibold">{detailCategory.indentedLabel || detailCategory.name}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Slug</p>
+                    <p className="font-mono">/{detailCategory.slug}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Thứ tự hiển thị</p>
+                    <p className="font-semibold">{detailCategory.sort_order || 0}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Trạng thái</p>
+                    <p className="font-semibold">
+                      {detailCategory.is_active ? 'Hoạt động' : 'Không hoạt động'}
+                      {detailCategory.is_featured ? ' • Nổi bật' : ''}
+                    </p>
+                  </div>
+                </div>
+
+                {detailCategory.parentChainLabel && (
+                  <div className="rounded-lg border border-border p-3 text-sm">
+                    <p className="text-muted-foreground mb-1">Danh mục cha</p>
+                    <p className="font-medium">{detailCategory.parentChainLabel}</p>
+                  </div>
+                )}
+
+                <div className="rounded-lg border border-border p-3 text-sm">
+                  <p className="text-muted-foreground mb-1">Mô tả</p>
+                  <p className="whitespace-pre-line">{detailCategory.description || 'Không có mô tả'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {editCategoryId && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setEditCategoryId(null)}
+          >
+            <div
+              className="w-full max-w-4xl max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Chỉnh sửa danh mục</h2>
+                <button
+                  type="button"
+                  onClick={() => setEditCategoryId(null)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <CategoryForm
+                embedded
+                entityId={editCategoryId}
+                onSuccess={handleEditSuccess}
+                onCancel={() => setEditCategoryId(null)}
+              />
+            </div>
+          </div>
+        )}
     </div>
   );
 };

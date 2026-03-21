@@ -153,7 +153,7 @@ const AddressList = () => {
         <Row justify="space-between" align="middle" style={{ marginBottom: '24px' }}>
           <Col>
             <h1 style={{ fontSize: '24px', fontWeight: '700', margin: 0 }}>
-              📍 Quản Lý Địa Chỉ
+              Quản lý địa chỉ
             </h1>
             <p style={{ margin: '4px 0 0 0', color: '#999' }}>
               Tổng cộng {addresses.length} địa chỉ

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import API from '@/lib/api';
 import Button from '@/components/ui/Button';
 import { useToast } from '@/components/ui/ToastProvider';
-import { Link } from 'react-router-dom';
 import ConfirmModal from '@/components/ui/ConfirmModal';
+import ProductForm from './ProductForm';
 import { Package, Search, Grid3x3, List, Trash2, CheckSquare, Square } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 12;
@@ -28,33 +28,46 @@ const ProductsList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('list'); // 'grid' or 'list'
   const [currentPage, setCurrentPage] = useState(1);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editProductId, setEditProductId] = useState(null);
+  const [detailProduct, setDetailProduct] = useState(null);
   const toast = useToast();
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await API.get('/products', { params: { limit: 200 } });
-        if (mounted) {
-          const responseData = res?.data?.data ?? res?.data;
-          const rawProducts = Array.isArray(responseData?.content)
-            ? responseData.content
-            : Array.isArray(responseData?.products)
-              ? responseData.products
-              : Array.isArray(res?.data?.products)
-                ? res.data.products
-                : Array.isArray(responseData)
-                  ? responseData
-                  : [];
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await API.get('/products', { params: { limit: 200 } });
+      const responseData = res?.data?.data ?? res?.data;
+      const rawProducts = Array.isArray(responseData?.content)
+        ? responseData.content
+        : Array.isArray(responseData?.products)
+          ? responseData.products
+          : Array.isArray(res?.data?.products)
+            ? res.data.products
+            : Array.isArray(responseData)
+              ? responseData
+              : [];
 
-          setItems(rawProducts.map(normalizeProduct));
-          setCurrentPage(1);
-        }
-      } catch (e) {
-        toast.push({ title: 'Lỗi', message: 'Không tải được danh sách sản phẩm', type: 'error' });
-      } finally { if (mounted) setLoading(false); }
-    })();
-    return () => { mounted = false; };
+      setItems(rawProducts.map(normalizeProduct));
+      setCurrentPage(1);
+      setSelectedIds([]);
+    } catch (e) {
+      toast.push({ title: 'Lỗi', message: 'Không tải được danh sách sản phẩm', type: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('create') === '1') {
+      setIsCreateModalOpen(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -190,6 +203,16 @@ const ProductsList = () => {
 
   const isPageSelected = paginatedProducts.length > 0 && paginatedProducts.every(p => selectedIds.includes(p._id));
 
+  const handleCreateSuccess = async () => {
+    setIsCreateModalOpen(false);
+    await fetchProducts();
+  };
+
+  const handleEditSuccess = async () => {
+    setEditProductId(null);
+    await fetchProducts();
+  };
+
   return (
     <div className="bg-card/60 backdrop-blur-md border border-border/50 rounded-[2rem] p-8 shadow-elegant">
       {/* Header */}
@@ -251,9 +274,7 @@ const ProductsList = () => {
               Xóa {selectedIds.length} đã chọn
             </Button>
           )}
-          <Link to="/admin/products/new">
-            <Button>+ Thêm sản phẩm</Button>
-          </Link>
+          <Button onClick={() => setIsCreateModalOpen(true)}>+ Thêm sản phẩm</Button>
         </div>
       </div>
 
@@ -305,6 +326,11 @@ const ProductsList = () => {
                   ? 'Thử tìm kiếm với từ khóa khác' 
                   : 'Bắt đầu bằng cách thêm sản phẩm đầu tiên'}
               </p>
+              {!searchTerm && (
+                <Button onClick={() => setIsCreateModalOpen(true)}>
+                  + Thêm sản phẩm
+                </Button>
+              )}
             </div>
           )}
 
@@ -404,16 +430,12 @@ const ProductsList = () => {
 
                       {/* Actions */}
                       <div className="flex gap-1 flex-col">
-                        <Link to={`/admin/products/${p._id}/detail`} className="w-full">
-                          <Button variant="secondary" size="xs" className="w-full text-xs">
-                            Chi tiết
-                          </Button>
-                        </Link>
-                        <Link to={`/admin/products/${p._id}`} className="w-full">
-                          <Button variant="outline" size="xs" className="w-full text-xs">
-                            Sửa
-                          </Button>
-                        </Link>
+                        <Button variant="secondary" size="xs" className="w-full text-xs" onClick={() => setDetailProduct(p)}>
+                          Chi tiết
+                        </Button>
+                        <Button variant="outline" size="xs" className="w-full text-xs" onClick={() => setEditProductId(p._id)}>
+                          Sửa
+                        </Button>
                         <Button 
                           variant="destructive" 
                           size="xs" 
@@ -507,16 +529,12 @@ const ProductsList = () => {
                       <div className="text-right text-sm">{p.sold_count || 0}</div>
 
                       <div className="flex justify-end gap-2">
-                        <Link to={`/admin/products/${p._id}/detail`}>
-                          <Button variant="ghost" size="sm">
-                            Chi tiết
-                          </Button>
-                        </Link>
-                        <Link to={`/admin/products/${p._id}`}>
-                          <Button variant="ghost" size="sm">
-                            Sửa
-                          </Button>
-                        </Link>
+                        <Button variant="ghost" size="sm" onClick={() => setDetailProduct(p)}>
+                          Chi tiết
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setEditProductId(p._id)}>
+                          Sửa
+                        </Button>
                         <Button 
                           variant="ghost" 
                           size="sm" 
@@ -610,6 +628,133 @@ const ProductsList = () => {
         cancelText="Hủy"
         type="danger"
       />
+
+        {isCreateModalOpen && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setIsCreateModalOpen(false)}
+          >
+            <div
+              className="w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Tạo sản phẩm mới</h2>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <ProductForm
+                embedded
+                onSuccess={handleCreateSuccess}
+                onCancel={() => setIsCreateModalOpen(false)}
+              />
+            </div>
+          </div>
+        )}
+
+        {detailProduct && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setDetailProduct(null)}
+          >
+            <div
+              className="w-full max-w-4xl max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Chi tiết sản phẩm</h2>
+                <button
+                  type="button"
+                  onClick={() => setDetailProduct(null)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="space-y-4 text-sm">
+                {getPrimaryImage(detailProduct) && (
+                  <img
+                    src={getPrimaryImage(detailProduct)}
+                    alt={detailProduct.name}
+                    className="w-full max-h-80 object-cover rounded-lg border border-border"
+                  />
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Tên sản phẩm</p>
+                    <p className="font-semibold">{detailProduct.name}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">SKU</p>
+                    <p className="font-mono">{detailProduct.sku || '—'}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Giá bán</p>
+                    <p className="font-semibold text-primary">{formatPrice(detailProduct.price)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Giá gốc</p>
+                    <p className="font-semibold">{formatPrice(detailProduct.original_price)}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Tồn kho</p>
+                    <p className="font-semibold">{detailProduct.stock_quantity || 0}</p>
+                  </div>
+                  <div className="rounded-lg border border-border p-3">
+                    <p className="text-muted-foreground mb-1">Đã bán</p>
+                    <p className="font-semibold">{detailProduct.sold_count || 0}</p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-border p-3">
+                  <p className="text-muted-foreground mb-1">Mô tả</p>
+                  <p className="whitespace-pre-line">{detailProduct.description || detailProduct.short_description || 'Không có mô tả'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {editProductId && (
+          <div
+            className="fixed inset-0 z-[1200] bg-black/45 flex items-center justify-center p-4"
+            onClick={() => setEditProductId(null)}
+          >
+            <div
+              className="w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-2xl p-4 md:p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4 sticky top-0 bg-white z-10">
+                <h2 className="text-xl font-semibold">Chỉnh sửa sản phẩm</h2>
+                <button
+                  type="button"
+                  onClick={() => setEditProductId(null)}
+                  className="h-9 w-9 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-100"
+                  aria-label="Đóng"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <ProductForm
+                embedded
+                entityId={editProductId}
+                onSuccess={handleEditSuccess}
+                onCancel={() => setEditProductId(null)}
+              />
+            </div>
+          </div>
+        )}
     </div>
   );
 };

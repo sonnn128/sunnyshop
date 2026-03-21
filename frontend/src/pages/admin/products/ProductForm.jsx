@@ -286,8 +286,9 @@ const syncVariantAttributeFields = (variant) => {
   return variant;
 };
 
-const ProductForm = () => {
-  const { id } = useParams();
+const ProductForm = ({ embedded = false, onSuccess, onCancel, entityId }) => {
+  const { id: routeId } = useParams();
+  const id = entityId || routeId;
   const navigate = useNavigate();
   const toast = useToast();
   const { role } = useRole();
@@ -930,7 +931,11 @@ const ProductForm = () => {
         });
       }
       
-      navigate('/admin?tab=products');
+      if (embedded) {
+        onSuccess?.();
+      } else {
+        navigate('/admin?tab=products');
+      }
     } catch (err) {
       console.error('Save product error:', err?.response?.data || err);
       const data = err?.response?.data;
@@ -951,10 +956,10 @@ const ProductForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
+    <div className={embedded ? '' : 'min-h-screen bg-muted/30 py-8 px-4'}>
+      <div className={embedded ? '' : 'max-w-5xl mx-auto'}>
         {/* Header */}
-        <div className="bg-background rounded-xl border border-border p-6 shadow-sm mb-6">
+        <div className={`${embedded ? 'hidden' : 'bg-background rounded-xl border border-border p-6 shadow-sm mb-6'}`}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <h1 className="text-2xl font-bold text-foreground">
@@ -969,7 +974,7 @@ const ProductForm = () => {
             </div>
             
             {/* Excel Import Buttons - Only show when creating new product */}
-            {!id && (
+            {!id && !embedded && (
               <div className="flex gap-2">
                 <Button 
                   type="button" 
@@ -1454,21 +1459,36 @@ const ProductForm = () => {
           {/* SEO, tag, and physical sections removed per updated requirements */}
 
           {/* === ACTION BUTTONS === */}
-          <div className="flex justify-between items-center sticky bottom-0 bg-background p-4 border-t">
-            <Button variant="outline" onClick={() => navigate('/admin?tab=products')} type="button" disabled={loading}>
-              Hủy
-            </Button>
+          <div className={`${embedded ? 'flex justify-end items-center bg-background p-4 border-t mt-2' : 'flex justify-between items-center sticky bottom-0 bg-background p-4 border-t'}`}>
+            {!embedded && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (embedded) {
+                    onCancel?.();
+                  } else {
+                    navigate('/admin?tab=products');
+                  }
+                }}
+                type="button"
+                disabled={loading}
+              >
+                Hủy
+              </Button>
+            )}
             
             <div className="flex gap-3">
-              <Button 
-                type="button" 
-                variant="outline"
-                onClick={handleSaveAsDraft}
-                disabled={loading}
-                className="min-w-[140px]"
-              >
-                {loading ? 'Đang lưu...' : '💾 Lưu Draft'}
-              </Button>
+              {!embedded && (
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={handleSaveAsDraft}
+                  disabled={loading}
+                  className="min-w-[140px]"
+                >
+                  {loading ? 'Đang lưu...' : '💾 Lưu Draft'}
+                </Button>
+              )}
               
               <Button type="submit" disabled={loading} className="min-w-[120px]">
                 {loading ? 'Đang lưu...' : '✅ Lưu & Xuất bản'}

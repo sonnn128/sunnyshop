@@ -1,0 +1,87 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: laptopshop
+  output:
+    ansi:
+      enabled: ALWAYS
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DB:laptopshop}
+    username: ${MYSQL_USER:laptopshop}
+    password: ${MYSQL_PASSWORD:laptopshop}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:sonvipkl04@gmail.com}
+    password: ${MAIL_PASSWORD:zmfw sgbw nowc pxvl}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+jwt:
+  expirationMs: 3600000
+  SECRET_KEY: ${JWT_SECRET_KEY:a1dae4457f142c88547a17529caec2f12c8ba2cb4ccd599aa75cfd7e5b27752f9d9167d1349a30596931fd238239d6d17fb49a8f63e27fd45cf7c49a65d3fd75}
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+    displayRequestDuration: true
+    showExtensions: true
+    showCommonExtensions: true
+    displayOperationId: true
+    defaultModelsExpandDepth: 1
+    defaultModelExpandDepth: 1
+  show-actuator: true
+  packages-to-scan: com.sonnguyen.base.controller
+
+# Spring Boot Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,loggers,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      simple:
+        enabled: true
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:dswdadh2n}
+  api-key: ${CLOUDINARY_API_KEY:741574128814778}
+  api-secret: ${CLOUDINARY_API_SECRET:J9XuHektVDcN5CI_3_58RmDjSoE}

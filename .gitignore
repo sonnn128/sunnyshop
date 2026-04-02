@@ -1,0 +1,6 @@
+data
+*.txt
+.idea
+images
+
+.env

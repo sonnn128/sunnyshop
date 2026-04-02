@@ -1,0 +1,268 @@
+/* Admin Layout Responsive Styles */
+.admin-content {
+  /* background managed by inline style with token */
+  min-height: calc(100vh - 64px);
+}
+
+.ant-layout-sider {
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+}
+
+.ant-layout-sider .ant-menu {
+  height: calc(100vh - 80px);
+  overflow-y: auto;
+  border-right: none;
+}
+
+.ant-layout-sider .ant-menu-item {
+  margin: 4px 8px;
+  border-radius: 6px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.ant-layout-sider .ant-menu-item-selected {
+  background: #1890ff; /* Fallback or use theme primary if possible via variable, but CSS here. Antd default blue is safe or handled by theme */
+  background-color: var(--ant-primary-color, #1890ff);
+  color: white;
+}
+
+.ant-layout-sider .ant-menu-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.ant-layout-sider .ant-menu-item-selected:hover {
+  background-color: var(--ant-primary-color, #1890ff);
+  opacity: 0.9;
+}
+
+.ant-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  /* border handled by theme */
+}
+
+.ant-card-head {
+  /* border handled by theme */
+  padding: 16px 24px;
+}
+
+.ant-card-body {
+  padding: 24px;
+}
+
+.ant-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  font-weight: 600;
+}
+
+.ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.ant-btn-primary {
+  /* Remove gradient override to let Ant Design theme handle it */
+  border: none;
+}
+
+.ant-btn-primary:hover {
+  /* Remove gradient override */
+  opacity: 0.9;
+}
+
+.ant-modal-header {
+  border-radius: 12px 12px 0 0;
+}
+
+.ant-modal-content {
+  border-radius: 12px;
+}
+
+.ant-form-item-label > label {
+  font-weight: 600;
+  /* color handled by theme */
+}
+
+.ant-input, .ant-input-number, .ant-select-selector, .ant-textarea {
+  border-radius: 6px;
+  /* border handled by theme */
+}
+
+.ant-input:focus, .ant-input-number:focus, .ant-select-focused .ant-select-selector, .ant-textarea:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+}
+
+.ant-breadcrumb {
+  margin-bottom: 24px;
+}
+
+.ant-breadcrumb a {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+.ant-breadcrumb a:hover {
+  color: #40a9ff;
+}
+
+/* Header responsive styles */
+.ant-layout-header {
+  overflow: hidden !important;
+  height: 64px !important;
+  line-height: 64px !important;
+}
+
+.header-left-section {
+  display: flex !important;
+  align-items: center !important;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  height: 64px;
+}
+
+.header-right-section {
+  display: flex !important;
+  align-items: center !important;
+  flex-shrink: 0;
+  margin-left: 16px;
+  height: 64px;
+}
+
+.header-title-section {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.header-title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+}
+
+.header-user-section {
+  min-width: 0;
+  max-width: 200px;
+  overflow: hidden;
+  height: auto;
+  display: flex;
+  align-items: center;
+}
+
+.header-user-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 1200px) {
+  .ant-layout-header {
+    padding: 0 12px !important;
+  }
+  
+  .header-user-section {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    margin: 16px 8px !important;
+    padding: 16px !important;
+  }
+  
+  .ant-layout-sider {
+    position: fixed !important;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+  }
+  
+  .ant-layout-sider-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+  }
+  
+  .ant-layout-header {
+    padding: 0 8px !important;
+    height: 64px !important;
+  }
+  
+  .header-left-section {
+    height: 64px !important;
+  }
+  
+  .header-right-section {
+    height: 64px !important;
+  }
+  
+  .ant-menu-inline-collapsed {
+    width: 0;
+  }
+  
+  .header-title-text {
+    font-size: 16px !important;
+  }
+  
+  .header-user-section {
+    max-width: 120px;
+  }
+  
+  .header-user-text {
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .admin-content {
+    margin: 8px 4px !important;
+    padding: 12px !important;
+  }
+  
+  .ant-breadcrumb {
+    font-size: 12px;
+  }
+  
+  .ant-card {
+    margin-bottom: 16px;
+  }
+  
+  .ant-table {
+    font-size: 12px;
+  }
+  
+  .ant-btn {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* Custom scrollbar for sidebar */
+.ant-layout-sider .ant-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ant-layout-sider .ant-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ant-layout-sider .ant-menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.ant-layout-sider .ant-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}

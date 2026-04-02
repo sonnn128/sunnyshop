@@ -22,6 +22,7 @@ public class User {
     private String phone;
     private String address;
     private String avatar;
+    private Boolean isLocked = false;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;

@@ -22,7 +22,9 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  SearchOutlined
+  SearchOutlined,
+  LockOutlined,
+  UnlockOutlined
 } from '@ant-design/icons';
 import { userService } from '../../services/user.service';
 
@@ -78,7 +80,7 @@ const Users = () => {
       }
     } catch (error) {
       console.error('Failed to fetch users:', error);
-      message.error('Failed to fetch users');
+      message.error('Tải dữ liệu người dùng thất bại');
       setUsers([]);
     } finally {
       setLoading(false);
@@ -108,11 +110,22 @@ const Users = () => {
   const handleDelete = async (id) => {
     try {
       await userService.delete(id);
-      message.success('User deleted successfully');
+      message.success('Xóa người dùng thành công');
       fetchUsers();
     } catch (error) {
       console.error('Failed to delete user:', error);
-      message.error('Failed to delete user');
+      message.error('Xóa người dùng thất bại');
+    }
+  };
+
+  const handleToggleLock = async (id, currentStatus) => {
+    try {
+      await userService.toggleLock(id);
+      message.success(currentStatus ? 'Đã mở khóa tài khoản' : 'Đã khóa tài khoản');
+      fetchUsers();
+    } catch (error) {
+      console.error('Failed to toggle lock user:', error);
+      message.error('Thực hiện thất bại');
     }
   };
 
@@ -120,16 +133,16 @@ const Users = () => {
     try {
       if (editingUser) {
         await userService.update(editingUser.id, values);
-        message.success('User updated successfully');
+        message.success('Cập nhật người dùng thành công');
       } else {
         await userService.create(values);
-        message.success('User created successfully');
+        message.success('Tạo người dùng thành công');
       }
       setModalVisible(false);
       fetchUsers();
     } catch (error) {
       console.error('Failed to save user:', error);
-      message.error('Failed to save user');
+      message.error('Lưu người dùng thất bại');
     }
   };
 
@@ -148,17 +161,18 @@ const Users = () => {
       key: 'avatar',
       width: 80,
       render: (username) => (
-        <Avatar icon={<UserOutlined />} />
+        <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#8B5CF6' }} />
       ),
     },
     {
-      title: 'Username',
+      title: 'Tên tài khoản',
       dataIndex: 'username',
       key: 'username',
       sorter: (a, b) => a.username.localeCompare(b.username),
+      render: (text) => <Typography.Text strong style={{ color: '#111827' }}>{text}</Typography.Text>
     },
     {
-      title: 'Full Name',
+      title: 'Họ và tên',
       dataIndex: 'fullName',
       key: 'fullName',
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
@@ -169,19 +183,19 @@ const Users = () => {
       key: 'email',
     },
     {
-      title: 'Phone',
+      title: 'Số điện thoại',
       dataIndex: 'phone',
       key: 'phone',
       render: (phone) => phone || '-',
     },
     {
-      title: 'Roles',
+      title: 'Quyền',
       dataIndex: 'roles',
       key: 'roles',
       render: (roles) => (
         <Space>
           {roles?.map(role => (
-            <Tag key={role.id} color={getRoleColor(role.id)}>
+            <Tag key={role.id} color={getRoleColor(role.id)} style={{ borderRadius: '12px' }}>
               {role.id}
             </Tag>
           ))}
@@ -189,12 +203,23 @@ const Users = () => {
       ),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => new Date(date).toLocaleDateString('vi-VN'),
     },
     {
+      title: 'Trạng thái',
+      key: 'status',
+      render: (_, record) => (
+        <Tag color={record.isLocked ? 'error' : 'success'} style={{ borderRadius: '12px' }}>
+          {record.isLocked ? 'Bị khóa' : 'Hoạt động'}
+        </Tag>
+      )
+    },
+    {
+      title: 'Thao tác',
+      key: 'actions',
       render: (_, record) => {
         const isAdmin = record.roles?.some(role => role.id === 'ADMIN');
         return (
@@ -204,21 +229,39 @@ const Users = () => {
               size="small"
               icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
+              style={{ borderRadius: '6px' }}
             />
             {!isAdmin && (
-              <Popconfirm
-                title="Are you sure you want to delete this user?"
-                onConfirm={() => handleDelete(record.id)}
-                okText="Yes"
-                cancelText="No"
-              >
-                <Button
-                  type="primary"
-                  danger
-                  size="small"
-                  icon={<DeleteOutlined />}
-                />
-              </Popconfirm>
+              <>
+                <Popconfirm
+                  title={record.isLocked ? "Bạn muốn mở khóa tài khoản này?" : "Bạn muốn khóa tài khoản này?"}
+                  onConfirm={() => handleToggleLock(record.id, record.isLocked)}
+                  okText="Đồng ý"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    type="primary"
+                    warning={!record.isLocked}
+                    size="small"
+                    icon={record.isLocked ? <UnlockOutlined /> : <LockOutlined />}
+                    style={{ borderRadius: '6px', backgroundColor: record.isLocked ? '#10B981' : '#F59E0B', border: 'none' }}
+                  />
+                </Popconfirm>
+                <Popconfirm
+                  title="Bạn có chắc muốn xóa người dùng này?"
+                  onConfirm={() => handleDelete(record.id)}
+                  okText="Đồng ý"
+                  cancelText="Hủy"
+                >
+                  <Button
+                    type="primary"
+                    danger
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    style={{ borderRadius: '6px' }}
+                  />
+                </Popconfirm>
+              </>
             )}
           </Space>
         );
@@ -228,42 +271,47 @@ const Users = () => {
 
   return (
     <div>
-      <Card>
-        <div style={{ marginBottom: 16 }}>
-          <Row justify="space-between" align="middle">
+      <Card style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: 0 }}>
+        <div style={{
+          padding: '24px',
+          borderBottom: '1px solid #F3F4F6'
+        }}>
+          <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <Title level={2} style={{ margin: 0 }}>Users Management</Title>
+              <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý người dùng</Title>
             </Col>
             <Col>
               <Button
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={handleAdd}
+                style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}
               >
-                Add User
+                Thêm người dùng
               </Button>
             </Col>
           </Row>
-        </div>
 
-        <div style={{ marginBottom: 16 }}>
           <Row gutter={16}>
             <Col span={8}>
               <Input
-                placeholder="Search by username..."
+                placeholder="Tìm kiếm theo tên tài khoản..."
                 prefix={<SearchOutlined />}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
                 allowClear
+                size="large"
+                style={{ borderRadius: '8px' }}
               />
             </Col>
             <Col span={8}>
               <Select
-                placeholder="Filter by role"
+                placeholder="Lọc theo quyền"
                 style={{ width: '100%' }}
                 value={searchRole}
                 onChange={setSearchRole}
                 allowClear
+                size="large"
               >
                 {availableRoles.map(role => (
                   <Option key={role.id} value={role.id}>
@@ -280,6 +328,7 @@ const Users = () => {
           dataSource={users}
           loading={loading}
           rowKey="id"
+          className="premium-table"
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
@@ -287,53 +336,61 @@ const Users = () => {
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) =>
-              `${range[0]}-${range[1]} of ${total} users`,
+              `${range[0]}-${range[1]} của ${total} người dùng`,
             onChange: (page, pageSize) => {
               setPagination(prev => ({
                 ...prev,
                 current: page,
                 pageSize: pageSize || 10
               }));
-            }
+            },
+            style: { padding: '0 24px 24px 24px' }
           }}
         />
       </Card>
 
       <Modal
-        title={editingUser ? 'Edit User' : 'Add New User'}
+        title={<span style={{ fontWeight: 700 }}>{editingUser ? 'Sửa người dùng' : 'Thêm người dùng mới'}</span>}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
         width={600}
+        styles={{
+          header: {
+            borderBottom: '1px solid #f0f0f0',
+            paddingBottom: 16
+          }
+        }}
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleSubmit}
+          style={{ marginTop: 16 }}
         >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="username"
-                label="Username"
+                label={<span style={{ fontWeight: 500 }}>Tên tài khoản</span>}
                 rules={[
-                  { required: true, message: 'Please input username!' },
-                  { min: 3, message: 'Username must be at least 3 characters!' }
+                  { required: true, message: 'Vui lòng nhập tên tài khoản!' },
+                  { min: 3, message: 'Tên tài khoản phải có ít nhất 3 ký tự!' }
                 ]}
               >
-                <Input />
+                <Input size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="email"
-                label="Email"
+                label={<span style={{ fontWeight: 500 }}>Email</span>}
                 rules={[
-                  { required: true, message: 'Please input email!' },
-                  { type: 'email', message: 'Please input valid email!' }
+                  { required: true, message: 'Vui lòng nhập email!' },
+                  { type: 'email', message: 'Vui lòng nhập email hợp lệ!' }
                 ]}
               >
-                <Input />
+                <Input size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -342,21 +399,21 @@ const Users = () => {
             <Col span={12}>
               <Form.Item
                 name="fullName"
-                label="Full Name"
+                label={<span style={{ fontWeight: 500 }}>Họ và tên</span>}
                 rules={[
-                  { required: true, message: 'Please input full name!' },
-                  { min: 2, message: 'Full name must be at least 2 characters!' }
+                  { required: true, message: 'Vui lòng nhập họ và tên!' },
+                  { min: 2, message: 'Họ và tên phải có ít nhất 2 ký tự!' }
                 ]}
               >
-                <Input />
+                <Input size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="phone"
-                label="Phone"
+                label={<span style={{ fontWeight: 500 }}>Số điện thoại</span>}
               >
-                <Input />
+                <Input size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -365,24 +422,26 @@ const Users = () => {
             <Col span={12}>
               <Form.Item
                 name="gender"
-                label="Gender"
+                label={<span style={{ fontWeight: 500 }}>Giới tính</span>}
               >
-                <Select placeholder="Select gender" allowClear>
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                  <Option value="other">Other</Option>
+                <Select placeholder="Chọn giới tính" allowClear size="large" style={{ borderRadius: '8px' }}>
+                  <Option value="male">Nam</Option>
+                  <Option value="female">Nữ</Option>
+                  <Option value="other">Khác</Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="roleIds"
-                label="Roles"
-                rules={[{ required: true, message: 'Please select at least one role!' }]}
+                label={<span style={{ fontWeight: 500 }}>Quyền</span>}
+                rules={[{ required: true, message: 'Vui lòng chọn ít nhất một quyền!' }]}
               >
                 <Select
                   mode="multiple"
-                  placeholder="Select roles"
+                  placeholder="Chọn quyền"
+                  size="large"
+                  style={{ borderRadius: '8px' }}
                 >
                   {availableRoles.map(role => (
                     <Option key={role.id} value={role.id}>
@@ -396,31 +455,31 @@ const Users = () => {
 
           <Form.Item
             name="address"
-            label="Address"
+            label={<span style={{ fontWeight: 500 }}>Địa chỉ</span>}
           >
-            <Input.TextArea rows={3} />
+            <Input.TextArea rows={3} style={{ borderRadius: '8px' }} />
           </Form.Item>
 
           {!editingUser && (
             <Form.Item
               name="password"
-              label="Password"
+              label={<span style={{ fontWeight: 500 }}>Mật khẩu</span>}
               rules={[
-                { required: true, message: 'Please input password!' },
-                { min: 6, message: 'Password must be at least 6 characters!' }
+                { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' }
               ]}
             >
-              <Input.Password />
+              <Input.Password size="large" style={{ borderRadius: '8px' }} />
             </Form.Item>
           )}
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button onClick={() => setModalVisible(false)}>
-                Cancel
+              <Button onClick={() => setModalVisible(false)} size="large" style={{ borderRadius: '8px' }}>
+                Hủy
               </Button>
-              <Button type="primary" htmlType="submit">
-                {editingUser ? 'Update' : 'Create'}
+              <Button type="primary" htmlType="submit" size="large" style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}>
+                {editingUser ? 'Cập nhật' : 'Tạo mới'}
               </Button>
             </Space>
           </Form.Item>

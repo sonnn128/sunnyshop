@@ -12,31 +12,25 @@ import {
   Tag,
   Avatar,
   Space,
-  Progress,
   Spin,
-  Alert,
-  Divider
+  Tooltip
 } from 'antd';
 import {
-  ShoppingOutlined,
   UserOutlined,
   DollarOutlined,
   ShoppingCartOutlined,
   EyeOutlined,
   EditOutlined,
-  DeleteOutlined,
   PlusOutlined,
-  TrophyOutlined,
-  ClockCircleOutlined
+  SkinOutlined,
+  TagsOutlined,
+  ClockCircleOutlined,
+  ArrowUpOutlined
 } from '@ant-design/icons';
-import { productService } from '../../services/product.service.js';
 import { userService } from '../../services/user.service.js';
-import { orderService } from '../../services/order.service.js';
 import { categoryService } from '../../services/category.service.js';
 
 const { Title, Text } = Typography;
-
-
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -60,7 +54,6 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      // Fetch all data in parallel
       const [
         statsRes,
         productsRes,
@@ -70,12 +63,11 @@ const Dashboard = () => {
       ] = await Promise.all([
         dashboardService.getStats(),
         dashboardService.getTopProducts(),
-        userService.getAll(0, 5), // Keep using userService for recent users as we didn't make a specific endpoint or just reuse getAll
+        userService.getAll(0, 5),
         dashboardService.getRecentOrders(),
         categoryService.getAll()
       ]);
 
-      // Update stats
       setStats({
         totalProducts: statsRes.totalProducts || 0,
         totalUsers: statsRes.totalUsers || 0,
@@ -84,9 +76,8 @@ const Dashboard = () => {
         totalRevenue: statsRes.totalRevenue || 0
       });
 
-      // Update recent data
       setRecentProducts(productsRes || []);
-      setRecentUsers(usersRes.data?.content || []); // usersRes is still Page<User>
+      setRecentUsers(usersRes.data?.content || []);
       setRecentOrders(ordersRes || []);
       setCategories(categoriesRes.data || []);
 
@@ -99,50 +90,52 @@ const Dashboard = () => {
 
   const productColumns = [
     {
-      title: 'Product',
+      title: 'Sản phẩm',
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
         <Space>
           <Avatar
             shape="square"
-            size={40}
+            size={48}
             src={record.image}
-            icon={<ShoppingOutlined />}
+            icon={<SkinOutlined />}
+            style={{ borderRadius: '8px', border: '1px solid #f0f0f0' }}
           />
           <div>
-            <Text strong>{text}</Text>
+            <Text strong style={{ color: '#111827' }}>{text}</Text>
             <br />
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              {record.categoryName || 'No Category'}
+              {record.categoryName || 'Chưa phân loại'}
             </Text>
           </div>
         </Space>
       ),
     },
     {
-      title: 'Price',
+      title: 'Giá',
       dataIndex: 'price',
       key: 'price',
-      render: (price) => formatPrice(price),
+      render: (price) => <Text strong>{formatPrice(price)}</Text>,
     },
     {
-      title: 'Stock',
+      title: 'Tồn kho',
       dataIndex: 'quantity',
       key: 'quantity',
       render: (quantity) => (
-        <Tag color={quantity > 10 ? 'green' : quantity > 0 ? 'orange' : 'red'}>
-          {quantity || 0}
+        <Tag color={quantity > 10 ? 'success' : quantity > 0 ? 'warning' : 'error'} style={{ borderRadius: '12px', padding: '2px 10px' }}>
+          {quantity > 0 ? `${quantity} sản phẩm` : 'Hết hàng'}
         </Tag>
       ),
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button type="text" icon={<EyeOutlined />} size="small" />
-          <Button type="text" icon={<EditOutlined />} size="small" />
+          <Tooltip title="Xem chi tiết">
+            <Button type="text" icon={<EyeOutlined />} style={{ color: '#4F46E5' }} />
+          </Tooltip>
         </Space>
       ),
     },
@@ -150,12 +143,14 @@ const Dashboard = () => {
 
   const userColumns = [
     {
-      title: 'User',
+      title: 'Khách hàng',
       dataIndex: 'username',
       key: 'username',
       render: (text, record) => (
         <Space>
-          <Avatar icon={<UserOutlined />} />
+          <Avatar style={{ backgroundColor: '#F3F4F6', color: '#4F46E5' }}>
+            {text.charAt(0).toUpperCase()}
+          </Avatar>
           <div>
             <Text strong>{text}</Text>
             <br />
@@ -167,32 +162,16 @@ const Dashboard = () => {
       ),
     },
     {
-      title: 'Full Name',
-      dataIndex: 'fullName',
-      key: 'fullName',
-      render: (text) => text || 'N/A',
-    },
-    {
-      title: 'Role',
+      title: 'Vai trò',
       dataIndex: 'roles',
       key: 'roles',
       render: (roles) => (
         <Space>
           {roles?.map(role => (
-            <Tag key={role.id} color={role.id === 'ADMIN' ? 'red' : 'blue'}>
+            <Tag key={role.id} color={role.id === 'ADMIN' ? 'purple' : 'blue'} style={{ borderRadius: '12px' }}>
               {role.id}
             </Tag>
           ))}
-        </Space>
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <Space>
-          <Button type="text" icon={<EyeOutlined />} size="small" />
-          <Button type="text" icon={<EditOutlined />} size="small" />
         </Space>
       ),
     },
@@ -200,221 +179,187 @@ const Dashboard = () => {
 
   const orderColumns = [
     {
-      title: 'Order ID',
+      title: 'Mã đơn',
       dataIndex: 'id',
       key: 'id',
-      render: (id) => `#${id?.toString().slice(-8) || 'N/A'}`,
+      render: (id) => <Text strong style={{ color: '#4F46E5' }}>#{id?.toString().slice(-8) || 'N/A'}</Text>,
     },
     {
-      title: 'Customer',
+      title: 'Khách hàng',
       dataIndex: 'user',
       key: 'user',
-      render: (user) => user?.username || 'Guest',
+      render: (user) => user?.username || 'Khách',
     },
     {
-      title: 'Total',
+      title: 'Tổng tiền',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
       render: (amount) => formatPrice(amount),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status) => (
-        <Tag color={status === 'COMPLETED' ? 'green' : status === 'PENDING' ? 'orange' : 'red'}>
+        <Tag color={status === 'COMPLETED' ? 'success' : status === 'PENDING' ? 'warning' : 'error'} style={{ borderRadius: '12px', padding: '2px 10px' }}>
           {status || 'PENDING'}
         </Tag>
       ),
     },
     {
-      title: 'Date',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
     },
   ];
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
+      <div style={{ textAlign: 'center', padding: '100px', height: '100%' }}>
         <Spin size="large" />
         <div style={{ marginTop: 16 }}>
-          <Text>Loading dashboard data...</Text>
+          <Text type="secondary">Đang tải dữ liệu tổng quan...</Text>
         </div>
       </div>
     );
   }
 
+  const statCards = [
+    { title: 'Tổng Doanh Thu', value: formatPrice(stats.totalRevenue), icon: <DollarOutlined />, color: '#10B981', bg: '#D1FAE5' },
+    { title: 'Tổng Đơn Hàng', value: stats.totalOrders, icon: <ShoppingCartOutlined />, color: '#3B82F6', bg: '#DBEAFE' },
+    { title: 'Tổng Sản Phẩm', value: stats.totalProducts, icon: <SkinOutlined />, color: '#8B5CF6', bg: '#EDE9FE' },
+    { title: 'Khách Hàng', value: stats.totalUsers, icon: <UserOutlined />, color: '#F59E0B', bg: '#FEF3C7' },
+  ];
+
   return (
-    <div style={{ padding: '24px' }}>
-      <div style={{ marginBottom: 24 }}>
-        <Title level={2} style={{ margin: 0 }}>
-          Admin Dashboard
+    <div>
+      <div style={{ marginBottom: 32 }}>
+        <Title level={2} style={{ margin: 0, fontWeight: 800, color: '#111827' }}>
+          Tổng quan
         </Title>
-        <Text type="secondary">
-          Welcome to the Sunny Shop Admin Panel
+        <Text type="secondary" style={{ fontSize: '15px' }}>
+          Chào mừng trở lại! Dưới đây là tình hình cửa hàng của bạn hôm nay.
         </Text>
       </div>
 
-      {/* Stats Cards */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Total Products"
-              value={stats.totalProducts}
-              prefix={<ShoppingOutlined style={{ color: '#1890ff' }} />}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Total Users"
-              value={stats.totalUsers}
-              prefix={<UserOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Total Orders"
-              value={stats.totalOrders}
-              prefix={<ShoppingCartOutlined style={{ color: '#fa8c16' }} />}
-              valueStyle={{ color: '#fa8c16' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Categories"
-              value={stats.totalCategories}
-              prefix={<TrophyOutlined style={{ color: '#722ed1' }} />}
-              valueStyle={{ color: '#722ed1' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={12} lg={6}>
-          <Card>
-            <Statistic
-              title="Total Revenue"
-              value={stats.totalRevenue}
-              formatter={(value) => formatPrice(value)}
-              prefix={<DollarOutlined style={{ color: '#f5222d' }} />}
-              valueStyle={{ color: '#f5222d' }}
-            />
-          </Card>
-        </Col>
+      {/* Stats Cards Row */}
+      <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
+        {statCards.map((stat, idx) => (
+          <Col xs={24} sm={12} lg={6} key={idx}>
+            <Card 
+              bodyStyle={{ padding: '24px' }} 
+              style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <Text type="secondary" style={{ fontSize: '14px', fontWeight: 500 }}>{stat.title}</Text>
+                  <Title level={3} style={{ margin: '8px 0 0 0', color: '#111827', fontWeight: 700 }}>
+                    {stat.value}
+                  </Title>
+                </div>
+                <div style={{ 
+                  width: '48px', height: '48px', 
+                  borderRadius: '12px', 
+                  backgroundColor: stat.bg, 
+                  color: stat.color,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '24px'
+                }}>
+                  {stat.icon}
+                </div>
+              </div>
+              <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
+                 <ArrowUpOutlined style={{ color: '#10B981' }} />
+                 <Text style={{ color: '#10B981', fontWeight: 600 }}>Tăng 12%</Text>
+                 <Text type="secondary">so với tháng trước</Text>
+              </div>
+            </Card>
+          </Col>
+        ))}
       </Row>
 
-      {/* Recent Data Tables */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
+      {/* Table Rows */}
+      <Row gutter={[24, 24]}>
+        <Col xs={24} xl={16}>
           <Card
-            title={
-              <Space>
-                <ShoppingOutlined />
-                Recent Products
-              </Space>
-            }
-            extra={<Button type="link" icon={<PlusOutlined />}>Add Product</Button>}
-          >
-            <Table
-              columns={productColumns}
-              dataSource={recentProducts}
-              pagination={false}
-              size="small"
-              rowKey="id"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} lg={12}>
-          <Card
-            title={
-              <Space>
-                <UserOutlined />
-                Recent Users
-              </Space>
-            }
-            extra={<Button type="link" icon={<PlusOutlined />}>Add User</Button>}
-          >
-            <Table
-              columns={userColumns}
-              dataSource={recentUsers}
-              pagination={false}
-              size="small"
-              rowKey="id"
-            />
-          </Card>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24}>
-          <Card
-            title={
-              <Space>
-                <ClockCircleOutlined />
-                Recent Orders
-              </Space>
-            }
-            extra={<Button type="link">View All Orders</Button>}
+            title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><ClockCircleOutlined style={{ color: '#4F46E5' }}/> Đơn Hàng Gần Đây</Space>}
+            extra={<Button type="link" style={{ color: '#4F46E5', fontWeight: 500 }}>Xem tất cả</Button>}
+            style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            bodyStyle={{ padding: 0 }}
           >
             <Table
               columns={orderColumns}
               dataSource={recentOrders}
               pagination={false}
-              size="small"
               rowKey="id"
+              className="premium-table"
+            />
+          </Card>
+        </Col>
+
+        <Col xs={24} xl={8}>
+          <Card
+            title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><TagsOutlined style={{ color: '#F59E0B' }}/> Danh Mục Nổi Bật</Space>}
+            style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', height: '100%' }}
+          >
+            {categories.slice(0, 5).map(cat => (
+              <div key={cat.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #F3F4F6' }}>
+                 <Space>
+                    <div style={{ width: 40, height: 40, borderRadius: '8px', backgroundColor: '#FEF3C7', color: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                       <TagsOutlined />
+                    </div>
+                    <div>
+                      <Text strong style={{ color: '#111827' }}>{cat.name}</Text>
+                      <br/>
+                      <Text type="secondary" style={{ fontSize: '12px' }}>{cat.productCount} sản phẩm</Text>
+                    </div>
+                 </Space>
+                 <Button type="text" shape="circle" icon={<ArrowRightOutlined />} />
+              </div>
+            ))}
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[24, 24]} style={{ marginTop: 24 }}>
+        <Col xs={24}>
+          <Card
+            title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><SkinOutlined style={{ color: '#8B5CF6' }}/> Sản Phẩm Xu Hướng</Space>}
+            extra={<Button type="link" icon={<PlusOutlined />} style={{ color: '#8B5CF6', fontWeight: 500 }}>Thêm Sản Phẩm</Button>}
+            style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
+            bodyStyle={{ padding: 0 }}
+          >
+            <Table
+              columns={productColumns}
+              dataSource={recentProducts}
+              pagination={false}
+              rowKey="id"
+              className="premium-table"
             />
           </Card>
         </Col>
       </Row>
 
-      {/* Categories Overview */}
-      {categories.length > 0 && (
-        <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          <Col xs={24}>
-            <Card
-              title={
-                <Space>
-                  <TrophyOutlined />
-                  Categories Overview
-                </Space>
-              }
-              extra={<Button type="link">Manage Categories</Button>}
-            >
-              <Row gutter={[16, 16]}>
-                {categories.map(category => (
-                  <Col xs={24} sm={12} md={8} lg={6} key={category.id}>
-                    <Card size="small" hoverable>
-                      <div style={{ textAlign: 'center' }}>
-                        <Avatar
-                          size={48}
-                          icon={<TrophyOutlined />}
-                          style={{ marginBottom: 8 }}
-                        />
-                        <div>
-                          <Text strong>{category.name}</Text>
-                          <br />
-                          <Text type="secondary" style={{ fontSize: '12px' }}>
-                            {category.productCount || 0} products
-                          </Text>
-                        </div>
-                      </div>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            </Card>
-          </Col>
-        </Row>
-      )}
+      <style>{`
+        .premium-table .ant-table-thead > tr > th {
+          background: #F9FAFB;
+          color: #6B7280;
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 12px;
+          letter-spacing: 0.5px;
+          border-bottom: 1px solid #E5E7EB;
+          padding: 16px 24px;
+        }
+        .premium-table .ant-table-tbody > tr > td {
+          padding: 16px 24px;
+          border-bottom: 1px solid #F3F4F6;
+        }
+        .premium-table .ant-table-tbody > tr:hover > td {
+          background-color: #F9FAFB;
+        }
+      `}</style>
     </div>
   );
 };

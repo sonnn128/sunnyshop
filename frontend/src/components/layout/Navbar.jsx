@@ -2,16 +2,15 @@ import React from 'react';
 import { Layout, Button, Dropdown, Avatar, Input, theme, Space, Badge } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
-  LaptopOutlined,
-  ShoppingCartOutlined,
+  ShoppingOutlined,
   UserOutlined,
   LoginOutlined,
   LogoutOutlined,
   SettingOutlined,
-  ShoppingOutlined,
   DashboardOutlined,
   BulbOutlined,
-  HeartOutlined
+  HeartOutlined,
+  SkinOutlined
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useTheme } from '@/contexts/ThemeContext.jsx';
@@ -35,13 +34,13 @@ const Navbar = () => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'Profile',
+      label: 'Hồ sơ',
       onClick: () => navigate('/profile')
     },
     {
       key: 'orders',
       icon: <ShoppingOutlined />,
-      label: 'My Orders',
+      label: 'Đơn hàng của tôi',
       onClick: () => navigate('/orders')
     },
     {
@@ -50,7 +49,7 @@ const Navbar = () => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: 'Đăng xuất',
       onClick: handleLogout
     }
   ];
@@ -59,25 +58,25 @@ const Navbar = () => {
     {
       key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: 'Tổng quan Admin',
       onClick: () => navigate('/admin')
     },
     {
       key: 'products',
-      icon: <LaptopOutlined />,
-      label: 'Products',
+      icon: <SkinOutlined />,
+      label: 'Quản lý Sản phẩm',
       onClick: () => navigate('/admin/products')
     },
     {
       key: 'orders',
       icon: <ShoppingOutlined />,
-      label: 'Orders',
+      label: 'Quản lý Đơn hàng',
       onClick: () => navigate('/admin/orders')
     },
     {
       key: 'users',
       icon: <UserOutlined />,
-      label: 'Users',
+      label: 'Quản lý Người dùng',
       onClick: () => navigate('/admin/users')
     }
   ];
@@ -85,7 +84,19 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <Header
+    <>
+      <div style={{
+        background: '#111827',
+        color: '#fff',
+        textAlign: 'center',
+        padding: '8px 24px',
+        fontSize: '13px',
+        fontWeight: '500',
+        letterSpacing: '0.5px'
+      }}>
+        ✨ MIỄN PHÍ VẬN CHUYỂN TOÀN QUỐC CHO ĐƠN HÀNG TỪ 1.000.000₫ ✨
+      </div>
+      <Header
       style={{
         position: 'sticky',
         top: 0,
@@ -108,21 +119,21 @@ const Navbar = () => {
         onClick={() => navigate('/')}
       >
         <div style={{
-          width: 40,
-          height: 40,
-          background: token.colorPrimary,
-          borderRadius: 10,
+          width: 44,
+          height: 44,
+          background: 'linear-gradient(135deg, #111827 0%, #374151 100%)',
+          borderRadius: 12,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: `0 4px 10px ${token.colorPrimary}66`
+          boxShadow: '0 4px 10px rgba(17, 24, 39, 0.3)'
         }}>
-          <LaptopOutlined style={{ color: '#fff', fontSize: 22 }} />
+          <SkinOutlined style={{ color: '#fff', fontSize: 24 }} />
         </div>
         <div style={{
-          fontSize: '20px',
-          fontWeight: '800',
-          color: token.colorPrimary,
+          fontSize: '22px',
+          fontWeight: '900',
+          color: '#111827',
           letterSpacing: '-0.5px'
         }}>
           Sunny Shop
@@ -137,40 +148,53 @@ const Navbar = () => {
             type="text"
             onClick={() => navigate('/')}
             style={{
-              fontWeight: isActive('/') ? 'bold' : 'normal',
-              color: isActive('/') ? token.colorPrimary : token.colorText
+              fontWeight: isActive('/') ? 'bold' : '600',
+              color: isActive('/') ? '#4F46E5' : token.colorText,
+              fontSize: '15px',
+              textTransform: 'uppercase'
             }}
           >
-            Home
+            Trang Chủ
           </Button>
           <Button
             type="text"
             onClick={() => navigate('/products')}
             style={{
-              fontWeight: isActive('/products') ? 'bold' : 'normal',
-              color: isActive('/products') ? token.colorPrimary : token.colorText
+              fontWeight: isActive('/products') ? 'bold' : '600',
+              color: isActive('/products') ? '#4F46E5' : token.colorText,
+              fontSize: '15px',
+              textTransform: 'uppercase'
             }}
           >
-            Products
+            Sản Phẩm
+          </Button>
+          <Button
+            type="text"
+            onClick={() => navigate('/products')}
+            style={{
+              fontWeight: '600',
+              color: token.colorText,
+              fontSize: '15px',
+              textTransform: 'uppercase'
+            }}
+          >
+            Hàng Mới
+          </Button>
+          <Button
+            type="text"
+            onClick={() => navigate('/products')}
+            style={{
+              fontWeight: '600',
+              color: '#EF4444',
+              fontSize: '15px',
+              textTransform: 'uppercase'
+            }}
+          >
+            Khuyến Mãi
           </Button>
         </Space>
 
-        {/* Search Bar */}
-        <div style={{ width: '100%', maxWidth: 400 }}>
-          <Input.Search
-            placeholder="Search for laptops..."
-            onSearch={(v) => navigate(`/products?search=${encodeURIComponent(v)}`)}
-            allowClear
-            size="large"
-            style={{
-              width: '100%',
-            }}
-            styles={{
-              input: { borderRadius: '20px 0 0 20px' },
-              button: { borderRadius: '0 20px 20px 0' }
-            }}
-          />
-        </div>
+
       </div>
 
       {/* 3. Actions Section */}
@@ -178,23 +202,23 @@ const Navbar = () => {
         <Space size="small">
           <Button
             type="text"
-            icon={<HeartOutlined />}
+            icon={<HeartOutlined style={{ fontSize: '20px' }} />}
             onClick={() => navigate('/wishlist')}
             style={{ color: token.colorText }}
-            title="Favorites"
+            title="Yêu Thích"
           />
 
-          <CartIcon />
+          <CartIcon style={{ color: token.colorText, fontSize: '20px' }} />
 
           <Button
             type="text"
-            icon={<BulbOutlined />}
+            icon={<BulbOutlined style={{ fontSize: '20px' }} />}
             onClick={() => {
               const nextMode = themeMode === 'light' ? 'dark' : (themeMode === 'dark' ? 'system' : 'light');
               setThemeMode(nextMode);
             }}
             style={{ color: token.colorText }}
-            title={`Theme: ${themeMode}`}
+            title={`Giao diện: ${themeMode}`}
           />
         </Space>
 
@@ -205,38 +229,39 @@ const Navbar = () => {
             {isAdmin() && (
               <Dropdown menu={{ items: adminMenuItems }} placement="bottomRight">
                 <Button type="text" style={{ color: token.colorText }}>
-                  <SettingOutlined />
+                  <SettingOutlined style={{ fontSize: '20px' }} />
                 </Button>
               </Dropdown>
             )}
 
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight" arrow>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', padding: '4px 8px', borderRadius: 6, transition: 'background 0.3s', ':hover': { background: token.colorFillTertiary } }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '6px 12px', borderRadius: 8, transition: 'background 0.3s', ':hover': { background: token.colorFillTertiary } }}>
                 <Avatar
-                  style={{ backgroundColor: token.colorPrimary, verticalAlign: 'middle' }}
+                  style={{ backgroundColor: '#4F46E5', verticalAlign: 'middle' }}
                   icon={<UserOutlined />}
-                  src={user.avatar} // Assuming user object might have an avatar property
+                  src={user.avatar}
                 >
                   {user?.fullName?.charAt(0) || user?.username?.charAt(0)}
                 </Avatar>
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: token.colorText }}>{user.fullName || user.username}</span>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: token.colorText }}>{user.fullName || user.username}</span>
                 </div>
               </div>
             </Dropdown>
           </>
         ) : (
           <Space>
-            <Button type="text" onClick={() => navigate('/login')}>
-              Login
+            <Button type="text" onClick={() => navigate('/login')} style={{ fontWeight: 600 }}>
+              Đăng Nhập
             </Button>
-            <Button type="primary" onClick={() => navigate('/register')}>
-              Register
+            <Button type="primary" onClick={() => navigate('/register')} style={{ borderRadius: '20px', fontWeight: 600, backgroundColor: '#111827', border: 'none', padding: '0 24px' }}>
+              Đăng Ký
             </Button>
           </Space>
         )}
       </div>
     </Header>
+    </>
   );
 };
 

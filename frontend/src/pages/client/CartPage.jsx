@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
-import { Card, Typography, Button, Table, InputNumber, Empty, Spin, message, Input, theme } from 'antd';
+import { Card, Typography, Button, Table, InputNumber, Empty, Spin, message, Input, theme, Select } from 'antd';
 import { DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { useCart } from '@/contexts/CartContext.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -24,11 +24,22 @@ const CartPage = () => {
     const [couponCode, setCouponCode] = React.useState('');
     const [discount, setDiscount] = React.useState(0);
     const [appliedCoupon, setAppliedCoupon] = React.useState(null);
+    const [activeCoupons, setActiveCoupons] = React.useState([]);
 
     // Load cart from server when component mounts
     useEffect(() => {
         loadCartFromServer();
+        fetchActiveCoupons();
     }, []);
+
+    const fetchActiveCoupons = async () => {
+        try {
+            const data = await couponService.getActive();
+            setActiveCoupons(data || []);
+        } catch (error) {
+            console.error('Failed to load active coupons', error);
+        }
+    };
 
     // Show error message if there's an error
     useEffect(() => {
@@ -164,24 +175,25 @@ const CartPage = () => {
             return;
         }
         try {
-            const res = await couponService.checkCoupon(couponCode);
-            if (res.success) {
-                const coupon = res.data;
-                // Currently only fixed discount supported
-                if (coupon.minOrderAmount && totalPrice < coupon.minOrderAmount) {
-                    message.error(`Minimum order amount is ${formatPrice(coupon.minOrderAmount)}`);
-                    return;
+            const coupon = await couponService.validate(couponCode, totalPrice);
+            
+            let calculatedDiscount = 0;
+            if (coupon.discountType === 'PERCENTAGE') {
+                calculatedDiscount = (totalPrice * coupon.discountValue) / 100;
+                if (coupon.maxDiscountAmount && calculatedDiscount > coupon.maxDiscountAmount) {
+                    calculatedDiscount = coupon.maxDiscountAmount;
                 }
-                setDiscount(coupon.discountAmount);
-                setAppliedCoupon(coupon);
-                message.success('Coupon applied!');
-                // Save to local storage or context if needed for checkout
-                localStorage.setItem('coupon', JSON.stringify(coupon));
             } else {
-                message.error(res.message);
+                calculatedDiscount = coupon.discountValue;
             }
+
+            setDiscount(calculatedDiscount);
+            setAppliedCoupon(coupon);
+            message.success('Đã áp dụng mã giảm giá!');
+            // Save to local storage or context if needed for checkout
+            localStorage.setItem('coupon', JSON.stringify(coupon));
         } catch (e) {
-            message.error(e.response?.data?.message || 'Invalid coupon');
+            message.error(typeof e === 'string' ? e : (e.response?.data?.message || 'Mã giảm giá không hợp lệ'));
             setDiscount(0);
             setAppliedCoupon(null);
         }
@@ -221,12 +233,17 @@ const CartPage = () => {
                     <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
                         <span style={{ fontWeight: 'bold' }}>Coupon:</span>
                         <div style={{ display: 'flex', gap: 8 }}>
-                            <Input
-                                placeholder="Enter code"
-                                value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value)}
-                                style={{ width: 150 }}
+                            <Select
+                                placeholder="Chọn mã giảm giá"
+                                value={couponCode || undefined}
+                                onChange={(val) => setCouponCode(val)}
+                                style={{ width: 250, textAlign: 'left' }}
                                 disabled={!!appliedCoupon}
+                                allowClear
+                                options={activeCoupons.map(c => ({
+                                    value: c.code,
+                                    label: `${c.code} - Giảm ${c.discountType === 'PERCENTAGE' ? c.discountValue + '%' : formatPrice(c.discountValue)}`
+                                }))}
                             />
                             {appliedCoupon ? (
                                 <Button onClick={() => {

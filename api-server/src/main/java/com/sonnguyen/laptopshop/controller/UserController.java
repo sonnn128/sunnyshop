@@ -58,6 +58,13 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/toggle-lock")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> toggleUserLock(@PathVariable UUID id) {
+        UserResponse user = userService.toggleUserLock(id);
+        return ResponseEntity.ok(user);
+    }
+
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponse>> searchUsers(

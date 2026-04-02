@@ -266,3 +266,23 @@
 .ant-layout-sider .ant-menu::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.2);
 }
+
+/* Premium Table Styles for all Admin pages */
+.premium-table .ant-table-thead > tr > th {
+  background: #F9FAFB;
+  color: #6B7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  padding: 16px 24px;
+  border-bottom: 1px solid #F3F4F6;
+}
+.premium-table .ant-table-tbody > tr > td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #F3F4F6;
+  color: #374151;
+}
+.premium-table .ant-table-tbody > tr:hover > td {
+  background: #F9FAFB !important;
+}

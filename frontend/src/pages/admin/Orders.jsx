@@ -98,11 +98,11 @@ const Orders = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await orderService.updateStatus(orderId, newStatus);
-      message.success('Order status updated successfully');
+      message.success('Cập nhật trạng thái đơn hàng thành công');
       fetchOrders(pagination.current - 1, pagination.pageSize, statusFilter);
     } catch (error) {
       console.error('Failed to update order status:', error);
-      message.error('Failed to update order status');
+      message.error('Cập nhật trạng thái đơn hàng thất bại');
     }
   };
 
@@ -127,10 +127,10 @@ const Orders = () => {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'PENDING': return <Badge status="warning" text="Pending" />;
-      case 'PROCESSING': return <Badge status="processing" text="Processing" />;
-      case 'COMPLETED': return <Badge status="success" text="Completed" />;
-      case 'CANCELLED': return <Badge status="error" text="Cancelled" />;
+      case 'PENDING': return <Badge status="warning" text="Chờ xử lý" />;
+      case 'PROCESSING': return <Badge status="processing" text="Đang xử lý" />;
+      case 'COMPLETED': return <Badge status="success" text="Hoàn thành" />;
+      case 'CANCELLED': return <Badge status="error" text="Đã hủy" />;
       default: return <Badge status="default" text={status} />;
     }
   };
@@ -178,43 +178,46 @@ const Orders = () => {
 
   const columns = [
     {
-      title: 'Order Number',
+      title: 'Mã đơn hàng',
       key: 'orderNumber',
-      render: (_, record) => getOrderNumber(record),
+      render: (_, record) => <Typography.Text strong style={{ color: '#111827' }}>#{getOrderNumber(record)}</Typography.Text>,
     },
     {
-      title: 'Customer',
+      title: 'Khách hàng',
       key: 'customer',
       render: (_, record) => (
         <div>
-          <div>{getCustomerName(record)}</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>{getCustomerEmail(record)}</div>
+          <div style={{ fontWeight: 500, color: '#111827' }}>{getCustomerName(record)}</div>
+          <div style={{ fontSize: '12px', color: '#6B7280' }}>{getCustomerEmail(record)}</div>
         </div>
       ),
     },
     {
-      title: 'Total Amount',
+      title: 'Tổng tiền',
       dataIndex: 'totalPrice',
       key: 'totalPrice',
       render: (_, record) => {
         const amount = getTotalAmount(record);
-        return amount ? formatPrice(amount) : formatPrice(0);
+        return <Typography.Text strong>{amount ? formatPrice(amount) : formatPrice(0)}</Typography.Text>;
       },
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
       render: (status) => getStatusBadge(status),
     },
     {
-      title: 'Order Date',
+      title: 'Ngày đặt',
       dataIndex: 'orderDate',
       key: 'orderDate',
-      render: (_, record) => getOrderDate(record),
+      render: (_, record) => {
+         const date = getOrderDate(record);
+         return date ? new Date(date).toLocaleString('vi-VN') : '';
+      },
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -222,8 +225,9 @@ const Orders = () => {
             type="primary"
             icon={<EyeOutlined />}
             onClick={() => handleView(record)}
+            style={{ borderRadius: '8px' }}
           >
-            View
+            Xem
           </Button>
           {record.status === 'PENDING' && (
             <>
@@ -231,16 +235,17 @@ const Orders = () => {
                 type="primary"
                 icon={<CheckOutlined />}
                 onClick={() => handleStatusChange(record.id, 'PROCESSING')}
-                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
+                style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', borderRadius: '8px' }}
               >
-                Process
+                Xử lý
               </Button>
               <Button
                 danger
                 icon={<CloseOutlined />}
                 onClick={() => handleStatusChange(record.id, 'CANCELLED')}
+                style={{ borderRadius: '8px' }}
               >
-                Cancel
+                Hủy
               </Button>
             </>
           )}
@@ -249,9 +254,9 @@ const Orders = () => {
               type="primary"
               icon={<CheckOutlined />}
               onClick={() => handleStatusChange(record.id, 'COMPLETED')}
-              style={{ backgroundColor: '#1890ff', borderColor: '#1890ff' }}
+              style={{ backgroundColor: '#1890ff', borderColor: '#1890ff', borderRadius: '8px' }}
             >
-              Complete
+              Hoàn thành
             </Button>
           )}
         </Space>
@@ -261,25 +266,27 @@ const Orders = () => {
 
   return (
     <div>
-      <Card>
+      <Card style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: 0 }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 16
+          padding: '24px',
+          borderBottom: '1px solid #F3F4F6'
         }}>
-          <Title level={2} style={{ margin: 0 }}>Orders Management</Title>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý đơn hàng</Title>
           <Select
             value={statusFilter}
             onChange={handleStatusFilterChange}
-            style={{ width: 150 }}
-            placeholder="Filter by status"
+            style={{ width: 180 }}
+            placeholder="Lọc theo trạng thái"
+            size="large"
           >
-            <Option value="ALL">All Orders</Option>
-            <Option value="PENDING">Pending</Option>
-            <Option value="PROCESSING">Processing</Option>
-            <Option value="COMPLETED">Completed</Option>
-            <Option value="CANCELLED">Cancelled</Option>
+            <Option value="ALL">Tất cả đơn hàng</Option>
+            <Option value="PENDING">Chờ xử lý</Option>
+            <Option value="PROCESSING">Đang xử lý</Option>
+            <Option value="COMPLETED">Hoàn thành</Option>
+            <Option value="CANCELLED">Đã hủy</Option>
           </Select>
         </div>
 
@@ -288,57 +295,67 @@ const Orders = () => {
           dataSource={orders}
           loading={loading}
           rowKey="id"
+          className="premium-table"
           pagination={{
             current: pagination.current,
             pageSize: pagination.pageSize,
             total: pagination.total,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} orders`,
+            showTotal: (total, range) => `${range[0]}-${range[1]} của ${total} đơn hàng`,
             onChange: handleTableChange,
             onShowSizeChange: handleTableChange,
+            style: { padding: '0 24px 24px 24px' }
           }}
         />
       </Card>
 
       <Modal
-        title={`Order Details - ${getOrderNumber(selectedOrder)}`}
+        title={<span style={{ fontWeight: 700 }}>Chi tiết đơn hàng - #{getOrderNumber(selectedOrder)}</span>}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
         width={800}
+        styles={{
+          header: {
+            borderBottom: '1px solid #f0f0f0',
+            paddingBottom: 16
+          }
+        }}
       >
         {selectedOrder && (
-          <div>
-            <Descriptions bordered column={1} size="middle" styles={{ label: { width: '150px' } }}>
-              <Descriptions.Item label="Date">
-                {getOrderDate(selectedOrder)}
+          <div style={{ marginTop: 16 }}>
+            <Descriptions bordered column={1} size="middle" styles={{ label: { width: '150px', fontWeight: 500 } }}>
+              <Descriptions.Item label="Ngày đặt">
+                {getOrderDate(selectedOrder) ? new Date(getOrderDate(selectedOrder)).toLocaleString('vi-VN') : ''}
               </Descriptions.Item>
-              <Descriptions.Item label="Status">
+              <Descriptions.Item label="Trạng thái">
                 {getStatusBadge(selectedOrder.status)}
               </Descriptions.Item>
-              <Descriptions.Item label="Receiver">
+              <Descriptions.Item label="Người nhận">
                 {selectedOrder.receiverName || getCustomerName(selectedOrder)}
               </Descriptions.Item>
-              <Descriptions.Item label="Address">
+              <Descriptions.Item label="Địa chỉ">
                 {selectedOrder.receiverAddress || selectedOrder.shippingAddress || ''}
               </Descriptions.Item>
-              <Descriptions.Item label="Phone">
+              <Descriptions.Item label="Số điện thoại">
                 {selectedOrder.receiverPhone || ''}
               </Descriptions.Item>
-              <Descriptions.Item label="Total Amount">
-                <Typography.Text strong style={{ fontSize: '16px' }}>
+              <Descriptions.Item label="Tổng tiền">
+                <Typography.Text strong style={{ fontSize: '16px', color: '#EF4444' }}>
                   {formatPrice(getTotalAmount(selectedOrder))}
                 </Typography.Text>
               </Descriptions.Item>
             </Descriptions>
 
             <div style={{ marginTop: 24 }}>
+              <Title level={5} style={{ marginBottom: 16, color: '#111827' }}>Sản phẩm đã đặt</Title>
               <Table
                 dataSource={getItems(selectedOrder)}
+                className="premium-table"
                 columns={[
                   {
-                    title: 'Product',
+                    title: 'Sản phẩm',
                     key: 'product',
                     width: '40%',
                     render: (_, record) => (
@@ -347,22 +364,22 @@ const Orders = () => {
                           src={record.product?.image}
                           width={50}
                           height={50}
-                          style={{ objectFit: 'cover', borderRadius: '4px' }}
+                          style={{ objectFit: 'cover', borderRadius: '8px' }}
                           fallback="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMIAAADDCAYAAADQvc6UAAABRWlDQ1BJQ0MgUHJvZmlsZQAAKJFjYGASSSwoyGFhYGDIzSspCnJ3UoiIjFJgf8LAwSDCIMogwMCcmFxc4BgQ4ANUwgCjUcG3awyMIPqyLsis7PPOq3QdDFcvjV3jOD1boQVTPQrgSkktTgbSf4A4LbmgqISBgTEFyFYuLykAsTuAbJEioKOA7DkgdjqEvQHEToKwj4DVhAQ5A9k3gGyB5IxEoBmML4BsnSQk8XQkNtReEOBxcfXxUQg1Mjc0dyHgXNJBSWpFCYh2zi+oLMpMzyhRcASGUqqCZ16yno6CkYGRAQMDKMwhqj/fAIcloxgHQqxAjIHBEugw5sUIsZqBg+IkQAi4eNcY2FQ+gfQO8nX3GwQcbgx1j+BmFUpA4nXwDxKzToYG4ib/2//9nYGBgO8T8//9+4///v4sB3d9vGjD8HwD3FgLefG8sYgAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggVGhlIEdJTVDvZCVuAAAADUlEQVQ4jWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="
                         />
-                        <span>{record.product?.name || 'Unknown Product'}</span>
+                        <span style={{ fontWeight: 500, color: '#111827' }}>{record.product?.name || 'Sản phẩm không xác định'}</span>
                       </div>
                     )
                   },
                   {
-                    title: 'Price',
+                    title: 'Giá',
                     dataIndex: 'price',
                     key: 'price',
                     render: (price) => formatPrice(price || 0)
                   },
-                  { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+                  { title: 'Số lượng', dataIndex: 'quantity', key: 'quantity' },
                   {
-                    title: 'Total',
+                    title: 'Thành tiền',
                     key: 'total',
                     render: (_, record) => (
                       <Typography.Text strong>

@@ -68,7 +68,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
 
   if (showQuantity) {
     return (
-      <Space.Compact style={style}>
+      <Space.Compact style={style} size={size}>
         <InputNumber
           min={1}
           max={99}
@@ -76,12 +76,14 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           onChange={handleQuantityChange}
           disabled={adding || loading}
           style={{ width: 80 }}
+          size={size}
         />
         <Tooltip title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}>
           <Button
             icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
             onClick={handleToggleWishlist}
             disabled={adding}
+            size={size}
           />
         </Tooltip>
         <Button
@@ -97,6 +99,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           type="default"
           onClick={handleBuyNow}
           disabled={adding || loading}
+          size={size}
         >
           Buy Now
         </Button>
@@ -105,13 +108,23 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
   }
   // compact mode for card actions (small icons / no long labels)
   if (compact) {
+    const compactSize = size === 'default' ? 'small' : size;
+    const isLarge = size === 'large';
+    const btnStyle = { 
+      borderRadius: '8px', 
+      height: isLarge ? '36px' : undefined,
+      padding: isLarge ? '0 8px' : undefined,
+      fontSize: isLarge ? '13px' : undefined
+    };
+
     return (
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
         <Tooltip title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}>
           <Button
             icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
             onClick={handleToggleWishlist}
-            size="small"
+            size={compactSize}
+            style={{ ...btnStyle, padding: isLarge ? '0 10px' : undefined }}
           />
         </Tooltip>
 
@@ -121,15 +134,20 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
             icon={<ShoppingCartOutlined />}
             onClick={handleAddToCart}
             loading={adding || loading}
-            size="small"
+            size={compactSize}
+            style={{ ...btnStyle, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >
-            {/* short label fits inside compact button */}
             Cart
           </Button>
         </Tooltip>
 
         <Tooltip title="Buy now">
-          <Button type="default" onClick={handleBuyNow} size="small">
+          <Button 
+            type="default" 
+            onClick={handleBuyNow} 
+            size={compactSize}
+            style={{ ...btnStyle, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          >
             Buy
           </Button>
         </Tooltip>
@@ -143,6 +161,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
         <Button
           icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
           onClick={handleToggleWishlist}
+          size={size}
         />
       </Tooltip>
       <Button
@@ -155,7 +174,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
       >
         Add to Cart
       </Button>
-      <Button type="default" onClick={handleBuyNow}>Buy Now</Button>
+      <Button type="default" onClick={handleBuyNow} size={size}>Buy Now</Button>
     </Space>
   );
 };

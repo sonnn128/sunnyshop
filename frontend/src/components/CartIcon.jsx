@@ -30,7 +30,6 @@ const CartIcon = ({ size = 'default', showText = false, style = {} }) => {
           onClick={handleClick}
           size={size}
           style={{ 
-            color: 'white', 
             display: 'flex',
             alignItems: 'center',
             ...style 

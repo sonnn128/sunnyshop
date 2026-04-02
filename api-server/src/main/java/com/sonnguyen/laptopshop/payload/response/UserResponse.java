@@ -17,6 +17,7 @@ public class UserResponse {
     private String phone;
     private String address;
     private Gender gender;
+    private Boolean isLocked;
     private List<RoleInfo> roles;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")

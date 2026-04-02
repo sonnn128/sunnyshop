@@ -37,13 +37,13 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
     {
       key: 'profile',
       icon: <UserOutlined />,
-      label: 'Profile',
+      label: 'Hồ sơ',
       onClick: () => navigate('/profile')
     },
     {
       key: 'settings',
       icon: <SettingOutlined />,
-      label: 'Settings',
+      label: 'Cài đặt',
       onClick: () => navigate('/admin/settings')
     },
     {
@@ -52,7 +52,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: 'Đăng xuất',
       onClick: handleLogout,
       danger: true
     }
@@ -120,7 +120,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
               flexShrink: 0
             }}
           >
-            LS
+            SS
           </div>
           <div style={{ minWidth: 0 }}>
             <Text
@@ -133,7 +133,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
                 lineHeight: '1.2'
               }}
             >
-              Sunny Shop Admin
+              Quản trị Sunny Shop
             </Text>
             <Text
               type="secondary"
@@ -145,7 +145,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
                 lineHeight: '1.2'
               }}
             >
-              Management Dashboard
+              Bảng điều khiển Quản trị
             </Text>
           </div>
         </div>
@@ -156,7 +156,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
         alignItems: 'center',
         gap: 8
       }}>
-        <Tooltip title="Go to Website">
+        <Tooltip title="Trang chủ Website">
           <Button
             type="text"
             icon={<HomeOutlined />}
@@ -170,7 +170,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
           />
         </Tooltip>
 
-        <Tooltip title="Notifications">
+        <Tooltip title="Thông báo">
           <Badge count={3} size="small">
             <Button
               type="text"
@@ -238,7 +238,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
                   display: 'block'
                 }}
               >
-                Administrator
+                Quản trị viên
               </Text>
             </div>
           </Button>

@@ -16,7 +16,7 @@ const LoginPage = () => {
     try {
       const result = await login(values.username, values.password);
       if (result.success) {
-        message.success('Login successful!');
+        message.success('Đăng nhập thành công!');
 
         const user = result.data.user || result.data.data.user;
         const isAdmin = user?.roles?.some(r => r.name === 'ADMIN' || r.name === 'ROLE_ADMIN') || user?.role === 'ADMIN';
@@ -30,7 +30,7 @@ const LoginPage = () => {
         message.error(result.message);
       }
     } catch (error) {
-      message.error('Login failed. Please try again.');
+      message.error('Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -69,10 +69,10 @@ const LoginPage = () => {
           
           <div style={{ maxWidth: '480px' }}>
             <Title level={1} style={{ color: '#fff', fontSize: '48px', fontWeight: 800, lineHeight: 1.1, marginBottom: '24px' }}>
-              Discover the new standard of shopping.
+              Khám phá chuẩn mực mua sắm mới.
             </Title>
             <Paragraph style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '18px', lineHeight: 1.6 }}>
-              Join thousands of satisfied customers who have revolutionized their style with our premium, curated collections.
+              Cùng hàng ngàn khách hàng nâng tầm phong cách với các bộ sưu tập cao cấp và được tuyển chọn kỹ lưỡng của chúng tôi.
             </Paragraph>
           </div>
           
@@ -84,7 +84,7 @@ const LoginPage = () => {
                  </div>
                ))}
              </div>
-             <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>Join 10,000+ shoppers</Text>
+             <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>Hơn 10,000+ khách hàng</Text>
           </div>
         </div>
       </Col>
@@ -106,10 +106,10 @@ const LoginPage = () => {
 
           <div style={{ marginBottom: '40px' }}>
             <Title level={2} style={{ fontSize: '32px', fontWeight: 800, color: '#111827', marginBottom: '8px' }}>
-              Welcome back
+              Chào mừng trở lại
             </Title>
             <Paragraph style={{ color: '#6B7280', fontSize: '16px' }}>
-              Please enter your details to sign in.
+              Vui lòng nhập thông tin để đăng nhập.
             </Paragraph>
           </div>
 
@@ -122,13 +122,13 @@ const LoginPage = () => {
           >
             <Form.Item
               name="username"
-              label={<span style={{ fontWeight: 600, color: '#374151' }}>Username</span>}
-              rules={[{ required: true, message: 'Please enter your username!' }]}
+              label={<span style={{ fontWeight: 600, color: '#374151' }}>Tên đăng nhập</span>}
+              rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
               style={{ marginBottom: '24px' }}
             >
               <Input
                 prefix={<UserOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />}
-                placeholder="Enter your username"
+                placeholder="Nhập tên đăng nhập"
                 size="large"
                 style={{
                   padding: '12px 16px',
@@ -142,8 +142,8 @@ const LoginPage = () => {
 
             <Form.Item
               name="password"
-              label={<span style={{ fontWeight: 600, color: '#374151' }}>Password</span>}
-              rules={[{ required: true, message: 'Please enter your password!' }]}
+              label={<span style={{ fontWeight: 600, color: '#374151' }}>Mật khẩu</span>}
+              rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
               style={{ marginBottom: '16px' }}
             >
               <Input.Password
@@ -170,7 +170,7 @@ const LoginPage = () => {
                   textDecoration: 'none'
                 }}
               >
-                Forgot password?
+                Quên mật khẩu?
               </Link>
             </div>
 
@@ -191,17 +191,17 @@ const LoginPage = () => {
                   fontWeight: '600'
                 }}
               >
-                <span>Sign in</span>
+                <span>Đăng nhập</span>
                 {!loading && <ArrowRightOutlined style={{ marginLeft: '8px', fontSize: '14px' }} />}
               </Button>
             </Form.Item>
           </Form>
 
-          <Divider style={{ color: '#9CA3AF', fontSize: '14px', margin: '32px 0' }}>or continue with</Divider>
+          <Divider style={{ color: '#9CA3AF', fontSize: '14px', margin: '32px 0' }}>hoặc tiếp tục với</Divider>
 
           <div style={{ textAlign: 'center' }}>
             <Paragraph style={{ color: '#6B7280', fontSize: '15px', marginBottom: 0 }}>
-              Don't have an account?{' '}
+              Chưa có tài khoản?{' '}
               <Link 
                 to="/register"
                 style={{ 
@@ -210,7 +210,7 @@ const LoginPage = () => {
                   textDecoration: 'none'
                 }}
               >
-                Sign up
+                Đăng ký ngay
               </Link>
             </Paragraph>
           </div>

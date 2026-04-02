@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Layout, ConfigProvider } from 'antd';
 import Navbar from '@/components/layout/Navbar.jsx';
+import CustomFooter from '@/components/layout/Footer.jsx';
 import CategoryStrip from '@/components/CategoryStrip.jsx';
 import AdminLayout from '@/components/layout/AdminLayout.jsx';
 import ProtectedRoute from '@/components/ProtectedRoute.jsx';
@@ -34,8 +35,9 @@ import Orders from '@/pages/admin/Orders.jsx';
 import Categories from '@/pages/admin/Categories.jsx';
 import Settings from '@/pages/admin/Settings.jsx';
 import PermissionManagement from '@/pages/admin/PermissionManagement.jsx';
+import Coupons from '@/pages/admin/Coupons.jsx';
 
-const { Content, Footer } = Layout;
+const { Content } = Layout;
 import { theme } from 'antd';
 
 const AppContent = () => {
@@ -158,6 +160,13 @@ const AppContent = () => {
                 </AdminLayout>
               </ProtectedRoute>
             } />
+            <Route path="/admin/coupons" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayout>
+                  <Coupons />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
             <Route path="/admin/settings" element={
               <ProtectedRoute requireAdmin={true}>
                 <AdminLayout>
@@ -175,11 +184,7 @@ const AppContent = () => {
           </Routes>
         </div>
       </Content>
-      {!isAdminRoute && (
-        <Footer style={{ textAlign: 'center' }}>
-          Sunny Shop ©{new Date().getFullYear()} Created by Son Nguyen
-        </Footer>
-      )}
+      {!isAdminRoute && <CustomFooter />}
     </Layout>
   );
 };

@@ -1,79 +1,65 @@
 package com.sonnguyen.laptopshop.controller;
 
 import com.sonnguyen.laptopshop.model.Coupon;
-import com.sonnguyen.laptopshop.payload.response.ApiResponse;
-import com.sonnguyen.laptopshop.repository.CouponRepository;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.sonnguyen.laptopshop.service.CouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/coupons")
 @RequiredArgsConstructor
-@Tag(name = "Coupons", description = "Coupon management APIs")
 public class CouponController {
 
-    private final CouponRepository couponRepository;
+    private final CouponService couponService;
 
-    @GetMapping("/check")
-    public ResponseEntity<ApiResponse<Coupon>> checkCoupon(@RequestParam String code) {
-        return couponRepository.findByCode(code)
-                .map(coupon -> {
-                    if (!coupon.isActive()) {
-                        return ResponseEntity.badRequest().body(
-                                ApiResponse.<Coupon>builder()
-                                        .success(false)
-                                        .message("Coupon is inactive")
-                                        .build()
-                        );
-                    }
-                    if (coupon.getExpiryDate() != null && coupon.getExpiryDate().isBefore(LocalDate.now())) {
-                        return ResponseEntity.badRequest().body(
-                                ApiResponse.<Coupon>builder()
-                                        .success(false)
-                                        .message("Coupon has expired")
-                                        .build()
-                        );
-                    }
-                    return ResponseEntity.ok(
-                            ApiResponse.<Coupon>builder()
-                                    .success(true)
-                                    .message("Coupon is valid")
-                                    .data(coupon)
-                                    .build()
-                    );
-                })
-                .orElse(ResponseEntity.badRequest().body(
-                        ApiResponse.<Coupon>builder()
-                                .success(false)
-                                .message("Invalid coupon code")
-                                .build()
-                ));
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Coupon>> getAllCoupons() {
+        return ResponseEntity.ok(couponService.getAllCoupons());
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<Coupon>> getActiveCoupons() {
+        return ResponseEntity.ok(couponService.getActiveCoupons());
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Coupon> getCouponById(@PathVariable Long id) {
+        return ResponseEntity.ok(couponService.getCouponById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<Coupon>> createCoupon(@RequestBody Coupon coupon) {
-        if (couponRepository.findByCode(coupon.getCode()).isPresent()) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.<Coupon>builder()
-                            .success(false)
-                            .message("Coupon code already exists")
-                            .build()
-            );
+    public ResponseEntity<Coupon> createCoupon(@RequestBody Coupon coupon) {
+        return ResponseEntity.ok(couponService.createCoupon(coupon));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Coupon> updateCoupon(@PathVariable Long id, @RequestBody Coupon coupon) {
+        return ResponseEntity.ok(couponService.updateCoupon(id, coupon));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteCoupon(@PathVariable Long id) {
+        couponService.deleteCoupon(id);
+        return ResponseEntity.ok(Map.of("message", "Deleted successfully"));
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateCoupon(@RequestParam String code, @RequestParam Double orderTotal) {
+        try {
+            Coupon coupon = couponService.validateCoupon(code, orderTotal);
+            return ResponseEntity.ok(coupon);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
-        Coupon saved = couponRepository.save(coupon);
-        return ResponseEntity.ok(
-                ApiResponse.<Coupon>builder()
-                        .success(true)
-                        .message("Coupon created")
-                        .data(saved)
-                        .build()
-        );
     }
 }

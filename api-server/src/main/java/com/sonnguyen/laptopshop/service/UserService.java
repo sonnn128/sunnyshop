@@ -121,6 +121,15 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public UserResponse toggleUserLock(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CommonException(USER_NOT_FOUND + id, HttpStatus.NOT_FOUND));
+        
+        user.setIsLocked(user.getIsLocked() == null ? true : !user.getIsLocked());
+        User savedUser = userRepository.save(user);
+        return convertToResponse(savedUser);
+    }
+
     public Page<UserResponse> searchUsers(String keyword, String role, Pageable pageable) {
         Page<User> users;
         if (keyword != null && !keyword.isEmpty() && role != null && !role.isEmpty()) {
@@ -144,6 +153,7 @@ public class UserService {
         response.setPhone(user.getPhone());
         response.setAddress(user.getAddress());
         response.setGender(user.getGender());
+        response.setIsLocked(user.getIsLocked() != null ? user.getIsLocked() : false);
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
 

@@ -16,13 +16,13 @@ const RegisterPage = () => {
     try {
       const result = await register(values);
       if (result.success) {
-        message.success('Registration successful! Please login.');
+        message.success('Đăng ký thành công! Vui lòng đăng nhập.');
         navigate('/login');
       } else {
         message.error(result.message);
       }
     } catch (error) {
-      message.error('Registration failed. Please try again.');
+      message.error('Đăng ký thất bại. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -61,10 +61,10 @@ const RegisterPage = () => {
             
             <div style={{ marginTop: 'auto', marginBottom: '80px', maxWidth: '400px' }}>
               <Title level={1} style={{ color: '#fff', fontSize: '42px', fontWeight: 800, lineHeight: 1.1, marginBottom: '24px' }}>
-                Start your journey with us.
+                Bắt đầu hành trình cùng chúng tôi.
               </Title>
               <Paragraph style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '18px', lineHeight: 1.6 }}>
-                Create an account today to enjoy exclusive member benefits, personalized recommendations, and faster checkouts.
+                Đăng ký ngay hôm nay để tận hưởng các đặc quyền dành riêng cho thành viên, các đề xuất cá nhân hóa, và thanh toán cực nhanh.
               </Paragraph>
             </div>
           </div>
@@ -77,10 +77,10 @@ const RegisterPage = () => {
           
           <div style={{ marginBottom: '40px' }}>
             <Title level={2} style={{ fontSize: '32px', fontWeight: 800, color: '#111827', marginBottom: '8px' }}>
-              Create an account
+              Tạo tài khoản mới
             </Title>
             <Paragraph style={{ color: '#6B7280', fontSize: '16px' }}>
-              We're thrilled to have you! Let's get started.
+              Rất vui được chào đón bạn! Hãy bắt đầu thôi.
             </Paragraph>
           </div>
 
@@ -95,13 +95,13 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="fullName"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Full Name</span>}
-                  rules={[{ required: true, message: 'Please enter your full name!' }]}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Họ và tên</span>}
+                  rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
                   style={{ marginBottom: '20px' }}
                 >
                   <Input 
                     prefix={<UserOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
-                    placeholder="John Doe" 
+                    placeholder="Nguyễn Văn A" 
                     size="large"
                     style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '15px' }}
                   />
@@ -110,16 +110,16 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="username"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Username</span>}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Tên đăng nhập</span>}
                   rules={[
-                    { required: true, message: 'Please enter your username!' },
-                    { min: 3, message: 'Username must be at least 3 characters!' }
+                    { required: true, message: 'Vui lòng nhập tên đăng nhập!' },
+                    { min: 3, message: 'Tên đăng nhập ít nhất 3 ký tự!' }
                   ]}
                   style={{ marginBottom: '20px' }}
                 >
                   <Input 
                     prefix={<UserOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
-                    placeholder="johndoe123" 
+                    placeholder="nguyenvana123" 
                     size="large"
                     style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '15px' }}
                   />
@@ -129,10 +129,10 @@ const RegisterPage = () => {
 
             <Form.Item
               name="email"
-              label={<span style={{ fontWeight: 600, color: '#374151' }}>Email Address</span>}
+              label={<span style={{ fontWeight: 600, color: '#374151' }}>Địa chỉ Email</span>}
               rules={[
-                { required: true, message: 'Please enter your email!' },
-                { type: 'email', message: 'Please enter a valid email!' }
+                { required: true, message: 'Vui lòng nhập email!' },
+                { type: 'email', message: 'Email không hợp lệ!' }
               ]}
               style={{ marginBottom: '20px' }}
             >
@@ -148,16 +148,16 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="phone"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Phone Number</span>}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Số điện thoại</span>}
                   rules={[
-                    { required: true, message: 'Please enter phone!' },
-                    { pattern: /^[0-9+\-\s()]+$/, message: 'Invalid phone number!' }
+                    { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                    { pattern: /^[0-9+\-\s()]+$/, message: 'Số điện thoại không hợp lệ!' }
                   ]}
                   style={{ marginBottom: '20px' }}
                 >
                   <Input 
                     prefix={<PhoneOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
-                    placeholder="+1 (555) 000-0000" 
+                    placeholder="0912 345 678" 
                     size="large"
                     style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '15px' }}
                   />
@@ -166,21 +166,21 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="gender"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Gender</span>}
-                  rules={[{ required: true, message: 'Please select gender!' }]}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Giới tính</span>}
+                  rules={[{ required: true, message: 'Vui lòng chọn giới tính!' }]}
                   style={{ marginBottom: '20px' }}
                 >
                   <Select
-                    placeholder="Select gender"
+                    placeholder="Chọn giới tính"
                     size="large"
                     dropdownStyle={{ borderRadius: '12px' }}
                     style={{ 
                       height: '48px', 
                     }}
                     options={[
-                      { value: 'MALE', label: 'Male' },
-                      { value: 'FEMALE', label: 'Female' },
-                      { value: 'OTHER', label: 'Other' }
+                      { value: 'MALE', label: 'Nam' },
+                      { value: 'FEMALE', label: 'Nữ' },
+                      { value: 'OTHER', label: 'Khác' }
                     ]}
                   />
                 </Form.Item>
@@ -203,13 +203,13 @@ const RegisterPage = () => {
 
             <Form.Item
               name="address"
-              label={<span style={{ fontWeight: 600, color: '#374151' }}>Address</span>}
-              rules={[{ required: true, message: 'Please enter your address!' }]}
+              label={<span style={{ fontWeight: 600, color: '#374151' }}>Địa chỉ</span>}
+              rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
               style={{ marginBottom: '20px' }}
             >
               <Input 
                 prefix={<HomeOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
-                placeholder="123 Main St, City, Country" 
+                placeholder="123 Đường chính, Quận/Huyện" 
                 size="large"
                 style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '15px' }}
               />
@@ -219,10 +219,10 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="password"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Password</span>}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Mật khẩu</span>}
                   rules={[
-                    { required: true, message: 'Please enter your password!' },
-                    { min: 6, message: 'Password must be at least 6 characters!' }
+                    { required: true, message: 'Vui lòng nhập mật khẩu!' },
+                    { min: 6, message: 'Mật khẩu ít nhất 6 ký tự!' }
                   ]}
                   style={{ marginBottom: '20px' }}
                 >
@@ -237,16 +237,16 @@ const RegisterPage = () => {
               <Col xs={24} sm={12}>
                 <Form.Item
                   name="confirmPassword"
-                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Confirm Password</span>}
+                  label={<span style={{ fontWeight: 600, color: '#374151' }}>Xác nhận mật khẩu</span>}
                   dependencies={["password"]}
                   rules={[
-                    { required: true, message: 'Please confirm your password!' },
+                    { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
                         if (!value || getFieldValue('password') === value) {
                           return Promise.resolve();
                         }
-                        return Promise.reject(new Error('Passwords do not match!'));
+                        return Promise.reject(new Error('Mật khẩu không khớp!'));
                       },
                     }),
                   ]}
@@ -279,17 +279,17 @@ const RegisterPage = () => {
                   fontWeight: '600'
                 }}
               >
-                <span>Create account</span>
+                <span>Đăng ký tài khoản</span>
                 {!loading && <ArrowRightOutlined style={{ marginLeft: '8px', fontSize: '14px' }} />}
               </Button>
             </Form.Item>
           </Form>
 
-          <Divider style={{ color: '#9CA3AF', fontSize: '14px', margin: '32px 0' }}>already a member?</Divider>
+          <Divider style={{ color: '#9CA3AF', fontSize: '14px', margin: '32px 0' }}>đã là thành viên?</Divider>
 
           <div style={{ textAlign: 'center' }}>
             <Paragraph style={{ color: '#6B7280', fontSize: '15px', marginBottom: 0 }}>
-              Already have an account?{' '}
+              Đã có tài khoản?{' '}
               <Link 
                 to="/login"
                 style={{ 
@@ -298,7 +298,7 @@ const RegisterPage = () => {
                   textDecoration: 'none'
                 }}
               >
-                Sign in
+                Đăng nhập
               </Link>
             </Paragraph>
           </div>

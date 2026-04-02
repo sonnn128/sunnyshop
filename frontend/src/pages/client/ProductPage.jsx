@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
-import { Card, Typography, Button, Row, Col, Spin, message, Input, Select, Pagination, Slider, Checkbox, Empty } from 'antd';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { Card, Typography, Button, Row, Col, Spin, message, Input, Select, Pagination, Slider, Checkbox, Empty, Rate } from 'antd';
+import { ShoppingCartOutlined, ThunderboltFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import AddToCartButton from '@/components/AddToCartButton.jsx';
 import { productService } from '@/services/product.service.js';
@@ -23,7 +23,7 @@ const ProductPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [factories, setFactories] = useState([]);
     const [selectedFactories, setSelectedFactories] = useState([]);
-    const [priceRange, setPriceRange] = useState([0, 100000000]);
+    const [priceRange, setPriceRange] = useState([0, 10000000]);
 
     const pageSize = 12;
     const navigate = useNavigate();
@@ -91,40 +91,57 @@ const ProductPage = () => {
         <div style={{ padding: '24px' }}>
             <Row gutter={24}>
                 {/* Sidebar Filter */}
-                <Col xs={24} md={6} lg={5}>
-                    <Card title="Filters" style={{ marginBottom: 24 }}>
-                        <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>Search</div>
-                            <Input
-                                placeholder="Search..."
+                <Col xs={24} md={6} lg={6} xl={5}>
+                    <Card
+                        title={<span style={{ fontSize: '20px', fontWeight: 800 }}>Bộ lọc tìm kiếm</span>}
+                        style={{ marginBottom: 24, borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: 'none' }}
+                        headStyle={{ borderBottom: '1px solid #F3F4F6', padding: '20px 24px' }}
+                        bodyStyle={{ padding: '24px' }}
+                    >
+                        <div style={{ marginBottom: 28 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Từ khóa</div>
+                            <Search
+                                placeholder="Tìm theo tên sản phẩm..."
                                 value={searchTerm}
                                 onChange={(e) => {
                                     setSearchTerm(e.target.value);
                                     setCurrentPage(1);
                                 }}
+                                size="large"
+                                style={{ borderRadius: '8px' }}
                             />
                         </div>
 
-                        <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>Price Range</div>
+                        <div style={{ marginBottom: 28 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 24, color: '#374151', fontSize: '15px' }}>Khoảng giá</div>
                             <Slider
                                 range
                                 min={0}
-                                max={100000000}
-                                defaultValue={[0, 100000000]}
+                                max={10000000}
+                                step={500000}
+                                marks={{
+                                    0: '0',
+                                    2000000: '2tr',
+                                    4000000: '4tr',
+                                    6000000: '6tr',
+                                    8000000: '8tr',
+                                    10000000: '10tr'
+                                }}
+                                defaultValue={[0, 10000000]}
                                 onChange={(val) => {
                                     setPriceRange(val);
                                     setCurrentPage(1);
                                 }}
+                                tooltip={{ formatter: (value) => formatPrice(value) }}
                             />
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, fontSize: '14px', fontWeight: 600, color: '#4F46E5' }}>
                                 <span>{formatPrice(priceRange[0])}</span>
                                 <span>{formatPrice(priceRange[1])}</span>
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontWeight: 'bold', marginBottom: 8 }}>Brands</div>
+                        <div style={{ marginBottom: 32 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Thương hiệu</div>
                             <Checkbox.Group
                                 options={factories}
                                 value={selectedFactories}
@@ -132,79 +149,134 @@ const ProductPage = () => {
                                     setSelectedFactories(val);
                                     setCurrentPage(1);
                                 }}
-                                style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
+                                style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
                             />
                         </div>
 
-                        <Button onClick={() => {
-                            setSearchTerm('');
-                            setSelectedFactories([]);
-                            setPriceRange([0, 100000000]);
-                            setCurrentPage(1);
-                        }} block>
-                            Reset Filters
+                        <Button
+                            onClick={() => {
+                                setSearchTerm('');
+                                setSelectedFactories([]);
+                                setPriceRange([0, 10000000]);
+                                setCurrentPage(1);
+                            }}
+                            block
+                            size="large"
+                            style={{ borderRadius: '12px', fontWeight: 600, color: '#6B7280', borderColor: '#D1D5DB' }}
+                        >
+                            Xóa bộ lọc
                         </Button>
                     </Card>
                 </Col>
 
                 {/* Product List */}
-                <Col xs={24} md={18} lg={19}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                        <Title level={2} style={{ margin: 0 }}>Products</Title>
+                <Col xs={24} md={18} lg={18} xl={19}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                        <Title level={2} style={{ margin: 0, fontWeight: 800, fontSize: '28px' }}>Tất cả sản phẩm</Title>
                         <Select
                             defaultValue="id_desc"
-                            style={{ width: 150 }}
+                            style={{ width: 200 }}
+                            size="large"
                             onChange={(val) => {
                                 const [s, o] = val.split('_');
                                 setSortBy(s);
                                 setSortOrder(o);
                             }}
                         >
-                            <Option value="id_desc">Newest</Option>
-                            <Option value="price_asc">Price: Low to High</Option>
-                            <Option value="price_desc">Price: High to Low</Option>
+                            <Option value="id_desc">Cũ nhất - Mới nhất</Option>
+                            <Option value="price_asc">Giá: Thấp đến Cao</Option>
+                            <Option value="price_desc">Giá: Cao đến Thấp</Option>
                         </Select>
                     </div>
 
                     {loading ? (
-                        <div style={{ textAlign: 'center', padding: '50px' }}>
+                        <div style={{ textAlign: 'center', padding: '100px 0' }}>
                             <Spin size="large" />
                         </div>
                     ) : products.length === 0 ? (
-                        <Card><Empty description="No products found" /></Card>
+                        <div style={{ textAlign: 'center', padding: '60px 0', backgroundColor: 'white', borderRadius: '20px' }}>
+                            <Empty description="Không tìm thấy sản phẩm nào phù hợp" />
+                        </div>
                     ) : (
                         <>
-                            <Row gutter={[16, 16]}>
-                                {products.map(product => (
-                                    <Col xs={24} sm={12} lg={8} xl={6} key={product.id}>
-                                        <Card
-                                            hoverable
-                                            cover={
-                                                <img
-                                                    alt={product.name}
-                                                    src={product.image || 'https://via.placeholder.com/300x200'}
-                                                    style={{ height: 180, objectFit: 'cover' }}
-                                                    onClick={() => handleProductClick(product.id)}
-                                                />
-                                            }
-                                            actions={[
-                                                <AddToCartButton product={product} size="small" compact showQuantity={false} />
-                                            ]}
-                                        >
-                                            <Card.Meta
-                                                title={<div onClick={() => handleProductClick(product.id)} style={{ cursor: 'pointer' }}>{product.name}</div>}
-                                                description={
-                                                    <div>
-                                                        <Text strong style={{ color: '#1890ff', fontSize: 16 }}>
-                                                            {formatPrice(product.price)}
-                                                        </Text>
-                                                        <div style={{ fontSize: 12, color: '#666' }}>{product.factory}</div>
+                            <Row gutter={[24, 24]}>
+                                {products.map(product => {
+                                    // MOCK UI DATA based on product ID for visual presentation
+                                    const rating = 4 + (product.id ? (product.id % 2) / 2 : 0);
+                                    const discountPercent = product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
+                                    const oldPrice = discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
+                                    const isSellingFast = product.id && product.id % 2 === 0;
+
+                                    return (
+                                        <Col xs={24} sm={12} lg={8} xl={8} key={product.id}>
+                                            <Card
+                                                hoverable
+                                                style={{ borderRadius: '20px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
+                                                bodyStyle={{ padding: '16px' }}
+                                                cover={
+                                                    <div style={{ overflow: 'hidden', padding: '16px', backgroundColor: '#F9FAFB', position: 'relative' }}>
+                                                        {discountPercent > 0 && (
+                                                            <div style={{ position: 'absolute', top: 12, left: 12, backgroundColor: '#FEF08A', color: '#B45309', padding: '4px 8px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', zIndex: 1, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                                <ThunderboltFilled style={{ color: '#EAB308' }} />
+                                                                -{discountPercent}%
+                                                            </div>
+                                                        )}
+                                                        <img
+                                                            alt={product.name}
+                                                            src={product.image || 'https://via.placeholder.com/300x200'}
+                                                            style={{ height: 200, width: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
+                                                            onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
+                                                            onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                                            onClick={() => handleProductClick(product.id)}
+                                                        />
                                                     </div>
                                                 }
-                                            />
-                                        </Card>
-                                    </Col>
-                                ))}
+                                            >
+                                                <div onClick={() => handleProductClick(product.id)} style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700, fontSize: '15px', marginBottom: '8px', color: '#111827' }}>
+                                                    {product.name}
+                                                </div>
+                                                
+                                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                                                    <Rate disabled defaultValue={rating} style={{ fontSize: '12px', color: '#FBBF24' }} />
+                                                </div>
+
+                                                <div style={{ minHeight: '24px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                    {oldPrice && (
+                                                        <Text delete style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                                                            {formatPrice(oldPrice)}
+                                                        </Text>
+                                                    )}
+                                                </div>
+
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '12px' }}>
+                                                    <Text strong style={{ color: '#EF4444', fontSize: '22px', lineHeight: 1 }}>
+                                                        {formatPrice(product.price)}
+                                                    </Text>
+                                                    <div style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase' }}>
+                                                        {product.factory || 'No Brand'}
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div style={{
+                                                        background: isSellingFast ? 'linear-gradient(90deg, #FECACA 0%, #FFEDD5 100%)' : '#F3F4F6',
+                                                        borderLeft: isSellingFast ? '4px solid #EF4444' : '4px solid #D1D5DB',
+                                                        padding: '4px 8px',
+                                                        borderRadius: '4px',
+                                                        fontSize: '11px',
+                                                        fontWeight: 700,
+                                                        color: isSellingFast ? '#DC2626' : '#6B7280',
+                                                        letterSpacing: '0.5px'
+                                                    }}>
+                                                        {isSellingFast ? 'ĐANG BÁN CHẠY' : 'SẴN HÀNG'}
+                                                    </div>
+                                                    
+                                                    <AddToCartButton product={product} size="middle" compact showQuantity={false} />
+                                                </div>
+                                            </Card>
+                                        </Col>
+                                    );
+                                })}
                             </Row>
 
                             {totalProducts > pageSize && (

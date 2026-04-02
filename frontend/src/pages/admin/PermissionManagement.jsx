@@ -125,19 +125,21 @@ const PermissionManagement = () => {
 
   return (
     <div className="permission-management">
-      <Card>
+      <Card style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: 0 }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 16
+          padding: '24px',
+          borderBottom: '1px solid #F3F4F6'
         }}>
-          <Title level={2} style={{ margin: 0 }}>Quản lý quyền hạn</Title>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý phân quyền</Title>
           <Space>
             <Button
               icon={<ReloadOutlined />}
               onClick={fetchPermissions}
               loading={loading}
+              style={{ borderRadius: '8px' }}
             >
               Làm mới
             </Button>
@@ -145,6 +147,7 @@ const PermissionManagement = () => {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() => setModalVisible(true)}
+              style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}
             >
               Thêm mới
             </Button>
@@ -156,52 +159,61 @@ const PermissionManagement = () => {
           dataSource={permissions}
           loading={loading}
           rowKey="id"
+          className="premium-table"
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng số ${total} quyền`
+            showTotal: (total) => `Tổng số ${total} quyền`,
+            style: { padding: '0 24px 24px 24px' }
           }}
         />
       </Card>
 
       <Modal
-        title="Thêm quyền mới"
+        title={<span style={{ fontWeight: 700 }}>Thêm quyền mới</span>}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
+        styles={{
+          header: {
+            borderBottom: '1px solid #f0f0f0',
+            paddingBottom: 16
+          }
+        }}
       >
         <Form
           form={form}
           layout="vertical"
           onFinish={handleAdd}
+          style={{ marginTop: 16 }}
         >
           <Form.Item
             name="name"
-            label="Tên quyền"
+            label={<span style={{ fontWeight: 500 }}>Tên quyền</span>}
             rules={[
               { required: true, message: 'Vui lòng nhập tên quyền!' },
               { min: 3, message: 'Tên phải có ít nhất 3 ký tự' }
             ]}
           >
-            <Input placeholder="ví dụ: ROLE_MANAGER" />
+            <Input placeholder="ví dụ: ROLE_MANAGER" size="large" style={{ borderRadius: '8px' }} />
           </Form.Item>
 
           <Form.Item
             name="description"
-            label="Mô tả"
+            label={<span style={{ fontWeight: 500 }}>Mô tả</span>}
             rules={[
               { required: true, message: 'Vui lòng nhập mô tả!' }
             ]}
           >
-            <Input.TextArea rows={4} placeholder="Nhập mô tả cho quyền này" />
+            <Input.TextArea rows={4} placeholder="Nhập mô tả cho quyền này" style={{ borderRadius: '8px' }} />
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button onClick={() => setModalVisible(false)}>
+              <Button onClick={() => setModalVisible(false)} size="large" style={{ borderRadius: '8px' }}>
                 Hủy
               </Button>
-              <Button type="primary" htmlType="submit" loading={submitLoading}>
+              <Button type="primary" htmlType="submit" loading={submitLoading} size="large" style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}>
                 Tạo quyền
               </Button>
             </Space>

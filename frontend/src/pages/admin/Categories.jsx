@@ -115,16 +115,16 @@ const Categories = () => {
 
       if (editingCategory) {
         await categoryService.update(editingCategory.id, formData);
-        message.success('Category updated successfully');
+        message.success('Cập nhật danh mục thành công');
       } else {
         await categoryService.create(formData);
-        message.success('Category created successfully');
+        message.success('Tạo danh mục thành công');
       }
       setModalVisible(false);
       fetchCategories();
     } catch (error) {
       console.error('Failed to save category:', error);
-      message.error('Failed to save category');
+      message.error('Lưu danh mục thất bại');
     } finally {
       setSubmitLoading(false);
     }
@@ -133,7 +133,7 @@ const Categories = () => {
 
   const columns = [
     {
-      title: 'Image',
+      title: 'Hình ảnh',
       dataIndex: 'image',
       key: 'image',
       render: (image) => (
@@ -142,42 +142,42 @@ const Categories = () => {
           height={50}
           src={image}
           alt="category"
-          style={{ objectFit: 'cover', borderRadius: 4 }}
+          style={{ objectFit: 'cover', borderRadius: '8px' }}
         />
       ),
     },
     {
-      title: 'Name',
+      title: 'Tên danh mục',
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
         <div>
-          <div style={{ fontWeight: 'bold' }}>{text}</div>
-          <div style={{ fontSize: '12px', color: '#666' }}>/{record.slug}</div>
+          <div style={{ fontWeight: 'bold', color: '#111827' }}>{text}</div>
+          <div style={{ fontSize: '12px', color: '#6B7280' }}>/{record.slug}</div>
         </div>
       ),
     },
     {
-      title: 'Description',
+      title: 'Mô tả',
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
     },
     {
-      title: 'Products',
+      title: 'Sản phẩm',
       dataIndex: 'productCount',
       key: 'productCount',
       render: (count) => (
-        <Tag color="blue">{count} products</Tag>
+        <Tag color="blue" style={{ borderRadius: '12px' }}>{count} sản phẩm</Tag>
       ),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
     },
     {
-      title: 'Actions',
+      title: 'Thao tác',
       key: 'actions',
       render: (_, record) => (
         <Space>
@@ -185,18 +185,19 @@ const Categories = () => {
             type="primary"
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
+            style={{ borderRadius: '8px' }}
           >
-            Edit
+            Sửa
           </Button>
           <Popconfirm
-            title="Are you sure you want to delete this category?"
-            description="This action cannot be undone and will affect all products in this category."
+            title="Bạn có chắc muốn xóa danh mục này?"
+            description="Hành động này không thể hoàn tác và sẽ ảnh hưởng đến các sản phẩm trong danh mục."
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No"
+            okText="Đồng ý"
+            cancelText="Hủy"
           >
-            <Button danger icon={<DeleteOutlined />}>
-              Delete
+            <Button danger icon={<DeleteOutlined />} style={{ borderRadius: '8px' }}>
+              Xóa
             </Button>
           </Popconfirm>
         </Space>
@@ -206,20 +207,22 @@ const Categories = () => {
 
   return (
     <div>
-      <Card>
+      <Card style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: 0 }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 16
+          padding: '24px',
+          borderBottom: '1px solid #F3F4F6'
         }}>
-          <Title level={2} style={{ margin: 0 }}>Categories Management</Title>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý danh mục</Title>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleAdd}
+            style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}
           >
-            Add Category
+            Thêm danh mục
           </Button>
         </div>
 
@@ -228,10 +231,12 @@ const Categories = () => {
           dataSource={categories}
           loading={loading}
           rowKey="id"
+          className="premium-table"
           pagination={{
             pageSize: 10,
             showSizeChanger: true,
             showQuickJumper: true,
+            style: { padding: '0 24px 24px 24px' }
           }}
         />
       </Card>
@@ -239,7 +244,7 @@ const Categories = () => {
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>{editingCategory ? 'Edit Category' : 'Add New Category'}</span>
+            <span style={{ fontWeight: 700 }}>{editingCategory ? 'Sửa danh mục' : 'Thêm danh mục mới'}</span>
           </div>
         }
         open={modalVisible}
@@ -263,40 +268,41 @@ const Categories = () => {
             <Col span={12}>
               <Form.Item
                 name="name"
-                label="Category Name"
-                rules={[{ required: true, message: 'Please input category name!' }]}
+                label={<span style={{ fontWeight: 500 }}>Tên danh mục</span>}
+                rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
               >
-                <Input placeholder="e.g., Gaming Laptops" />
+                <Input placeholder="VD: Áo Sơ Mi" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="slug"
-                label="Slug"
-                rules={[{ required: true, message: 'Please input slug!' }]}
+                label={<span style={{ fontWeight: 500 }}>Đường dẫn (Slug)</span>}
+                rules={[{ required: true, message: 'Vui lòng nhập đường dẫn!' }]}
               >
-                <Input placeholder="e.g., gaming-laptops" />
+                <Input placeholder="VD: ao-so-mi" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
           </Row>
 
           <Form.Item
             name="description"
-            label="Description"
-            rules={[{ required: true, message: 'Please input description!' }]}
+            label={<span style={{ fontWeight: 500 }}>Mô tả</span>}
+            rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
           >
             <Input.TextArea
               rows={3}
-              placeholder="Describe this category..."
+              placeholder="Mô tả về danh mục..."
               showCount
               maxLength={200}
+              style={{ borderRadius: '8px' }}
             />
           </Form.Item>
 
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 24 }}>
             <Form.Item
               name="imageFile"
-              label="Category Image"
+              label={<span style={{ fontWeight: 500 }}>Hình ảnh danh mục</span>}
               valuePropName="fileList"
               getValueFromEvent={(e) => {
                 if (Array.isArray(e)) return e;
@@ -307,25 +313,25 @@ const Categories = () => {
               <Upload
                 listType="picture-card"
                 maxCount={1}
-                beforeUpload={() => false} // Prevent auto upload
+                beforeUpload={() => false}
                 accept="image/*"
               >
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Tải lên</div>
                 </div>
               </Upload>
             </Form.Item>
 
             {editingCategory && editingCategory.image && (
               <div style={{ textAlign: 'center', paddingTop: 30 }}>
-                <div style={{ marginBottom: 8, fontSize: 12 }}>Current:</div>
+                <div style={{ marginBottom: 8, fontSize: 12 }}>Ảnh hiện tại:</div>
                 <Image
                   width={80}
                   height={80}
                   src={editingCategory.image}
                   alt="Current"
-                  style={{ objectFit: 'cover', borderRadius: 4 }}
+                  style={{ objectFit: 'cover', borderRadius: '8px' }}
                 />
               </div>
             )}
@@ -333,23 +339,23 @@ const Categories = () => {
 
           <Form.Item
             name="status"
-            label="Status"
-            rules={[{ required: true, message: 'Please select status!' }]}
+            label={<span style={{ fontWeight: 500 }}>Trạng thái</span>}
+            rules={[{ required: true, message: 'Vui lòng chọn trạng thái!' }]}
             initialValue="active"
           >
-            <Select placeholder="Select status">
-              <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
+            <Select placeholder="Chọn trạng thái" size="large" style={{ borderRadius: '8px' }}>
+              <Option value="active">Hoạt động</Option>
+              <Option value="inactive">Tạm ngưng</Option>
             </Select>
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button onClick={() => setModalVisible(false)}>
-                Cancel
+              <Button onClick={() => setModalVisible(false)} size="large" style={{ borderRadius: '8px' }}>
+                Hủy
               </Button>
-              <Button type="primary" htmlType="submit" size="large" loading={submitLoading}>
-                {editingCategory ? 'Update Category' : 'Create Category'}
+              <Button type="primary" htmlType="submit" size="large" loading={submitLoading} style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}>
+                {editingCategory ? 'Cập nhật' : 'Thêm mới'}
               </Button>
             </Space>
           </Form.Item>

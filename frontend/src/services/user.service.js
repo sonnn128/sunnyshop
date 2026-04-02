@@ -67,5 +67,17 @@ export const userService = {
       console.error('API Error:', error);
       throw error;
     }
+  },
+
+  // Toggle lock status
+  toggleLock: async (id) => {
+    try {
+      const response = await api.put(`/users/${id}/toggle-lock`);
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
+
 };

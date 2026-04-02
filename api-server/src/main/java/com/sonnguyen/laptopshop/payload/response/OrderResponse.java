@@ -14,6 +14,7 @@ public class OrderResponse {
     private String receiverAddress;
     private String receiverPhone;
     private String status;
+    private String paymentMethod;
     private List<OrderDetailResponse> orderDetails;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")

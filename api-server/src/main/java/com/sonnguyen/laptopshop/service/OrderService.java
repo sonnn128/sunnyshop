@@ -51,6 +51,7 @@ public class OrderService {
             order.setReceiverAddress(request.getReceiverAddress());
             order.setReceiverPhone(request.getReceiverPhone());
             order.setStatus("PENDING");
+            order.setPaymentMethod(request.getPaymentMethod() != null ? request.getPaymentMethod() : "COD");
             order.setTotalPrice(0.0);
 
             Order savedOrder = orderRepository.save(order);

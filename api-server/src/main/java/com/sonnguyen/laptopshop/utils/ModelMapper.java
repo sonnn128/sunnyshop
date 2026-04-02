@@ -91,6 +91,7 @@ public class ModelMapper {
         response.setReceiverAddress(order.getReceiverAddress());
         response.setReceiverPhone(order.getReceiverPhone());
         response.setStatus(order.getStatus());
+        response.setPaymentMethod(order.getPaymentMethod());
         response.setOrderDate(order.getOrderDate());
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());

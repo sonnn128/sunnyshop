@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
-import { Card, Typography, Form, Input, Button, Row, Col, Table, message, Spin, Empty, theme } from 'antd';
+import { Card, Typography, Form, Input, Button, Row, Col, Table, message, Spin, Empty, theme, Radio, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext.jsx';
 import { useAuth } from '@/contexts/AuthContext.jsx';
@@ -40,6 +40,7 @@ const CheckoutPage = () => {
                 receiverName: `${values.firstName} ${values.lastName}`.trim(),
                 receiverAddress: `${values.address}, ${values.city}, ${values.state} ${values.zipCode}`.trim(),
                 receiverPhone: values.phone || 'N/A',
+                paymentMethod: values.paymentMethod || 'COD',
                 cartItems: cartItems.map(item => ({
                     productId: parseInt(item.id),
                     quantity: parseInt(item.quantity)
@@ -54,6 +55,20 @@ const CheckoutPage = () => {
             console.log('Order response data:', response.data);
 
             if (response.status === 201 && response.data) {
+                const createdOrder = response.data;
+                
+                if (orderData.paymentMethod === 'VNPAY') {
+                    setLoading(true);
+                    const paymentRes = await api.get(`/payment/vnpay/create-payment?amount=${createdOrder.totalPrice}&orderInfo=Thanh toan don hang ${createdOrder.id}&orderId=${createdOrder.id}`);
+                    if (paymentRes.data && paymentRes.data.url) {
+                        await clearCart(); // Clear local cart before redirecting away
+                        window.location.href = paymentRes.data.url;
+                        return;
+                    } else {
+                        message.error('Failed to initiate VNPay check out');
+                    }
+                }
+
                 message.success('Order placed successfully!');
                 await clearCart();
                 navigate('/orders');
@@ -233,6 +248,26 @@ const CheckoutPage = () => {
                                     </Form.Item>
                                 </Col>
                             </Row>
+
+                            <Form.Item
+                                name="paymentMethod"
+                                label="Payment Method"
+                                rules={[{ required: true, message: 'Please select a payment method!' }]}
+                                initialValue="COD"
+                            >
+                                <Radio.Group style={{ width: '100%' }}>
+                                    <Space direction="vertical" style={{ width: '100%' }}>
+                                        <Card size="small" style={{ cursor: 'pointer', borderRadius: '8px' }} onClick={() => form.setFieldsValue({ paymentMethod: 'COD' })}>
+                                            <Radio value="COD"><span style={{ fontWeight: 600 }}>Thanh toán khi nhận hàng (COD)</span></Radio>
+                                            <div style={{ marginLeft: 24, fontSize: '13px', color: '#6B7280' }}>Thanh toán bằng tiền mặt khi giao hàng.</div>
+                                        </Card>
+                                        <Card size="small" style={{ cursor: 'pointer', borderRadius: '8px' }} onClick={() => form.setFieldsValue({ paymentMethod: 'VNPAY' })}>
+                                            <Radio value="VNPAY"><span style={{ fontWeight: 600 }}>Thanh toán trực tuyến (VNPay / Thẻ ATM)</span></Radio>
+                                            <div style={{ marginLeft: 24, fontSize: '13px', color: '#6B7280' }}>Thanh toán qua cổng VNPay, an toàn và tiện lợi.</div>
+                                        </Card>
+                                    </Space>
+                                </Radio.Group>
+                            </Form.Item>
 
                             <Form.Item>
                                 <Button

@@ -35,6 +35,9 @@ public class Order {
     private String receiverAddress;
     private String receiverPhone;
     private String status = "PENDING";
+    
+    @Column(name = "payment_method")
+    private String paymentMethod = "COD";
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")
     private Instant orderDate;

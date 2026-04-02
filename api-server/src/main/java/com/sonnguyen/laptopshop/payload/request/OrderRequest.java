@@ -20,4 +20,6 @@ public class OrderRequest {
 
     @NotNull(message = "Cart items are required")
     private List<CartItemRequest> cartItems;
+
+    private String paymentMethod;
 }

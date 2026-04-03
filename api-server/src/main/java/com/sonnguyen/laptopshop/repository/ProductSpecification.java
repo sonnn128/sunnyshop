@@ -25,6 +25,15 @@ public class ProductSpecification {
         };
     }
 
+    public static Specification<Product> hasCategoryIn(List<String> categories) {
+        return (root, query, criteriaBuilder) -> {
+            if (categories == null || categories.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            return root.join("category").get("name").in(categories);
+        };
+    }
+
     public static Specification<Product> hasPriceBetween(Double min, Double max) {
         return (root, query, criteriaBuilder) -> {
             if (min == null && max == null) {

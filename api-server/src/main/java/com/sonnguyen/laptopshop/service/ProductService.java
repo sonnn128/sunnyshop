@@ -128,6 +128,7 @@ public class ProductService {
     public Page<ProductResponse> getProductsWithFilters(
             List<String> factories,
             List<String> targets,
+            List<String> categories,
             Double minPrice,
             Double maxPrice,
             String keyword,
@@ -135,6 +136,7 @@ public class ProductService {
         
         Specification<Product> spec = Specification.where(ProductSpecification.hasFactoryIn(factories))
                 .and(ProductSpecification.hasTargetIn(targets))
+                .and(ProductSpecification.hasCategoryIn(categories))
                 .and(ProductSpecification.hasPriceBetween(minPrice, maxPrice))
                 .and(ProductSpecification.nameContains(keyword));
 

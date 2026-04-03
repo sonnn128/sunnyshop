@@ -97,7 +97,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<com.sonnguyen.laptopshop.payload.response.ApiResponse> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<com.sonnguyen.laptopshop.payload.response.ApiResponse<?>> deleteProduct(@PathVariable Long id) {
         if (productService.deleteProduct(id)) {
             return ResponseEntity.ok(
                     com.sonnguyen.laptopshop.payload.response.ApiResponse.builder()
@@ -178,6 +178,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductResponse>> filterProducts(
             @RequestParam(required = false) List<String> factory,
             @RequestParam(required = false) List<String> target,
+            @RequestParam(required = false) List<String> category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String keyword,
@@ -190,7 +191,7 @@ public class ProductController {
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<ProductResponse> products = productService.getProductsWithFilters(factory, target, minPrice, maxPrice, keyword, pageable);
+        Page<ProductResponse> products = productService.getProductsWithFilters(factory, target, category, minPrice, maxPrice, keyword, pageable);
         return ResponseEntity.ok(products);
     }
 

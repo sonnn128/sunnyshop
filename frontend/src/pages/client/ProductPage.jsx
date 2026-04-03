@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
 import { Card, Typography, Button, Row, Col, Spin, message, Input, Select, Pagination, Slider, Checkbox, Empty, Rate } from 'antd';
 import { ShoppingCartOutlined, ThunderboltFilled } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import AddToCartButton from '@/components/AddToCartButton.jsx';
 import { productService } from '@/services/product.service.js';
+import { brandService } from '@/services/brand.service.js';
+import { targetService } from '@/services/target.service.js';
 import { categoryService } from '@/services/category.service.js';
 
 const { Title, Text } = Typography;
@@ -19,26 +21,55 @@ const ProductPage = () => {
     const [sortBy, setSortBy] = useState('id');
     const [sortOrder, setSortOrder] = useState('desc');
 
+    const [searchParams] = useSearchParams();
+    
     // Filter States
     const [searchTerm, setSearchTerm] = useState('');
-    const [factories, setFactories] = useState([]);
-    const [selectedFactories, setSelectedFactories] = useState([]);
-    const [priceRange, setPriceRange] = useState([0, 10000000]);
+    const [brands, setBrands] = useState([]);
+    const [targets, setTargets] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedTargets, setSelectedTargets] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [priceRange, setPriceRange] = useState([0, 50000000]);
+
+    // Sync selected filters from URL search params
+    useEffect(() => {
+        const cat = searchParams.get('category');
+        const br = searchParams.get('brand');
+        const tg = searchParams.get('target');
+        
+        if (cat) setSelectedCategories([cat]);
+        if (br) setSelectedBrands([br]);
+        if (tg) setSelectedTargets([tg]);
+        
+        // When url param changes, it resets pagination
+        setCurrentPage(1);
+    }, [searchParams]);
 
     const pageSize = 12;
     const navigate = useNavigate();
 
-    // Fetch available factories
     useEffect(() => {
-        const fetchMeta = async () => {
+        const fetchFilters = async () => {
             try {
-                const res = await productService.getFactories();
-                setFactories(res || []);
+                const resBrands = await brandService.getAll();
+                const brData = resBrands.data || resBrands || [];
+                setBrands(brData.map(b => ({ label: b.name, value: b.name })));
+
+                const resTargets = await targetService.getAll();
+                const tgData = resTargets.data || resTargets || [];
+                setTargets(tgData.map(t => ({ label: t.name, value: t.name })));
+
+                const resCats = await categoryService.getAll();
+                const catData = resCats.data || resCats || [];
+                setCategories(catData.map(c => ({ label: c.name, value: c.name })));
             } catch (e) {
                 console.error(e);
             }
         };
-        fetchMeta();
+        fetchFilters();
     }, []);
 
     // Load products with filters
@@ -48,10 +79,12 @@ const ProductPage = () => {
             const params = {
                 page: currentPage - 1,
                 size: pageSize,
-                sortBy: sortBy, // Fixed param name
-                sortDir: sortOrder, // Fixed param name
+                sortBy: sortBy,
+                sortDir: sortOrder,
                 keyword: searchTerm,
-                factory: selectedFactories,
+                factory: selectedBrands,
+                target: selectedTargets,
+                category: selectedCategories,
                 minPrice: priceRange[0],
                 maxPrice: priceRange[1]
             };
@@ -81,7 +114,7 @@ const ProductPage = () => {
             loadProducts();
         }, 500);
         return () => clearTimeout(timer);
-    }, [currentPage, searchTerm, selectedFactories, priceRange, sortBy, sortOrder]);
+    }, [currentPage, searchTerm, selectedBrands, selectedTargets, selectedCategories, priceRange, sortBy, sortOrder]);
 
     const handleProductClick = (productId) => {
         navigate(`/products/${productId}`);
@@ -121,13 +154,13 @@ const ProductPage = () => {
                                 step={500000}
                                 marks={{
                                     0: '0',
-                                    2000000: '2tr',
-                                    4000000: '4tr',
-                                    6000000: '6tr',
-                                    8000000: '8tr',
-                                    10000000: '10tr'
+                                    10000000: '10tr',
+                                    20000000: '20tr',
+                                    30000000: '30tr',
+                                    40000000: '40tr',
+                                    50000000: '50tr'
                                 }}
-                                defaultValue={[0, 10000000]}
+                                defaultValue={[0, 50000000]}
                                 onChange={(val) => {
                                     setPriceRange(val);
                                     setCurrentPage(1);
@@ -143,10 +176,36 @@ const ProductPage = () => {
                         <div style={{ marginBottom: 32 }}>
                             <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Thương hiệu</div>
                             <Checkbox.Group
-                                options={factories}
-                                value={selectedFactories}
+                                options={brands}
+                                value={selectedBrands}
                                 onChange={(val) => {
-                                    setSelectedFactories(val);
+                                    setSelectedBrands(val);
+                                    setCurrentPage(1);
+                                }}
+                                style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: 32 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Đối tượng</div>
+                            <Checkbox.Group
+                                options={targets}
+                                value={selectedTargets}
+                                onChange={(val) => {
+                                    setSelectedTargets(val);
+                                    setCurrentPage(1);
+                                }}
+                                style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
+                            />
+                        </div>
+
+                        <div style={{ marginBottom: 32 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Danh mục</div>
+                            <Checkbox.Group
+                                options={categories}
+                                value={selectedCategories}
+                                onChange={(val) => {
+                                    setSelectedCategories(val);
                                     setCurrentPage(1);
                                 }}
                                 style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
@@ -156,8 +215,10 @@ const ProductPage = () => {
                         <Button
                             onClick={() => {
                                 setSearchTerm('');
-                                setSelectedFactories([]);
-                                setPriceRange([0, 10000000]);
+                                setSelectedBrands([]);
+                                setSelectedTargets([]);
+                                setSelectedCategories([]);
+                                setPriceRange([0, 50000000]);
                                 setCurrentPage(1);
                             }}
                             block

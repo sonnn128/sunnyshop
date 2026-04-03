@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Button, Dropdown, Avatar, Input, theme, Space, Badge } from 'antd';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useTheme } from '@/contexts/ThemeContext.jsx';
 import CartIcon from '../CartIcon.jsx';
+import { categoryService } from '@/services/category.service.js';
 
 const { Header } = Layout;
 
@@ -24,6 +25,14 @@ const Navbar = () => {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    categoryService.getAll().then(res => {
+      setCategories(res?.data || res || []);
+    }).catch(console.error);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -80,6 +89,14 @@ const Navbar = () => {
       onClick: () => navigate('/admin/users')
     }
   ];
+
+  const categoryMenu = {
+    items: categories.map(cat => ({
+      key: cat.id,
+      label: cat.name,
+      onClick: () => navigate(`/products?category=${encodeURIComponent(cat.name)}`)
+    }))
+  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -168,6 +185,19 @@ const Navbar = () => {
           >
             Sản Phẩm
           </Button>
+          <Dropdown menu={categoryMenu} placement="bottomLeft">
+            <Button
+              type="text"
+              style={{
+                fontWeight: '600',
+                color: token.colorText,
+                fontSize: '15px',
+                textTransform: 'uppercase'
+              }}
+            >
+              Danh Mục
+            </Button>
+          </Dropdown>
           <Button
             type="text"
             onClick={() => navigate('/products')}

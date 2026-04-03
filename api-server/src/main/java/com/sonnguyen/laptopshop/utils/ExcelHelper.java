@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ExcelHelper {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    static String[] HEADERS = { "Name", "Price", "Image URL", "Description", "Quantity", "Factory", "Target", "Category" };
+    static String[] HEADERS = { "Name", "Price", "Image URL", "Description", "Quantity", "Brand", "Target", "Category" };
     static String SHEET = "Products";
 
     public static boolean hasExcelFormat(MultipartFile file) {
@@ -42,7 +42,7 @@ public class ExcelHelper {
             sampleRow.createCell(2).setCellValue("https://example.com/image.jpg");
             sampleRow.createCell(3).setCellValue("Short description");
             sampleRow.createCell(4).setCellValue(10);
-            sampleRow.createCell(5).setCellValue("Dell");
+            sampleRow.createCell(5).setCellValue("Apple");
             sampleRow.createCell(6).setCellValue("Gaming");
             sampleRow.createCell(7).setCellValue("Laptop Gaming");
 

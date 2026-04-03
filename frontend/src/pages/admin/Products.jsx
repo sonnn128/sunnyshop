@@ -298,7 +298,7 @@ const Products = () => {
             image: row['Image URL'] || row['Image'], // Handle both cases
             description: row['Description'],
             quantity: row['Quantity'],
-            factory: row['Factory'],
+            factory: row['Brand'] || row['Factory'],
             target: row['Target'],
             categoryId: category.id,
             categoryName: category.name // For display purposes

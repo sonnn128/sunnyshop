@@ -63,6 +63,14 @@ public class Product {
     @JsonIgnore
     private List<CartDetail> cartDetails;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Review> reviews;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Wishlist> wishlists;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

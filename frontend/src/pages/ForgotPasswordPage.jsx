@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Card, Typography, message, Space } from 'antd';
+import { Form, Input, Button, Card, Typography, message, Space, Row, Col } from 'antd';
 import { UserOutlined, KeyOutlined, LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth.service.js';
@@ -62,87 +62,162 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh', background: '#f0f2f5' }}>
-      <Card style={{ width: 400, borderRadius: 8 }}>
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={3}>Quên Mật Khẩu</Title>
+    <Row style={{ minHeight: '100vh', fontFamily: "'Inter', 'Segoe UI', sans-serif" }}>
+      {/* Left side: Image/Branding */}
+      <Col xs={0} md={12} lg={14} style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundImage: `url('/auth-bg.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }} />
+        <div style={{
+          position: 'absolute',
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: 'linear-gradient(to right, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.1) 100%)',
+        }} />
+        <div style={{
+          position: 'relative',
+          zIndex: 1,
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: '60px',
+          color: '#fff'
+        }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'auto', alignSelf: 'flex-start', color: '#fff', textDecoration: 'none' }}>
+            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>Sunny Shop</span>
+          </Link>
+          <div style={{ maxWidth: '480px' }}>
+            <Typography.Title level={1} style={{ color: '#fff', fontSize: '48px', fontWeight: 800, lineHeight: 1.1, marginBottom: '24px' }}>
+              Khôi phục quyền truy cập.
+            </Typography.Title>
+            <Typography.Paragraph style={{ color: 'rgba(255, 255, 255, 0.85)', fontSize: '18px', lineHeight: 1.6 }}>
+              Bảo vệ an toàn thông tin tài khoản của bạn với quy trình xác thực OTP trực tiếp qua email.
+            </Typography.Paragraph>
+          </div>
         </div>
+      </Col>
 
-        {step === 1 && (
-          <Form onFinish={handleSearch} layout="vertical">
-            <Form.Item
-              label="Tên đăng nhập"
-              name="username"
-              rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
-            >
-              <Input prefix={<UserOutlined />} placeholder="Nhập tên đăng nhập hoặc email" size="large" />
-            </Form.Item>
-            <Form.Item>
-              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                <Link to="/login">
-                  <Button icon={<ArrowLeftOutlined />}>Hủy</Button>
-                </Link>
-                <Button type="primary" htmlType="submit" loading={loading} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
-                  Tìm kiếm
+      {/* Right side: Form */}
+      <Col xs={24} md={12} lg={10} style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        padding: '40px',
+        backgroundColor: '#ffffff'
+      }}>
+        <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}>
+          
+          <div style={{ marginBottom: '40px' }}>
+            <Title level={2} style={{ fontSize: '32px', fontWeight: 800, color: '#111827', marginBottom: '8px' }}>
+              Quên mật khẩu
+            </Title>
+            <Text style={{ color: '#6B7280', fontSize: '16px' }}>
+              {step === 1 ? 'Nhập tên đăng nhập hoặc email của bạn để nhận mã xác thực.' : step === 2 ? 'Chúng tôi đã gửi một mã xác thực qua email.' : 'Vui lòng thiết lập mật khẩu mới an toàn.'}
+            </Text>
+          </div>
+
+          {step === 1 && (
+            <Form onFinish={handleSearch} layout="vertical" requiredMark={false}>
+              <Form.Item
+                label={<span style={{ fontWeight: 600, color: '#374151' }}>Tên đăng nhập hoặc Email</span>}
+                name="username"
+                rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
+                style={{ marginBottom: '24px' }}
+              >
+                <Input 
+                  prefix={<UserOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
+                  placeholder="Nhập tên đăng nhập hoặc email" 
+                  size="large" 
+                  style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '15px' }}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={loading} block size="large" style={{ height: '52px', backgroundColor: '#4F46E5', borderRadius: '12px', fontSize: '16px', fontWeight: '600' }}>
+                  Gửi mã xác nhận
                 </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-        )}
+              </Form.Item>
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Link to="/login" style={{ color: '#6B7280', fontWeight: 500 }}><ArrowLeftOutlined style={{ marginRight: 8 }} /> Quay lại trang đăng nhập</Link>
+              </div>
+            </Form>
+          )}
 
-        {step === 2 && (
-          <Form onFinish={handleVerifyOtp} layout="vertical">
-            <div style={{ marginBottom: 16 }}>
-              <Text type="secondary">Mã xác nhận đã được gửi đến email đăng ký của tài khoản <strong>{username}</strong>.</Text>
-            </div>
-            <Form.Item
-              label="Nhập Mã Xác Nhận"
-              name="otp"
-              rules={[{ required: true, message: 'Vui lòng nhập mã xác nhận!' }]}
-            >
-              <Input prefix={<KeyOutlined />} placeholder="Nhập mã 6 chữ số" size="large" maxLength={6} />
-            </Form.Item>
-            <Form.Item>
-              <Space style={{ width: '100%', justifyContent: 'space-between' }}>
-                <Button onClick={() => setStep(1)}>Quay lại</Button>
-                <Button type="primary" htmlType="submit" loading={loading} style={{ background: '#52c41a', borderColor: '#52c41a' }}>
-                  Xác Nhận Mã
+          {step === 2 && (
+            <Form onFinish={handleVerifyOtp} layout="vertical" requiredMark={false}>
+              <div style={{ marginBottom: 24, padding: '16px', backgroundColor: '#EFF6FF', borderRadius: '12px', border: '1px solid #BFDBFE' }}>
+                <Text style={{ color: '#1E40AF' }}>Mã xác nhận 6 chữ số đã được gửi đến email tài khoản <strong>{username}</strong>.</Text>
+              </div>
+              <Form.Item
+                label={<span style={{ fontWeight: 600, color: '#374151' }}>Nhập mã xác nhận (OTP)</span>}
+                name="otp"
+                rules={[{ required: true, message: 'Vui lòng nhập mã xác nhận!' }]}
+                style={{ marginBottom: '24px' }}
+              >
+                <Input 
+                  prefix={<KeyOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
+                  placeholder="••••••" 
+                  size="large" 
+                  maxLength={6} 
+                  style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB', fontSize: '18px', letterSpacing: '4px', textAlign: 'center' }}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" loading={loading} block size="large" style={{ height: '52px', backgroundColor: '#4F46E5', borderRadius: '12px', fontSize: '16px', fontWeight: '600' }}>
+                  Xác nhận mã OTP
                 </Button>
-              </Space>
-            </Form.Item>
-          </Form>
-        )}
+              </Form.Item>
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <Button type="link" onClick={() => setStep(1)} style={{ color: '#6B7280', fontWeight: 500 }}>Nhập sai tài khoản?</Button>
+              </div>
+            </Form>
+          )}
 
-        {step === 3 && (
-          <Form onFinish={handleResetPassword} layout="vertical">
-            <Form.Item
-              label="Mật khẩu mới"
-              name="newPassword"
-              rules={[
-                { required: true, message: 'Vui lòng nhập mật khẩu mới!' },
-                { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }
-              ]}
-            >
-              <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu mới" size="large" />
-            </Form.Item>
-            <Form.Item
-              label="Xác nhận mật khẩu"
-              name="confirmPassword"
-              rules={[
-                { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
-              ]}
-            >
-              <Input.Password prefix={<LockOutlined />} placeholder="Nhập lại mật khẩu" size="large" />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit" style={{ width: '100%' }} size="large" loading={loading}>
-                Đổi Mật Khẩu
-              </Button>
-            </Form.Item>
-          </Form>
-        )}
-      </Card>
-    </div>
+          {step === 3 && (
+            <Form onFinish={handleResetPassword} layout="vertical" requiredMark={false}>
+              <Form.Item
+                label={<span style={{ fontWeight: 600, color: '#374151' }}>Mật khẩu mới</span>}
+                name="newPassword"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập mật khẩu mới!' },
+                  { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }
+                ]}
+                style={{ marginBottom: '20px' }}
+              >
+                <Input.Password 
+                  prefix={<LockOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
+                  placeholder="••••••••" 
+                  size="large" 
+                  style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<span style={{ fontWeight: 600, color: '#374151' }}>Xác nhận mật khẩu</span>}
+                name="confirmPassword"
+                rules={[{ required: true, message: 'Vui lòng xác nhận mật khẩu!' }]}
+                style={{ marginBottom: '32px' }}
+              >
+                <Input.Password 
+                  prefix={<LockOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />} 
+                  placeholder="••••••••" 
+                  size="large" 
+                  style={{ padding: '12px 16px', borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#F9FAFB' }}
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" htmlType="submit" block size="large" loading={loading} style={{ height: '52px', backgroundColor: '#10B981', borderRadius: '12px', fontSize: '16px', fontWeight: '600', border: 'none' }}>
+                  Lưu Mật Khẩu
+                </Button>
+              </Form.Item>
+            </Form>
+          )}
+
+        </div>
+      </Col>
+    </Row>
   );
 };
 

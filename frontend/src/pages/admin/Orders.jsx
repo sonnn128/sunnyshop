@@ -12,12 +12,14 @@ import {
   Tag,
   Descriptions,
   Badge,
-  Image
+  Image,
+  Popconfirm
 } from 'antd';
 import {
   EyeOutlined,
   CheckOutlined,
-  CloseOutlined
+  CloseOutlined,
+  DeleteOutlined
 } from '@ant-design/icons';
 import { orderService } from '../../services/order.service';
 
@@ -35,6 +37,7 @@ const Orders = () => {
     total: 0
   });
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // Mock data
   useEffect(() => {
@@ -81,6 +84,7 @@ const Orders = () => {
           total: 0
         }));
       }
+      setSelectedRowKeys([]);
     } catch (error) {
       console.error('Failed to fetch orders:', error);
       message.error('Failed to fetch orders from API');
@@ -106,8 +110,40 @@ const Orders = () => {
     }
   };
 
+  const handleDelete = async (orderId) => {
+    try {
+      await orderService.delete(orderId);
+      message.success('Xóa đơn hàng thành công');
+      fetchOrders(pagination.current - 1, pagination.pageSize, statusFilter);
+    } catch (error) {
+      console.error('Failed to delete order:', error);
+      message.error('Lỗi khi xóa đơn hàng');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await orderService.bulkDelete(selectedRowKeys);
+      message.success(`Đã xóa thành công ${selectedRowKeys.length} đơn hàng`);
+      setSelectedRowKeys([]);
+      fetchOrders(pagination.current - 1, pagination.pageSize, statusFilter);
+    } catch (error) {
+      console.error('Failed to delete orders:', error);
+      message.error('Xóa đơn hàng thất bại');
+    }
+  };
+
   const handleTableChange = (pagination) => {
     fetchOrders(pagination.current - 1, pagination.pageSize, statusFilter);
+  };
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
   };
 
   const handleStatusFilterChange = (value) => {
@@ -259,6 +295,21 @@ const Orders = () => {
               Hoàn thành
             </Button>
           )}
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa đơn hàng này?"
+            description="Thao tác này là không thể hoàn tác."
+            onConfirm={() => handleDelete(record.id)}
+            okText="Xóa"
+            cancelText="Hủy"
+            okButtonProps={{ danger: true }}
+          >
+            <Button
+              danger
+              type="default"
+              icon={<DeleteOutlined />}
+              style={{ borderRadius: '8px' }}
+            />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -275,22 +326,39 @@ const Orders = () => {
           borderBottom: '1px solid #F3F4F6'
         }}>
           <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý đơn hàng</Title>
-          <Select
-            value={statusFilter}
-            onChange={handleStatusFilterChange}
-            style={{ width: 180 }}
-            placeholder="Lọc theo trạng thái"
-            size="large"
-          >
-            <Option value="ALL">Tất cả đơn hàng</Option>
-            <Option value="PENDING">Chờ xử lý</Option>
-            <Option value="PROCESSING">Đang xử lý</Option>
-            <Option value="COMPLETED">Hoàn thành</Option>
-            <Option value="CANCELLED">Đã hủy</Option>
-          </Select>
+          <Space>
+            {selectedRowKeys.length > 0 && (
+              <Popconfirm
+                title={`Bạn có chắc muốn xóa ${selectedRowKeys.length} đơn hàng đã chọn?`}
+                description="Thao tác này là không thể hoàn tác."
+                onConfirm={handleBulkDelete}
+                okText="Đồng ý"
+                cancelText="Hủy"
+                okButtonProps={{ danger: true }}
+              >
+                <Button danger icon={<DeleteOutlined />} style={{ borderRadius: '8px' }}>
+                  Xóa đã chọn ({selectedRowKeys.length})
+                </Button>
+              </Popconfirm>
+            )}
+            <Select
+              value={statusFilter}
+              onChange={handleStatusFilterChange}
+              style={{ width: 180 }}
+              placeholder="Lọc theo trạng thái"
+              size="large"
+            >
+              <Option value="ALL">Tất cả đơn hàng</Option>
+              <Option value="PENDING">Chờ xử lý</Option>
+              <Option value="PROCESSING">Đang xử lý</Option>
+              <Option value="COMPLETED">Hoàn thành</Option>
+              <Option value="CANCELLED">Đã hủy</Option>
+            </Select>
+          </Space>
         </div>
 
         <Table
+          rowSelection={rowSelection}
           columns={columns}
           dataSource={orders}
           loading={loading}

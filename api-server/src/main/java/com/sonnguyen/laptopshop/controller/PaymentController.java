@@ -20,6 +20,8 @@ import java.util.*;
 public class PaymentController {
 
     private final OrderService orderService;
+    private final com.sonnguyen.laptopshop.service.CartService cartService;
+    private final com.sonnguyen.laptopshop.repository.OrderRepository orderRepository;
 
     @GetMapping("/vnpay/create-payment")
     public ResponseEntity<?> createPayment(HttpServletRequest request,
@@ -92,13 +94,29 @@ public class PaymentController {
         if ("00".equals(vnp_ResponseCode)) {
             try {
                 String orderIdStr = vnp_TxnRef.split("_")[0];
-                orderService.updateOrderStatus(Long.parseLong(orderIdStr), "PAID");
+                Long orderId = Long.parseLong(orderIdStr);
+                orderService.updateOrderStatus(orderId, "PAID");
+                
+                // Clear cart for the user
+                com.sonnguyen.laptopshop.model.Order order = orderRepository.findById(orderId).orElse(null);
+                if (order != null && order.getUser() != null) {
+                    cartService.clearCart(order.getUser().getUsername());
+                }
+                
                 response.sendRedirect("http://localhost:5173/orders?payment=success&orderId=" + orderIdStr);
             } catch (Exception e) {
                 response.sendRedirect("http://localhost:5173/orders?payment=failed&reason=update_failed");
             }
         } else {
-            response.sendRedirect("http://localhost:5173/orders?payment=failed");
+            try {
+                if (vnp_TxnRef != null) {
+                    String orderIdStr = vnp_TxnRef.split("_")[0];
+                    orderService.cancelOrder(Long.parseLong(orderIdStr));
+                }
+            } catch (Exception e) {
+               // ignore
+            }
+            response.sendRedirect("http://localhost:5173/cart?payment=failed");
         }
     }
 }

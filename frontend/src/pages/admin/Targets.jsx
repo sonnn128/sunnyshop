@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { categoryService } from '../../services/category.service.js';
+import { targetService } from '../../services/target.service.js';
 import {
   Table,
   Button,
@@ -11,7 +11,6 @@ import {
   Popconfirm,
   Typography,
   Card,
-  Tag,
   Image,
   Row,
   Col,
@@ -29,103 +28,95 @@ import {
 
 const { Title } = Typography;
 
-const Categories = () => {
-  const [categories, setCategories] = useState([]);
+const Targets = () => {
+  const [targets, setTargets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingTarget, setEditingTarget] = useState(null);
   const [form] = Form.useForm();
 
-  // Mock data
   useEffect(() => {
-    fetchCategories();
+    fetchTargets();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchTargets = async () => {
     setLoading(true);
     try {
-      const response = await categoryService.getAll();
-      // Ensure we always set an array
+      const response = await targetService.getAll();
       const data = response.data || response;
-      setCategories(Array.isArray(data) ? data : []);
+      setTargets(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
-      message.error('Failed to fetch categories from API');
-      setCategories([]);
+      console.error('Failed to fetch targets:', error);
+      message.error('Tải danh sách đối tượng thất bại từ API');
+      setTargets([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
-    setEditingCategory(null);
+    setEditingTarget(null);
     form.resetFields();
     setModalVisible(true);
   };
 
   const handleEdit = (record) => {
-    setEditingCategory(record);
+    setEditingTarget(record);
     form.setFieldsValue(record);
     setModalVisible(true);
   };
 
   const handleDelete = async (id) => {
     try {
-      await categoryService.delete(id);
-      message.success('Category deleted successfully');
-      fetchCategories();
+      await targetService.delete(id);
+      message.success('Xóa đối tượng thành công');
+      fetchTargets();
     } catch (error) {
-      console.error('Failed to delete category:', error);
-      message.error('Failed to delete category');
+      console.error('Failed to delete target:', error);
+      message.error('Xóa đối tượng thất bại');
     }
   };
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     try {
       const formData = new FormData();
 
-      // Extract image file if exists
       let imageFile = null;
       if (values.imageFile && values.imageFile.length > 0) {
         imageFile = values.imageFile[0].originFileObj;
       }
 
-      const { imageFile: ignored, ...categoryInfo } = values;
+      const { imageFile: ignored, ...targetInfo } = values;
 
-      // Prepare category data
-      const categoryData = {
-        ...categoryInfo,
-        image: undefined // Default to undefined
+      const targetData = {
+        ...targetInfo,
+        image: undefined
       };
 
-      // If editing and no new file, keep existing image
-      if (editingCategory && !imageFile) {
-        categoryData.image = editingCategory.image;
+      if (editingTarget && !imageFile) {
+        targetData.image = editingTarget.image;
       }
 
-      // Append category JSON
-      formData.append('category', JSON.stringify(categoryData));
+      formData.append('target', JSON.stringify(targetData));
 
-      // Append file if present
       if (imageFile) {
         formData.append('imageFile', imageFile);
       }
 
-      if (editingCategory) {
-        await categoryService.update(editingCategory.id, formData);
-        message.success('Cập nhật danh mục thành công');
+      if (editingTarget) {
+        await targetService.update(editingTarget.id, formData);
+        message.success('Cập nhật đối tượng thành công');
       } else {
-        await categoryService.create(formData);
-        message.success('Tạo danh mục thành công');
+        await targetService.create(formData);
+        message.success('Tạo đối tượng thành công');
       }
       setModalVisible(false);
-      fetchCategories();
+      fetchTargets();
     } catch (error) {
-      console.error('Failed to save category:', error);
-      message.error('Lưu danh mục thất bại');
+      console.error('Failed to save target:', error);
+      message.error('Lưu đối tượng thất bại');
     } finally {
       setSubmitLoading(false);
     }
@@ -142,13 +133,13 @@ const Categories = () => {
           width={50}
           height={50}
           src={image}
-          alt="category"
+          alt="target"
           style={{ objectFit: 'cover', borderRadius: '8px' }}
         />
       ),
     },
     {
-      title: 'Tên danh mục',
+      title: 'Tên đối tượng',
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
@@ -163,14 +154,6 @@ const Categories = () => {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-    },
-    {
-      title: 'Sản phẩm',
-      dataIndex: 'productCount',
-      key: 'productCount',
-      render: (count) => (
-        <Tag color="blue" style={{ borderRadius: '12px' }}>{count} sản phẩm</Tag>
-      ),
     },
     {
       title: 'Ngày tạo',
@@ -203,8 +186,8 @@ const Categories = () => {
             Sửa
           </Button>
           <Popconfirm
-            title="Bạn có chắc muốn xóa danh mục này?"
-            description="Hành động này không thể hoàn tác và sẽ ảnh hưởng đến các sản phẩm trong danh mục."
+            title="Bạn có chắc muốn xóa đối tượng này?"
+            description="Hành động này không thể hoàn tác."
             onConfirm={() => handleDelete(record.id)}
             okText="Đồng ý"
             cancelText="Hủy"
@@ -228,20 +211,20 @@ const Categories = () => {
           padding: '24px',
           borderBottom: '1px solid #F3F4F6'
         }}>
-          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý danh mục</Title>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý đối tượng (Target)</Title>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleAdd}
             style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}
           >
-            Thêm danh mục
+            Thêm đối tượng
           </Button>
         </div>
 
         <Table
           columns={columns}
-          dataSource={categories}
+          dataSource={targets}
           loading={loading}
           rowKey="id"
           className="premium-table"
@@ -257,7 +240,7 @@ const Categories = () => {
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontWeight: 700 }}>{editingCategory ? 'Sửa danh mục' : 'Thêm danh mục mới'}</span>
+            <span style={{ fontWeight: 700 }}>{editingTarget ? 'Sửa đối tượng' : 'Thêm đối tượng mới'}</span>
           </div>
         }
         open={modalVisible}
@@ -281,10 +264,10 @@ const Categories = () => {
             <Col span={12}>
               <Form.Item
                 name="name"
-                label={<span style={{ fontWeight: 500 }}>Tên danh mục</span>}
-                rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+                label={<span style={{ fontWeight: 500 }}>Tên đối tượng</span>}
+                rules={[{ required: true, message: 'Vui lòng nhập tên đối tượng!' }]}
               >
-                <Input placeholder="VD: Áo Sơ Mi" size="large" style={{ borderRadius: '8px' }} />
+                <Input placeholder="VD: Sinh viên" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -293,7 +276,7 @@ const Categories = () => {
                 label={<span style={{ fontWeight: 500 }}>Đường dẫn (Slug)</span>}
                 rules={[{ required: true, message: 'Vui lòng nhập đường dẫn!' }]}
               >
-                <Input placeholder="VD: ao-so-mi" size="large" style={{ borderRadius: '8px' }} />
+                <Input placeholder="VD: sinh-vien" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -305,7 +288,7 @@ const Categories = () => {
           >
             <Input.TextArea
               rows={3}
-              placeholder="Mô tả về danh mục..."
+              placeholder="Mô tả về đối tượng..."
               showCount
               maxLength={200}
               style={{ borderRadius: '8px' }}
@@ -315,7 +298,7 @@ const Categories = () => {
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 24 }}>
             <Form.Item
               name="imageFile"
-              label={<span style={{ fontWeight: 500 }}>Hình ảnh danh mục</span>}
+              label={<span style={{ fontWeight: 500 }}>Hình ảnh</span>}
               valuePropName="fileList"
               getValueFromEvent={(e) => {
                 if (Array.isArray(e)) return e;
@@ -336,13 +319,13 @@ const Categories = () => {
               </Upload>
             </Form.Item>
 
-            {editingCategory && editingCategory.image && (
+            {editingTarget && editingTarget.image && (
               <div style={{ textAlign: 'center', paddingTop: 30 }}>
                 <div style={{ marginBottom: 8, fontSize: 12 }}>Ảnh hiện tại:</div>
                 <Image
                   width={80}
                   height={80}
-                  src={editingCategory.image}
+                  src={editingTarget.image}
                   alt="Current"
                   style={{ objectFit: 'cover', borderRadius: '8px' }}
                 />
@@ -368,7 +351,7 @@ const Categories = () => {
                 Hủy
               </Button>
               <Button type="primary" htmlType="submit" size="large" loading={submitLoading} style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}>
-                {editingCategory ? 'Cập nhật' : 'Thêm mới'}
+                {editingTarget ? 'Cập nhật' : 'Thêm mới'}
               </Button>
             </Space>
           </Form.Item>
@@ -378,4 +361,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default Targets;

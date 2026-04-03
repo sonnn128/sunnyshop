@@ -10,6 +10,8 @@ import {
   SettingOutlined,
   ShoppingCartOutlined,
   TagsOutlined,
+  BlockOutlined,
+  TeamOutlined,
   SafetyCertificateOutlined,
   GiftOutlined
 } from '@ant-design/icons';
@@ -29,42 +31,52 @@ const AdminLayout = ({ children }) => {
     {
       key: '/admin/dashboard',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: 'Tổng quan',
     },
     {
       key: '/admin/products',
       icon: <SkinOutlined />,
-      label: 'Products',
+      label: 'Sản phẩm',
     },
     {
       key: '/admin/categories',
       icon: <TagsOutlined />,
-      label: 'Categories',
+      label: 'Danh mục',
+    },
+    {
+      key: '/admin/brands',
+      icon: <BlockOutlined />,
+      label: 'Hãng',
+    },
+    {
+      key: '/admin/targets',
+      icon: <TeamOutlined />,
+      label: 'Đối tượng',
     },
     {
       key: '/admin/orders',
       icon: <ShoppingCartOutlined />,
-      label: 'Orders',
+      label: 'Đơn hàng',
     },
     {
       key: '/admin/coupons',
       icon: <GiftOutlined />,
-      label: 'Coupons',
+      label: 'Mã giảm giá',
     },
     {
       key: '/admin/users',
       icon: <UserOutlined />,
-      label: 'Users',
+      label: 'Người dùng',
     },
     {
       key: '/admin/permissions',
       icon: <SafetyCertificateOutlined />,
-      label: 'Permissions',
+      label: 'Phân quyền',
     },
     {
       key: '/admin/settings',
       icon: <SettingOutlined />,
-      label: 'Settings',
+      label: 'Cài đặt',
     },
   ];
 
@@ -84,6 +96,8 @@ const AdminLayout = ({ children }) => {
         dashboard: 'Tổng quan',
         products: 'Sản phẩm',
         categories: 'Danh mục',
+        brands: 'Hãng (Brands)',
+        targets: 'Đối tượng',
         orders: 'Đơn hàng',
         coupons: 'Mã giảm giá',
         users: 'Người dùng',

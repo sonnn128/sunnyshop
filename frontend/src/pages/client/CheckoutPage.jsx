@@ -61,7 +61,7 @@ const CheckoutPage = () => {
                     setLoading(true);
                     const paymentRes = await api.get(`/payment/vnpay/create-payment?amount=${createdOrder.totalPrice}&orderInfo=Thanh toan don hang ${createdOrder.id}&orderId=${createdOrder.id}`);
                     if (paymentRes.data && paymentRes.data.url) {
-                        await clearCart(); // Clear local cart before redirecting away
+                        // Cart will be cleared by the backend only after successful payment
                         window.location.href = paymentRes.data.url;
                         return;
                     } else {

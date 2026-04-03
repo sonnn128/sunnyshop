@@ -161,4 +161,54 @@ public class OrderService {
                 .map(ModelMapper::toOrderResponse)
                 .toList();
     }
+
+    public Optional<OrderResponse> cancelOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .map(order -> {
+                    order.setStatus("CANCELED");
+                    
+                    // Restore products quantity and sold
+                    if (order.getOrderDetails() != null) {
+                        for (OrderDetail orderDetail : order.getOrderDetails()) {
+                            Product product = orderDetail.getProduct();
+                            if (product != null) {
+                                product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+                                product.setSold(Math.max(0, product.getSold() - orderDetail.getQuantity()));
+                                productRepository.save(product);
+                            }
+                        }
+                    }
+                    
+                    return orderRepository.save(order);
+                })
+                .map(ModelMapper::toOrderResponse);
+    }
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new CommonException("Order not found", HttpStatus.NOT_FOUND));
+        
+        // Restore inventory if status was not already CANCELED
+        if (!"CANCELED".equals(order.getStatus()) && order.getOrderDetails() != null) {
+            for (OrderDetail orderDetail : order.getOrderDetails()) {
+                Product product = orderDetail.getProduct();
+                if (product != null) {
+                    product.setQuantity(product.getQuantity() + orderDetail.getQuantity());
+                    product.setSold(Math.max(0, product.getSold() - orderDetail.getQuantity()));
+                    productRepository.save(product);
+                }
+            }
+        }
+        
+        orderRepository.delete(order);
+    }
+
+    public void deleteOrders(List<Long> ids) {
+        for (Long id : ids) {
+            try {
+                deleteOrder(id);
+            } catch (CommonException e) {
+                // Log and continue if one order fails or simply ignore
+            }
+        }
+    }
 }

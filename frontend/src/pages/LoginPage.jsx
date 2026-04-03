@@ -63,10 +63,10 @@ const LoginPage = () => {
           color: '#fff'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'auto', alignSelf: 'flex-start' }}>
-             <ShoppingOutlined style={{ fontSize: '32px', color: '#fff' }} />
-             <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>Sunny Shop</span>
+            <ShoppingOutlined style={{ fontSize: '32px', color: '#fff' }} />
+            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>Sunny Shop</span>
           </div>
-          
+
           <div style={{ maxWidth: '480px' }}>
             <Title level={1} style={{ color: '#fff', fontSize: '48px', fontWeight: 800, lineHeight: 1.1, marginBottom: '24px' }}>
               Khám phá chuẩn mực mua sắm mới.
@@ -75,30 +75,30 @@ const LoginPage = () => {
               Cùng hàng ngàn khách hàng nâng tầm phong cách với các bộ sưu tập cao cấp và được tuyển chọn kỹ lưỡng của chúng tôi.
             </Paragraph>
           </div>
-          
+
           <div style={{ marginTop: 'auto', display: 'flex', gap: '16px', alignItems: 'center', paddingBottom: '24px' }}>
-             <div style={{ display: 'flex' }}>
-               {[...Array(5)].map((_, i) => (
-                 <div key={i} style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', marginLeft: i > 0 ? -12 : 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                   <UserOutlined style={{ color: '#666' }} />
-                 </div>
-               ))}
-             </div>
-             <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>Hơn 10,000+ khách hàng</Text>
+            <div style={{ display: 'flex' }}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', marginLeft: i > 0 ? -12 : 0, background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserOutlined style={{ color: '#666' }} />
+                </div>
+              ))}
+            </div>
+            <Text style={{ color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>Hơn 10,000+ khách hàng</Text>
           </div>
         </div>
       </Col>
 
       {/* Right side: Form */}
-      <Col xs={24} md={12} lg={10} style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center', 
+      <Col xs={24} md={12} lg={10} style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
         padding: '40px',
         backgroundColor: '#ffffff'
       }}>
         <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}>
-          
+
           {/* Mobile Header Branding */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '40px' }} className="mobile-branding">
             {/* Displayed primarily on small screens if needed, but handled organically */}
@@ -128,7 +128,7 @@ const LoginPage = () => {
             >
               <Input
                 prefix={<UserOutlined style={{ color: '#9CA3AF', marginRight: '8px' }} />}
-                placeholder="Nhập tên đăng nhập"
+                placeholder="Nhập tên đăng nhập hoặc email"
                 size="large"
                 style={{
                   padding: '12px 16px',
@@ -161,10 +161,10 @@ const LoginPage = () => {
             </Form.Item>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '32px' }}>
-              <Link 
+              <Link
                 to="/forgot-password"
-                style={{ 
-                  color: '#4F46E5', 
+                style={{
+                  color: '#4F46E5',
                   fontSize: '14px',
                   fontWeight: 600,
                   textDecoration: 'none'
@@ -181,7 +181,7 @@ const LoginPage = () => {
                 loading={loading}
                 size="large"
                 block
-                style={{ 
+                style={{
                   height: '52px',
                   backgroundColor: '#4F46E5',
                   boxShadow: '0 4px 6px -1px rgba(79, 70, 229, 0.2), 0 2px 4px -1px rgba(79, 70, 229, 0.1)',
@@ -202,10 +202,10 @@ const LoginPage = () => {
           <div style={{ textAlign: 'center' }}>
             <Paragraph style={{ color: '#6B7280', fontSize: '15px', marginBottom: 0 }}>
               Chưa có tài khoản?{' '}
-              <Link 
+              <Link
                 to="/register"
-                style={{ 
-                  color: '#4F46E5', 
+                style={{
+                  color: '#4F46E5',
                   fontWeight: '700',
                   textDecoration: 'none'
                 }}

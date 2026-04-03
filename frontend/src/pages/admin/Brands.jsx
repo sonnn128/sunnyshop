@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { categoryService } from '../../services/category.service.js';
+import { brandService } from '../../services/brand.service.js';
 import {
   Table,
   Button,
@@ -11,7 +11,6 @@ import {
   Popconfirm,
   Typography,
   Card,
-  Tag,
   Image,
   Row,
   Col,
@@ -29,103 +28,95 @@ import {
 
 const { Title } = Typography;
 
-const Categories = () => {
-  const [categories, setCategories] = useState([]);
+const Brands = () => {
+  const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingBrand, setEditingBrand] = useState(null);
   const [form] = Form.useForm();
 
-  // Mock data
   useEffect(() => {
-    fetchCategories();
+    fetchBrands();
   }, []);
 
-  const fetchCategories = async () => {
+  const fetchBrands = async () => {
     setLoading(true);
     try {
-      const response = await categoryService.getAll();
-      // Ensure we always set an array
+      const response = await brandService.getAll();
       const data = response.data || response;
-      setCategories(Array.isArray(data) ? data : []);
+      setBrands(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Failed to fetch categories:', error);
-      message.error('Failed to fetch categories from API');
-      setCategories([]);
+      console.error('Failed to fetch brands:', error);
+      message.error('Failed to fetch brands from API');
+      setBrands([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleAdd = () => {
-    setEditingCategory(null);
+    setEditingBrand(null);
     form.resetFields();
     setModalVisible(true);
   };
 
   const handleEdit = (record) => {
-    setEditingCategory(record);
+    setEditingBrand(record);
     form.setFieldsValue(record);
     setModalVisible(true);
   };
 
   const handleDelete = async (id) => {
     try {
-      await categoryService.delete(id);
-      message.success('Category deleted successfully');
-      fetchCategories();
+      await brandService.delete(id);
+      message.success('Xóa hãng thành công');
+      fetchBrands();
     } catch (error) {
-      console.error('Failed to delete category:', error);
-      message.error('Failed to delete category');
+      console.error('Failed to delete brand:', error);
+      message.error('Xóa hãng thất bại');
     }
   };
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
     try {
       const formData = new FormData();
 
-      // Extract image file if exists
       let imageFile = null;
       if (values.imageFile && values.imageFile.length > 0) {
         imageFile = values.imageFile[0].originFileObj;
       }
 
-      const { imageFile: ignored, ...categoryInfo } = values;
+      const { imageFile: ignored, ...brandInfo } = values;
 
-      // Prepare category data
-      const categoryData = {
-        ...categoryInfo,
-        image: undefined // Default to undefined
+      const brandData = {
+        ...brandInfo,
+        image: undefined
       };
 
-      // If editing and no new file, keep existing image
-      if (editingCategory && !imageFile) {
-        categoryData.image = editingCategory.image;
+      if (editingBrand && !imageFile) {
+        brandData.image = editingBrand.image;
       }
 
-      // Append category JSON
-      formData.append('category', JSON.stringify(categoryData));
+      formData.append('brand', JSON.stringify(brandData));
 
-      // Append file if present
       if (imageFile) {
         formData.append('imageFile', imageFile);
       }
 
-      if (editingCategory) {
-        await categoryService.update(editingCategory.id, formData);
-        message.success('Cập nhật danh mục thành công');
+      if (editingBrand) {
+        await brandService.update(editingBrand.id, formData);
+        message.success('Cập nhật hãng thành công');
       } else {
-        await categoryService.create(formData);
-        message.success('Tạo danh mục thành công');
+        await brandService.create(formData);
+        message.success('Tạo hãng thành công');
       }
       setModalVisible(false);
-      fetchCategories();
+      fetchBrands();
     } catch (error) {
-      console.error('Failed to save category:', error);
-      message.error('Lưu danh mục thất bại');
+      console.error('Failed to save brand:', error);
+      message.error('Lưu hãng thất bại');
     } finally {
       setSubmitLoading(false);
     }
@@ -142,13 +133,13 @@ const Categories = () => {
           width={50}
           height={50}
           src={image}
-          alt="category"
+          alt="brand"
           style={{ objectFit: 'cover', borderRadius: '8px' }}
         />
       ),
     },
     {
-      title: 'Tên danh mục',
+      title: 'Tên hãng',
       dataIndex: 'name',
       key: 'name',
       render: (text, record) => (
@@ -163,14 +154,6 @@ const Categories = () => {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-    },
-    {
-      title: 'Sản phẩm',
-      dataIndex: 'productCount',
-      key: 'productCount',
-      render: (count) => (
-        <Tag color="blue" style={{ borderRadius: '12px' }}>{count} sản phẩm</Tag>
-      ),
     },
     {
       title: 'Ngày tạo',
@@ -203,8 +186,8 @@ const Categories = () => {
             Sửa
           </Button>
           <Popconfirm
-            title="Bạn có chắc muốn xóa danh mục này?"
-            description="Hành động này không thể hoàn tác và sẽ ảnh hưởng đến các sản phẩm trong danh mục."
+            title="Bạn có chắc muốn xóa hãng này?"
+            description="Hành động này không thể hoàn tác."
             onConfirm={() => handleDelete(record.id)}
             okText="Đồng ý"
             cancelText="Hủy"
@@ -228,20 +211,20 @@ const Categories = () => {
           padding: '24px',
           borderBottom: '1px solid #F3F4F6'
         }}>
-          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý danh mục</Title>
+          <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý hãng (Brand)</Title>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleAdd}
             style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}
           >
-            Thêm danh mục
+            Thêm hãng
           </Button>
         </div>
 
         <Table
           columns={columns}
-          dataSource={categories}
+          dataSource={brands}
           loading={loading}
           rowKey="id"
           className="premium-table"
@@ -257,7 +240,7 @@ const Categories = () => {
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontWeight: 700 }}>{editingCategory ? 'Sửa danh mục' : 'Thêm danh mục mới'}</span>
+            <span style={{ fontWeight: 700 }}>{editingBrand ? 'Sửa hãng' : 'Thêm hãng mới'}</span>
           </div>
         }
         open={modalVisible}
@@ -281,10 +264,10 @@ const Categories = () => {
             <Col span={12}>
               <Form.Item
                 name="name"
-                label={<span style={{ fontWeight: 500 }}>Tên danh mục</span>}
-                rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+                label={<span style={{ fontWeight: 500 }}>Tên hãng</span>}
+                rules={[{ required: true, message: 'Vui lòng nhập tên hãng!' }]}
               >
-                <Input placeholder="VD: Áo Sơ Mi" size="large" style={{ borderRadius: '8px' }} />
+                <Input placeholder="VD: Apple" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -293,7 +276,7 @@ const Categories = () => {
                 label={<span style={{ fontWeight: 500 }}>Đường dẫn (Slug)</span>}
                 rules={[{ required: true, message: 'Vui lòng nhập đường dẫn!' }]}
               >
-                <Input placeholder="VD: ao-so-mi" size="large" style={{ borderRadius: '8px' }} />
+                <Input placeholder="VD: apple" size="large" style={{ borderRadius: '8px' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -305,7 +288,7 @@ const Categories = () => {
           >
             <Input.TextArea
               rows={3}
-              placeholder="Mô tả về danh mục..."
+              placeholder="Mô tả về hãng..."
               showCount
               maxLength={200}
               style={{ borderRadius: '8px' }}
@@ -315,7 +298,7 @@ const Categories = () => {
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', marginBottom: 24 }}>
             <Form.Item
               name="imageFile"
-              label={<span style={{ fontWeight: 500 }}>Hình ảnh danh mục</span>}
+              label={<span style={{ fontWeight: 500 }}>Hình ảnh hãng</span>}
               valuePropName="fileList"
               getValueFromEvent={(e) => {
                 if (Array.isArray(e)) return e;
@@ -336,13 +319,13 @@ const Categories = () => {
               </Upload>
             </Form.Item>
 
-            {editingCategory && editingCategory.image && (
+            {editingBrand && editingBrand.image && (
               <div style={{ textAlign: 'center', paddingTop: 30 }}>
                 <div style={{ marginBottom: 8, fontSize: 12 }}>Ảnh hiện tại:</div>
                 <Image
                   width={80}
                   height={80}
-                  src={editingCategory.image}
+                  src={editingBrand.image}
                   alt="Current"
                   style={{ objectFit: 'cover', borderRadius: '8px' }}
                 />
@@ -368,7 +351,7 @@ const Categories = () => {
                 Hủy
               </Button>
               <Button type="primary" htmlType="submit" size="large" loading={submitLoading} style={{ backgroundColor: '#4F46E5', borderRadius: '8px' }}>
-                {editingCategory ? 'Cập nhật' : 'Thêm mới'}
+                {editingBrand ? 'Cập nhật' : 'Thêm mới'}
               </Button>
             </Space>
           </Form.Item>
@@ -378,4 +361,4 @@ const Categories = () => {
   );
 };
 
-export default Categories;
+export default Brands;

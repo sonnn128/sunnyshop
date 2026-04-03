@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
 import { productService } from '../../services/product.service.js';
 import { categoryService } from '../../services/category.service.js';
+import { brandService } from '../../services/brand.service.js';
+import { targetService } from '../../services/target.service.js';
 import {
   Table,
   Button,
@@ -39,6 +41,8 @@ const { Option } = Select;
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [targets, setTargets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -64,6 +68,8 @@ const Products = () => {
   useEffect(() => {
     fetchProducts(1, 10);
     fetchCategories();
+    fetchBrands();
+    fetchTargets();
   }, []);
 
   const fetchProducts = async (page = 1, size = 10) => {
@@ -147,6 +153,30 @@ const Products = () => {
       console.error('Failed to fetch categories:', error);
       message.error('Tải danh mục thất bại');
       setCategories([]);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await brandService.getAll();
+      const data = response.data || response;
+      setBrands(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to fetch brands:', error);
+      message.error('Tải danh sách hãng thất bại');
+      setBrands([]);
+    }
+  };
+
+  const fetchTargets = async () => {
+    try {
+      const response = await targetService.getAll();
+      const data = response.data || response;
+      setTargets(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to fetch targets:', error);
+      message.error('Tải danh sách đối tượng thất bại');
+      setTargets([]);
     }
   };
 
@@ -606,19 +636,31 @@ const Products = () => {
             <Col span={12}>
               <Form.Item
                 name="factory"
-                label={<span style={{ fontWeight: 500 }}>Nhà sản xuất</span>}
-                rules={[{ required: true, message: 'Vui lòng nhập nhà sản xuất!' }]}
+                label={<span style={{ fontWeight: 500 }}>Hãng (Brand)</span>}
+                rules={[{ required: true, message: 'Vui lòng chọn hãng!' }]}
               >
-                <Input placeholder="Nhập nhà sản xuất" size="large" style={{ borderRadius: '8px' }} />
+                <Select placeholder="Chọn hãng" showSearch size="large" style={{ borderRadius: '8px' }}>
+                  {brands.map(brand => (
+                    <Option key={brand.id} value={brand.name}>
+                      {brand.name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 name="target"
                 label={<span style={{ fontWeight: 500 }}>Đối tượng</span>}
-                rules={[{ required: true, message: 'Vui lòng nhập đối tượng!' }]}
+                rules={[{ required: true, message: 'Vui lòng chọn đối tượng!' }]}
               >
-                <Input placeholder="Nhập đối tượng" size="large" style={{ borderRadius: '8px' }} />
+                <Select placeholder="Chọn đối tượng" showSearch size="large" style={{ borderRadius: '8px' }}>
+                  {targets.map(target => (
+                    <Option key={target.id} value={target.name}>
+                      {target.name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
           </Row>
@@ -679,7 +721,7 @@ const Products = () => {
               { title: 'Danh mục', dataIndex: 'categoryName' },
               { title: 'Giá', dataIndex: 'price', render: (val) => formatPrice(val) },
               { title: 'SL', dataIndex: 'quantity' },
-              { title: 'Nhà sản xuất', dataIndex: 'factory' }
+              { title: 'Hãng', dataIndex: 'factory' }
             ]}
           />
         ) : (
@@ -759,7 +801,7 @@ const Products = () => {
                 <Descriptions.Item label="Danh mục">
                   {viewingProduct.categoryName || 'Không có'}
                 </Descriptions.Item>
-                <Descriptions.Item label="Nhà sản xuất">
+                <Descriptions.Item label="Hãng">
                   {viewingProduct.factory || 'Không có'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Đối tượng">

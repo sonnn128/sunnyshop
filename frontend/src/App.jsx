@@ -33,6 +33,8 @@ import Products from '@/pages/admin/Products.jsx';
 import Users from '@/pages/admin/Users.jsx';
 import Orders from '@/pages/admin/Orders.jsx';
 import Categories from '@/pages/admin/Categories.jsx';
+import Brands from '@/pages/admin/Brands.jsx';
+import Targets from '@/pages/admin/Targets.jsx';
 import Settings from '@/pages/admin/Settings.jsx';
 import PermissionManagement from '@/pages/admin/PermissionManagement.jsx';
 import Coupons from '@/pages/admin/Coupons.jsx';
@@ -157,6 +159,20 @@ const AppContent = () => {
               <ProtectedRoute requireAdmin={true}>
                 <AdminLayout>
                   <Categories />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/brands" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayout>
+                  <Brands />
+                </AdminLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/targets" element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayout>
+                  <Targets />
                 </AdminLayout>
               </ProtectedRoute>
             } />

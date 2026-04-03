@@ -15,6 +15,8 @@ import com.sonnguyen.laptopshop.payload.response.AuthResponse;
 import com.sonnguyen.laptopshop.repository.RoleRepository;
 import com.sonnguyen.laptopshop.repository.UserRepository;
 import com.sonnguyen.laptopshop.service.AuthService;
+import com.sonnguyen.laptopshop.service.EmailService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
     @Value("${jwt.EXPIRATION_TIME:3600000}")
     private int JWT_EXPIRATION_TIME;
@@ -45,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
-    private final com.sonnguyen.laptopshop.service.EmailService emailService;
+    private final EmailService emailService;
 
 
     @Override
@@ -54,7 +57,13 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(username, password));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtService.generateToken((UserDetails) authentication.getPrincipal(), JWT_EXPIRATION_TIME);
+        
+        // Find user by username or email for the response
         User user = userRepository.findByUsername(username);
+        if (user == null) {
+            user = userRepository.findByEmail(username);
+        }
+        
         // create refresh token
         RefreshToken refresh = new RefreshToken();
         refresh.setToken(UUID.randomUUID().toString());
@@ -222,4 +231,3 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenRepository.deleteAllByUser(user);
     }
 }
-

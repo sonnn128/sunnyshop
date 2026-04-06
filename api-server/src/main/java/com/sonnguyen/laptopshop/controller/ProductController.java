@@ -178,7 +178,7 @@ public class ProductController {
     public ResponseEntity<Page<ProductResponse>> filterProducts(
             @RequestParam(required = false) List<String> factory,
             @RequestParam(required = false) List<String> target,
-            @RequestParam(required = false) List<String> category,
+            @RequestParam(required = false) List<Long> category,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String keyword,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatPrice } from '@/utils/format';
+import { formatPrice, formatQuantity } from '@/utils/format';
 import { productService } from '../../services/product.service.js';
 import { categoryService } from '../../services/category.service.js';
 import { brandService } from '../../services/brand.service.js';
@@ -400,7 +400,7 @@ const Products = () => {
       title: 'Tồn kho',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (q) => q ?? 0,
+      render: (q) => formatQuantity(q),
     },
     {
       title: 'Danh mục',

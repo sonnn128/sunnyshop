@@ -128,7 +128,7 @@ public class ProductService {
     public Page<ProductResponse> getProductsWithFilters(
             List<String> factories,
             List<String> targets,
-            List<String> categories,
+            List<Long> categories,
             Double minPrice,
             Double maxPrice,
             String keyword,

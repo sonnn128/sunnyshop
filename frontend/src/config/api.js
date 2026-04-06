@@ -77,10 +77,9 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
 
       if (!refreshToken) {
-        // Nothing to do, force logout
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        // No refresh token available - just reject without redirecting.
+        // This allows public pages (e.g. /products) to handle 401 gracefully
+        // without being force-redirected to /login.
         isRefreshing = false;
         return Promise.reject(error);
       }

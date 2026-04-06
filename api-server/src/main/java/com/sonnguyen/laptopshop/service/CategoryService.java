@@ -113,6 +113,7 @@ public class CategoryService {
         response.setSlug(category.getSlug());
         response.setDescription(category.getDescription());
         response.setImage(category.getImage());
+        response.setStatus(category.getStatus());
         response.setCreatedAt(category.getCreatedAt());
         response.setUpdatedAt(category.getUpdatedAt());
         // Use a separate query to count products to avoid LazyInitializationException

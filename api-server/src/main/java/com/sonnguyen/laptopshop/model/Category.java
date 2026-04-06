@@ -33,6 +33,9 @@ public class Category {
 
     private String image;
 
+    @Column(columnDefinition = "VARCHAR(20) DEFAULT 'active'")
+    private String status = "active";
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")
     private Instant createdAt;
 

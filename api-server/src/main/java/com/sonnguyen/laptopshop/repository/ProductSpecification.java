@@ -25,12 +25,12 @@ public class ProductSpecification {
         };
     }
 
-    public static Specification<Product> hasCategoryIn(List<String> categories) {
+    public static Specification<Product> hasCategoryIn(List<Long> categoryIds) {
         return (root, query, criteriaBuilder) -> {
-            if (categories == null || categories.isEmpty()) {
+            if (categoryIds == null || categoryIds.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return root.join("category").get("name").in(categories);
+            return root.get("category").get("id").in(categoryIds);
         };
     }
 

@@ -12,6 +12,7 @@ public class CategoryResponse {
     private String slug;
     private String description;
     private String image;
+    private String status;
     private Long productCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")

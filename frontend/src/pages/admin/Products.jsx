@@ -594,6 +594,8 @@ const Products = () => {
                   style={{ width: '100%', borderRadius: '8px' }}
                   size="large"
                   placeholder="0"
+                  formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                  parser={value => value.replace(/\$\s?|(,*)/g, '')}
                 />
               </Form.Item>
             </Col>
@@ -795,7 +797,7 @@ const Products = () => {
                 <Descriptions.Item label="Tồn kho">
                   <Badge
                     status={viewingProduct.quantity > 0 ? "success" : "error"}
-                    text={viewingProduct.quantity > 0 ? `${viewingProduct.quantity} sản phẩm` : "Hết hàng"}
+                    text={viewingProduct.quantity > 0 ? `${formatQuantity(viewingProduct.quantity)} sản phẩm` : "Hết hàng"}
                   />
                 </Descriptions.Item>
                 <Descriptions.Item label="Danh mục">

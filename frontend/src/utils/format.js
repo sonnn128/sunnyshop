@@ -5,5 +5,5 @@ export const formatPrice = (price) => {
 
 export const formatQuantity = (quantity) => {
     if (quantity === undefined || quantity === null) return '0';
-    return new Intl.NumberFormat('vi-VN').format(quantity);
+    return quantity.toLocaleString('en-US');
 };

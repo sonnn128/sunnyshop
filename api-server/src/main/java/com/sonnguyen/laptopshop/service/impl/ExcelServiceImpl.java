@@ -31,7 +31,7 @@ public class ExcelServiceImpl implements ExcelService {
                 if (product.getImage() == null) product.setImage(""); 
 
                 if (product.getCategory() != null && product.getCategory().getName() != null) {
-                    String categoryName = product.getCategory().getName();
+                    String categoryName = product.getCategory().getName().trim();
                     com.sonnguyen.laptopshop.model.Category category = categoryRepository.findByName(categoryName)
                             .orElseGet(() -> {
                                 com.sonnguyen.laptopshop.model.Category newCategory = new com.sonnguyen.laptopshop.model.Category();

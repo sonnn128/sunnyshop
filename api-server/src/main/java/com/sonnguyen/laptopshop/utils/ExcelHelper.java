@@ -81,7 +81,6 @@ public class ExcelHelper {
 
                 Product product = new Product();
 
-                // Use index based iteration to handle blank cells correctly
                 for (int cellIdx = 0; cellIdx < HEADERS.length; cellIdx++) {
                    Cell currentCell = currentRow.getCell(cellIdx, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
                    
@@ -139,9 +138,9 @@ public class ExcelHelper {
         try {
             switch (cell.getCellType()) {
                 case STRING:
-                    return cell.getStringCellValue();
+                    return cell.getStringCellValue().trim();
                 case NUMERIC:
-                    return String.valueOf(cell.getNumericCellValue());
+                    return String.valueOf((long) cell.getNumericCellValue());
                 case BOOLEAN:
                     return String.valueOf(cell.getBooleanCellValue());
                 default:

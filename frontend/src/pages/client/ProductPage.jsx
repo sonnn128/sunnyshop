@@ -40,9 +40,9 @@ const ProductPage = () => {
         const br = searchParams.get('brand');
         const tg = searchParams.get('target');
         
-        if (cat) setSelectedCategories([cat]);
-        if (br) setSelectedBrands([br]);
-        if (tg) setSelectedTargets([tg]);
+        setSelectedCategories(cat ? [cat] : []);
+        setSelectedBrands(br ? [br] : []);
+        setSelectedTargets(tg ? [tg] : []);
         
         // When url param changes, it resets pagination
         setCurrentPage(1);

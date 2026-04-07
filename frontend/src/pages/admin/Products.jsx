@@ -280,13 +280,13 @@ const Products = () => {
 
         for (let i = 0; i < jsonData.length; i++) {
           const row = jsonData[i];
-          const categoryName = row['Category'];
+          const categoryName = row['Category']?.trim();
           if (!categoryName) {
             errors.push(`Row ${i + 2}: Category is missing`);
             continue;
           }
 
-          const category = categories.find(c => c.name.toLowerCase() === categoryName.toString().toLowerCase());
+          const category = categories.find(c => c.name.trim().toLowerCase() === categoryName.toString().toLowerCase());
           if (!category) {
             errors.push(`Row ${i + 2}: Category '${categoryName}' not found`);
             continue;

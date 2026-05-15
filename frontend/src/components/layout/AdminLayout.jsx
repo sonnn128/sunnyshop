@@ -12,7 +12,6 @@ import {
   TagsOutlined,
   BlockOutlined,
   TeamOutlined,
-  SafetyCertificateOutlined,
   GiftOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -69,11 +68,6 @@ const AdminLayout = ({ children }) => {
       label: 'Người dùng',
     },
     {
-      key: '/admin/permissions',
-      icon: <SafetyCertificateOutlined />,
-      label: 'Phân quyền',
-    },
-    {
       key: '/admin/settings',
       icon: <SettingOutlined />,
       label: 'Cài đặt',
@@ -101,7 +95,6 @@ const AdminLayout = ({ children }) => {
         orders: 'Đơn hàng',
         coupons: 'Mã giảm giá',
         users: 'Người dùng',
-        permissions: 'Phân quyền',
         settings: 'Cài đặt'
       };
 

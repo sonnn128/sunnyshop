@@ -5,8 +5,17 @@ import com.sonnguyen.laptopshop.model.Role;
 import com.sonnguyen.laptopshop.model.User;
 import com.sonnguyen.laptopshop.payload.request.UserRequest;
 import com.sonnguyen.laptopshop.payload.response.UserResponse;
+import com.sonnguyen.laptopshop.repository.AddressRepository;
+import com.sonnguyen.laptopshop.repository.CartDetailRepository;
+import com.sonnguyen.laptopshop.repository.CartRepository;
+import com.sonnguyen.laptopshop.repository.OrderDetailRepository;
+import com.sonnguyen.laptopshop.repository.OrderRepository;
+import com.sonnguyen.laptopshop.repository.PasswordResetTokenRepository;
+import com.sonnguyen.laptopshop.repository.RefreshTokenRepository;
+import com.sonnguyen.laptopshop.repository.ReviewRepository;
 import com.sonnguyen.laptopshop.repository.RoleRepository;
 import com.sonnguyen.laptopshop.repository.UserRepository;
+import com.sonnguyen.laptopshop.repository.WishlistRepository;
 import com.sonnguyen.laptopshop.utils.ModelMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +39,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CartRepository cartRepository;
+    private final CartDetailRepository cartDetailRepository;
+    private final WishlistRepository wishlistRepository;
+    private final AddressRepository addressRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final ReviewRepository reviewRepository;
+    private final OrderRepository orderRepository;
+    private final OrderDetailRepository orderDetailRepository;
 
     private static final String USER_NOT_FOUND = "User not found with id: ";
     private static final String USERNAME_EXISTS = "Username already exists: ";
@@ -118,6 +136,19 @@ public class UserService {
     public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new CommonException(USER_NOT_FOUND + id, HttpStatus.NOT_FOUND));
+        orderRepository.findByUserId(id).forEach(order -> {
+            orderDetailRepository.deleteByOrder(order);
+            orderRepository.delete(order);
+        });
+        cartRepository.findByUser(user).ifPresent(cart -> {
+            cartDetailRepository.deleteByCart(cart);
+            cartRepository.delete(cart);
+        });
+        wishlistRepository.deleteByUserId(id);
+        addressRepository.deleteByUserId(id);
+        refreshTokenRepository.deleteAllByUser(user);
+        passwordResetTokenRepository.deleteAllByUser(user);
+        reviewRepository.deleteByUserId(id);
         userRepository.delete(user);
     }
 

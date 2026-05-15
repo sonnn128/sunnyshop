@@ -28,6 +28,7 @@ const ProductPage = () => {
     const [brands, setBrands] = useState([]);
     const [targets, setTargets] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [rawCategories, setRawCategories] = useState([]);
 
     const [selectedBrands, setSelectedBrands] = useState([]);
     const [selectedTargets, setSelectedTargets] = useState([]);
@@ -36,17 +37,28 @@ const ProductPage = () => {
 
     // Sync selected filters from URL search params
     useEffect(() => {
-        const cat = searchParams.get('category');
+        const catParam = searchParams.get('category');
         const br = searchParams.get('brand');
         const tg = searchParams.get('target');
-        
-        setSelectedCategories(cat ? [cat] : []);
+
+        const resolvedCategories = catParam
+            ? catParam.split(',').map((value) => {
+                const asNumber = Number(value);
+                if (!Number.isNaN(asNumber)) {
+                    return asNumber;
+                }
+                const match = rawCategories.find((c) => c.name === value || c.slug === value);
+                return match ? match.id : null;
+            }).filter((value) => value !== null)
+            : [];
+
+        setSelectedCategories(resolvedCategories);
         setSelectedBrands(br ? [br] : []);
         setSelectedTargets(tg ? [tg] : []);
-        
+
         // When url param changes, it resets pagination
         setCurrentPage(1);
-    }, [searchParams]);
+    }, [searchParams, rawCategories]);
 
     const pageSize = 12;
     const navigate = useNavigate();
@@ -64,7 +76,8 @@ const ProductPage = () => {
 
                 const resCats = await categoryService.getAll();
                 const catData = resCats.data || resCats || [];
-                setCategories(catData.map(c => ({ label: c.name, value: c.name })));
+                setRawCategories(catData);
+                setCategories(catData.map(c => ({ label: c.name, value: c.id })));
             } catch (e) {
                 console.error(e);
             }

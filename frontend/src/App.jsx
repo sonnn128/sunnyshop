@@ -26,6 +26,7 @@ import AddressBookPage from '@/pages/client/AddressBookPage.jsx';
 import WishlistPage from '@/pages/client/WishlistPage.jsx';
 import ForgotPasswordPage from '@/pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from '@/pages/ResetPasswordPage.jsx';
+import NotFoundPage from '@/pages/NotFoundPage.jsx';
 
 // Admin Pages
 import Dashboard from '@/pages/admin/Dashboard.jsx';
@@ -36,7 +37,6 @@ import Categories from '@/pages/admin/Categories.jsx';
 import Brands from '@/pages/admin/Brands.jsx';
 import Targets from '@/pages/admin/Targets.jsx';
 import Settings from '@/pages/admin/Settings.jsx';
-import PermissionManagement from '@/pages/admin/PermissionManagement.jsx';
 import Coupons from '@/pages/admin/Coupons.jsx';
 
 const { Content } = Layout;
@@ -190,12 +190,16 @@ const AppContent = () => {
                 </AdminLayout>
               </ProtectedRoute>
             } />
-            <Route path="/admin/permissions" element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminLayout>
-                  <PermissionManagement />
-                </AdminLayout>
-              </ProtectedRoute>
+            <Route path="*" element={
+              isAdminRoute ? (
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminLayout>
+                    <NotFoundPage />
+                  </AdminLayout>
+                </ProtectedRoute>
+              ) : (
+                <NotFoundPage />
+              )
             } />
           </Routes>
         </div>

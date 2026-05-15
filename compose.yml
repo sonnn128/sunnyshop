@@ -17,19 +17,34 @@ services:
       - ./data/mysql:/var/lib/mysql
       - ./laptopshop.sql:/docker-entrypoint-initdb.d/laptopshop.sql
 
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+
   api-server:
     build:
       context: ./api-server
       dockerfile: Dockerfile
     ports:
-      - "8888:8888"
-    env_file:
-      - .env
+      - "8081:8081"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DB: laptopshop
+      MYSQL_USER: laptopshop
+      MYSQL_PASSWORD: laptopshop
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_started
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -40,9 +55,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: http://localhost:8888
-    env_file:
-      - .env
+        VITE_API_BASE_URL: http://localhost:8081
     ports:
       - "5173:5173"
     depends_on:

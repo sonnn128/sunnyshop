@@ -139,5 +139,39 @@ export const productService = {
         console.error('API Error:', error);
         throw error;
     }
+  },
+
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await api.post('/files/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
+  getVariants: async (id) => {
+    try {
+      const response = await api.get(`/products/${id}/variants`);
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
+  updateVariants: async (id, variants) => {
+    try {
+      const response = await api.put(`/products/${id}/variants`, variants);
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
   }
 };

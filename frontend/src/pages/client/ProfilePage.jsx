@@ -39,11 +39,11 @@ const ProfilePage = () => {
 
             setAvatarUrl(url);
             onSuccess(url);
-            message.success('Avatar uploaded successfully');
+            message.success('Đã tải ảnh đại diện lên thành công');
         } catch (error) {
             console.error('Upload error:', error);
             onError(error);
-            message.error('Failed to upload avatar');
+            message.error('Không thể tải ảnh đại diện lên');
         }
     };
 
@@ -55,7 +55,7 @@ const ProfilePage = () => {
                 avatar: avatarUrl
             };
             const res = await api.put('/auth/profile', updateData);
-            message.success('Profile updated');
+            message.success('Đã cập nhật hồ sơ');
 
             const updatedUser = res.data.data || res.data;
             localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -64,7 +64,7 @@ const ProfilePage = () => {
             window.location.reload();
         } catch (e) {
             console.error(e);
-            message.error('Unable to update profile');
+            message.error('Không thể cập nhật hồ sơ');
         } finally {
             setLoadingProfile(false);
         }
@@ -74,9 +74,9 @@ const ProfilePage = () => {
         setLoadingPassword(true);
         try {
             await api.post('/auth/change-password', { oldPassword: vals.oldPassword, newPassword: vals.newPassword });
-            message.success('Password changed');
+            message.success('Đã đổi mật khẩu');
         } catch (e) {
-            message.error('Unable to change password');
+            message.error('Không thể đổi mật khẩu');
         } finally {
             setLoadingPassword(false);
         }
@@ -84,7 +84,7 @@ const ProfilePage = () => {
 
     return (
         <div>
-            <Title level={2}>My Profile</Title>
+            <Title level={2}>Hồ sơ của tôi</Title>
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} md={8}>
@@ -102,16 +102,16 @@ const ProfilePage = () => {
                                 showUploadList={false}
                                 accept="image/*"
                             >
-                                <Button icon={<UploadOutlined />}>Change Avatar</Button>
+                                <Button icon={<UploadOutlined />}>Đổi ảnh đại diện</Button>
                             </Upload>
-                            <Title level={4} style={{ marginTop: 16 }}>{user?.fullName || 'User'}</Title>
+                            <Title level={4} style={{ marginTop: 16 }}>{user?.fullName || 'Người dùng'}</Title>
                             <p>{user?.email || 'user@example.com'}</p>
                         </div>
                     </Card>
                 </Col>
 
                 <Col xs={24} md={16}>
-                    <Card title="Edit Profile">
+                    <Card title="Chỉnh sửa hồ sơ">
                         <Form
                             form={form}
                             layout="vertical"
@@ -123,7 +123,7 @@ const ProfilePage = () => {
 
                             <Row gutter={16}>
                                 <Col xs={24} sm={12}>
-                                    <Form.Item name="username" label="Username" rules={[{ required: true }]}>
+                                    <Form.Item name="username" label="Tên đăng nhập" rules={[{ required: true }]}>
                                         <Input disabled />
                                     </Form.Item>
                                 </Col>
@@ -134,40 +134,40 @@ const ProfilePage = () => {
                                 </Col>
                             </Row>
 
-                            <Form.Item name="fullName" label="Full Name" rules={[{ required: true }]}>
+                            <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true }]}>
                                 <Input />
                             </Form.Item>
 
-                            <Form.Item name="phone" label="Phone">
+                            <Form.Item name="phone" label="Số điện thoại">
                                 <Input />
                             </Form.Item>
 
-                            <Form.Item name="address" label="Address">
+                            <Form.Item name="address" label="Địa chỉ">
                                 <Input.TextArea rows={2} />
                             </Form.Item>
 
-                            <Form.Item label="Address Book">
+                            <Form.Item label="Sổ địa chỉ">
                                 <Link to="/profile/addresses">
-                                    <Button type="dashed" icon={<UserOutlined />}>Manage Address Book</Button>
+                                    <Button type="dashed" icon={<UserOutlined />}>Quản lý sổ địa chỉ</Button>
                                 </Link>
                             </Form.Item>
 
                             <Form.Item>
-                                <Button type="primary" htmlType="submit" loading={loadingProfile}>Update Profile</Button>
+                                <Button type="primary" htmlType="submit" loading={loadingProfile}>Cập nhật hồ sơ</Button>
                             </Form.Item>
                         </Form>
 
                         <div style={{ marginTop: 24 }}>
-                            <Card title="Change password">
+                            <Card title="Đổi mật khẩu">
                                 <Form onFinish={onChangePassword}>
                                     <Form.Item name="oldPassword" rules={[{ required: true }]}>
-                                        <Input.Password placeholder="Old password" />
+                                        <Input.Password placeholder="Mật khẩu cũ" />
                                     </Form.Item>
                                     <Form.Item name="newPassword" rules={[{ required: true, min: 6 }]}>
-                                        <Input.Password placeholder="New password" />
+                                        <Input.Password placeholder="Mật khẩu mới" />
                                     </Form.Item>
                                     <Form.Item>
-                                        <Button htmlType="submit" type="primary" loading={loadingPassword}>Change password</Button>
+                                        <Button htmlType="submit" type="primary" loading={loadingPassword}>Đổi mật khẩu</Button>
                                     </Form.Item>
                                 </Form>
                             </Card>

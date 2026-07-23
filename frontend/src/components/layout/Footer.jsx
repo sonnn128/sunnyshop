@@ -34,7 +34,7 @@ const Footer = () => {
                 <SkinOutlined style={{ color: '#fff', fontSize: 22 }} />
               </div>
               <span style={{ fontSize: '24px', fontWeight: '800', letterSpacing: '-0.5px' }}>
-                Sunny Shop
+                TrendWear Shop
               </span>
             </div>
             <Text style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.6, display: 'block', marginBottom: 24 }}>
@@ -59,7 +59,7 @@ const Footer = () => {
           </Col>
 
           <Col xs={24} sm={8} md={5}>
-            <Title level={4} style={{ color: '#fff', marginBottom: 24, fontSize: '18px' }}>Về Sunny Shop</Title>
+            <Title level={4} style={{ color: '#fff', marginBottom: 24, fontSize: '18px' }}>Về TrendWear Shop</Title>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <li><Link to="/about" style={{ color: '#9CA3AF', transition: 'color 0.3s' }} onMouseEnter={(e) => e.target.style.color = '#4F46E5'} onMouseLeave={(e) => e.target.style.color = '#9CA3AF'}>Câu chuyện thương hiệu</Link></li>
               <li><Link to="/careers" style={{ color: '#9CA3AF', transition: 'color 0.3s' }} onMouseEnter={(e) => e.target.style.color = '#4F46E5'} onMouseLeave={(e) => e.target.style.color = '#9CA3AF'}>Tuyển dụng</Link></li>
@@ -81,7 +81,7 @@ const Footer = () => {
               </li>
               <li style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 <MailOutlined style={{ color: '#4F46E5', fontSize: '18px' }} />
-                <span style={{ color: '#9CA3AF' }}>contact@sunnyshop.com</span>
+                <span style={{ color: '#9CA3AF' }}>contact@trendwearshop.com</span>
               </li>
             </ul>
           </Col>
@@ -89,7 +89,7 @@ const Footer = () => {
         
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: 40, paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <Text style={{ color: '#6B7280' }}>
-            © {new Date().getFullYear()} Sunny Shop. All rights reserved. Created by Son Nguyen.
+            © {new Date().getFullYear()} TrendWear Shop. All rights reserved. Created by Son Nguyen.
           </Text>
           <div style={{ display: 'flex', gap: 16 }}>
              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" style={{ height: 20, filter: 'grayscale(1) brightness(2)' }} />

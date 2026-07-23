@@ -41,19 +41,19 @@ const OrderPage = () => {
 
     const columns = [
         {
-            title: 'Order Number',
+            title: 'Mã đơn hàng',
             dataIndex: 'id',
             key: 'orderNumber',
             render: (_, record) => record.orderNumber || record.id || record.code || ''
         },
         {
-            title: 'Date',
+            title: 'Ngày đặt',
             dataIndex: 'orderDate',
             key: 'date',
             render: (d) => d || record?.createdAt || ''
         },
         {
-            title: 'Status',
+            title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (status) => (
@@ -63,13 +63,19 @@ const OrderPage = () => {
             ),
         },
         {
-            title: 'Items',
+            title: 'Sản phẩm',
             dataIndex: 'orderDetails',
             key: 'items',
-            render: (orderDetails) => (Array.isArray(orderDetails) ? orderDetails.map(d => d.productName || d.name).join(', ') : '')
+            render: (orderDetails) => (Array.isArray(orderDetails) 
+                ? orderDetails.map(d => {
+                    const name = d.product?.name || d.productName || d.name || '';
+                    const attrs = [d.size, d.color].filter(Boolean).join('/');
+                    return name + (attrs ? ` (${attrs})` : '');
+                }).join(', ') 
+                : '')
         },
         {
-            title: 'Total',
+            title: 'Tổng tiền',
             dataIndex: 'totalPrice',
             key: 'total',
             render: (t) => formatPrice(t),
@@ -79,9 +85,9 @@ const OrderPage = () => {
     if (!user) {
         return (
             <div>
-                <Title level={2}>My Orders</Title>
+                <Title level={2}>Đơn hàng của tôi</Title>
                 <Card>
-                    <div>Please login to view your orders.</div>
+                    <div>Vui lòng đăng nhập để xem đơn hàng của bạn.</div>
                 </Card>
             </div>
         );
@@ -89,7 +95,7 @@ const OrderPage = () => {
 
     return (
         <div>
-            <Title level={2}>My Orders</Title>
+            <Title level={2}>Đơn hàng của tôi</Title>
             <Card>
                 {loading ? <Spin /> : (
                     <Table

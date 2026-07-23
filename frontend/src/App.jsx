@@ -10,6 +10,8 @@ import ClientRoute from '@/components/ClientRoute.jsx';
 import { AuthProvider } from '@/contexts/AuthContext.jsx';
 import { CartProvider } from '@/contexts/CartContext.jsx';
 import { WishlistProvider } from '@/contexts/WishlistContext.jsx';
+import ChatbotWidget from '@/components/ChatbotWidget.jsx';
+
 
 // Pages
 import HomePage from '@/pages/client/HomePage.jsx';
@@ -205,6 +207,7 @@ const AppContent = () => {
         </div>
       </Content>
       {!isAdminRoute && <CustomFooter />}
+      {!isAdminRoute && <ChatbotWidget />}
     </Layout>
   );
 };

@@ -18,6 +18,9 @@ const ProductDetailPage = () => {
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedColor, setSelectedColor] = useState("");
+    const [activeImage, setActiveImage] = useState("");
 
     // Wishlist State
     const [inWishlist, setInWishlist] = useState(false);
@@ -27,6 +30,85 @@ const ProductDetailPage = () => {
     const [reviews, setReviews] = useState([]);
     const [submittingReview, setSubmittingReview] = useState(false);
     const [form] = Form.useForm();
+
+    // Compute gallery images list
+    const galleryImages = React.useMemo(() => {
+        if (!product) return [];
+        const list = [];
+        if (product.image) list.push(product.image);
+        if (product.images && product.images.trim()) {
+            product.images.split(',').map(img => img.trim()).filter(Boolean).forEach(img => {
+                if (!list.includes(img)) {
+                    list.push(img);
+                }
+            });
+        }
+        return list;
+    }, [product]);
+
+    // Compute selected variant based on selected size & color
+    const selectedVariant = React.useMemo(() => {
+        if (!product || !product.variants) return null;
+        return product.variants.find(
+            v => v.size === selectedSize && v.color === selectedColor
+        );
+    }, [product, selectedSize, selectedColor]);
+
+    // Compute stock quantity dynamically
+    const stockQuantity = React.useMemo(() => {
+        if (!product) return 0;
+        if (product.variants && product.variants.length > 0) {
+            if (selectedSize && selectedColor) {
+                return selectedVariant ? selectedVariant.quantity : 0;
+            }
+            if (selectedSize) {
+                return product.variants
+                    .filter(v => v.size === selectedSize)
+                    .reduce((sum, v) => sum + v.quantity, 0);
+            }
+            if (selectedColor) {
+                return product.variants
+                    .filter(v => v.color === selectedColor)
+                    .reduce((sum, v) => sum + v.quantity, 0);
+            }
+            return product.variants.reduce((sum, v) => sum + v.quantity, 0);
+        }
+        return product.quantity;
+    }, [product, selectedSize, selectedColor, selectedVariant]);
+
+    // Check if color is out-of-stock for selected size
+    const isColorDisabled = React.useCallback((color) => {
+        if (!product || !product.variants || product.variants.length === 0) return false;
+        if (!selectedSize) {
+            // If no size selected, color is disabled if out-of-stock in all sizes
+            return !product.variants.some(v => v.color === color && v.quantity > 0);
+        }
+        const variant = product.variants.find(v => v.size === selectedSize && v.color === color);
+        return variant ? variant.quantity <= 0 : true;
+    }, [product, selectedSize]);
+
+    // Check if size is out-of-stock for selected color
+    const isSizeDisabled = React.useCallback((size) => {
+        if (!product || !product.variants || product.variants.length === 0) return false;
+        if (!selectedColor) {
+            // If no color selected, size is disabled if out-of-stock in all colors
+            return !product.variants.some(v => v.size === size && v.quantity > 0);
+        }
+        const variant = product.variants.find(v => v.size === size && v.color === selectedColor);
+        return variant ? variant.quantity <= 0 : true;
+    }, [product, selectedColor]);
+
+    const handleColorSelect = (color) => {
+        setSelectedColor(color);
+        if (product && product.colors && product.images) {
+            const colorList = product.colors.split(',').map(x => x.trim()).filter(Boolean);
+            const imageList = product.images.split(',').map(x => x.trim()).filter(Boolean);
+            const colorIndex = colorList.indexOf(color);
+            if (colorIndex !== -1 && imageList[colorIndex]) {
+                setActiveImage(imageList[colorIndex]);
+            }
+        }
+    };
 
     useEffect(() => {
         if (id) {
@@ -42,6 +124,9 @@ const ProductDetailPage = () => {
             const result = await productService.getById(id);
             const data = result.data || result;
             setProduct(data);
+            setActiveImage(data.image);
+            setSelectedSize("");
+            setSelectedColor("");
             pushView(data);
         } catch (error) {
             console.error('Error loading product:', error);
@@ -147,14 +232,45 @@ const ProductDetailPage = () => {
                     <Row gutter={[0, 0]}>
                         {/* Image Section */}
                         <Col xs={24} md={12} lg={14}>
-                            <div style={{ backgroundColor: '#F3F4F6', height: '100%', minHeight: '600px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
-                                <img
-                                    src={product.image || 'https://via.placeholder.com/800x800?text=Chưa+có+ảnh'}
-                                    alt={product.name}
-                                    style={{ maxWidth: '100%', maxHeight: '600px', objectFit: 'contain', borderRadius: '16px', transition: 'transform 0.3s ease' }}
-                                    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
-                                    onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
-                                />
+                            <div style={{ backgroundColor: '#F3F4F6', height: '100%', minHeight: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+                                <div style={{ minHeight: '480px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: '24px' }}>
+                                    <img
+                                        src={activeImage || 'https://via.placeholder.com/800x800?text=Chưa+có+ảnh'}
+                                        alt={product.name}
+                                        style={{ maxWidth: '100%', maxHeight: '480px', objectFit: 'contain', borderRadius: '16px', transition: 'transform 0.3s ease' }}
+                                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
+                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                    />
+                                </div>
+                                {galleryImages.length > 1 && (
+                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                        {galleryImages.map((imgUrl, idx) => (
+                                            <div
+                                                key={idx}
+                                                style={{
+                                                    width: '70px',
+                                                    height: '70px',
+                                                    borderRadius: '8px',
+                                                    border: activeImage === imgUrl ? '2px solid #4F46E5' : '2px solid transparent',
+                                                    padding: '2px',
+                                                    backgroundColor: '#FFFFFF',
+                                                    cursor: 'pointer',
+                                                    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                                                    transition: 'all 0.2s ease',
+                                                    overflow: 'hidden'
+                                                }}
+                                                onMouseEnter={() => setActiveImage(imgUrl)}
+                                                onClick={() => setActiveImage(imgUrl)}
+                                            >
+                                                <img 
+                                                    src={imgUrl} 
+                                                    alt={`Thumbnail ${idx}`} 
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </Col>
 
@@ -193,8 +309,8 @@ const ProductDetailPage = () => {
                                             Mục: {product.categoryName}
                                         </Tag>
                                     )}
-                                    <Tag color={product.quantity > 0 ? '#10B981' : '#EF4444'} style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none' }}>
-                                        {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
+                                    <Tag color={stockQuantity > 0 ? '#10B981' : '#EF4444'} style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none' }}>
+                                        {stockQuantity > 0 ? `Còn ${stockQuantity} sản phẩm` : 'Hết hàng'}
                                     </Tag>
                                     {product.target && (
                                         <Tag style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none', backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
@@ -204,6 +320,68 @@ const ProductDetailPage = () => {
                                 </div>
 
                                 <Divider style={{ margin: '24px 0' }} />
+
+                                {product.sizes && product.sizes.trim() && (
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '15px', color: '#374151', marginBottom: '8px' }}>Kích cỡ:</div>
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                            {product.sizes.split(',').map(s => s.trim()).filter(Boolean).map(s => {
+                                                const disabled = isSizeDisabled(s);
+                                                return (
+                                                    <Button
+                                                        key={s}
+                                                        type={selectedSize === s ? 'primary' : 'default'}
+                                                        disabled={disabled}
+                                                        style={{ 
+                                                            borderRadius: '8px', 
+                                                            minWidth: '50px', 
+                                                            height: '40px',
+                                                            borderColor: selectedSize === s ? '#4F46E5' : '#D1D5DB',
+                                                            backgroundColor: selectedSize === s ? '#4F46E5' : '#FFFFFF',
+                                                            color: selectedSize === s ? '#FFFFFF' : '#374151',
+                                                            fontWeight: selectedSize === s ? 600 : 400,
+                                                            opacity: disabled ? 0.4 : 1
+                                                        }}
+                                                        onClick={() => setSelectedSize(s)}
+                                                    >
+                                                        {s}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {product.colors && product.colors.trim() && (
+                                    <div style={{ marginBottom: '24px' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '15px', color: '#374151', marginBottom: '8px' }}>Màu sắc:</div>
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                            {product.colors.split(',').map(c => c.trim()).filter(Boolean).map(c => {
+                                                const disabled = isColorDisabled(c);
+                                                return (
+                                                    <Button
+                                                        key={c}
+                                                        type={selectedColor === c ? 'primary' : 'default'}
+                                                        disabled={disabled}
+                                                        style={{ 
+                                                            borderRadius: '8px', 
+                                                            height: '40px',
+                                                            padding: '0 16px',
+                                                            borderColor: selectedColor === c ? '#4F46E5' : '#D1D5DB',
+                                                            backgroundColor: selectedColor === c ? '#4F46E5' : '#FFFFFF',
+                                                            color: selectedColor === c ? '#FFFFFF' : '#374151',
+                                                            fontWeight: selectedColor === c ? 600 : 400,
+                                                            opacity: disabled ? 0.4 : 1
+                                                        }}
+                                                        onClick={() => handleColorSelect(c)}
+                                                    >
+                                                        {c}
+                                                    </Button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div style={{ flex: 1 }}>
                                     <Title level={4} style={{ fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>Mô tả sản phẩm</Title>
@@ -217,8 +395,11 @@ const ProductDetailPage = () => {
                                         product={product}
                                         size="large"
                                         showQuantity={true}
+                                        selectedSize={selectedSize}
+                                        selectedColor={selectedColor}
+                                        disabled={stockQuantity <= 0}
                                     />
-                                    {product.quantity === 0 && (
+                                    {stockQuantity === 0 && (
                                         <div style={{
                                             padding: '16px',
                                             backgroundColor: '#FEF2F2',
@@ -227,7 +408,7 @@ const ProductDetailPage = () => {
                                             textAlign: 'center'
                                         }}>
                                             <Text style={{ color: '#EF4444', fontWeight: 600 }}>
-                                                Sản phẩm hiện đang tạm hết hàng. Vui lòng quay lại sau!
+                                                Sản phẩm hiện đang tạm hết hàng ở biến thể đã chọn. Vui lòng chọn biến thể khác!
                                             </Text>
                                         </div>
                                     )}

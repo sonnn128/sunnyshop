@@ -35,25 +35,25 @@ const OrderHistoryPage = () => {
 
     const columns = [
         {
-            title: 'Order ID',
+            title: 'Mã đơn hàng',
             dataIndex: 'id',
             key: 'id',
             render: (text) => `#${text}`,
         },
         {
-            title: 'Date',
+            title: 'Ngày đặt',
             dataIndex: 'orderDate',
             key: 'orderDate',
             render: (date) => new Date(date).toLocaleString(),
         },
         {
-            title: 'Total',
+            title: 'Tổng tiền',
             dataIndex: 'totalPrice',
             key: 'totalPrice',
             render: (price) => formatPrice(price),
         },
         {
-            title: 'Status',
+            title: 'Trạng thái',
             dataIndex: 'status',
             key: 'status',
             render: (status) => {
@@ -68,7 +68,7 @@ const OrderHistoryPage = () => {
             },
         },
         {
-            title: 'Action',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Button
@@ -77,7 +77,7 @@ const OrderHistoryPage = () => {
                     icon={<EyeOutlined />}
                     onClick={() => handleViewOrder(record)}
                 >
-                    View
+                    Xem
                 </Button>
             ),
         },
@@ -85,29 +85,37 @@ const OrderHistoryPage = () => {
 
     const modelColumns = [
         {
-            title: 'Product',
-            dataIndex: 'productName', // Accessing product name from nested object needs careful mapping below or transformation
+            title: 'Sản phẩm',
+            dataIndex: 'productName',
             key: 'productName',
             render: (_, record) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <img src={record.product?.image} alt={record.product?.name} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: '4px' }} />
-                    <span>{record.product?.name}</span>
+                    <div>
+                        <div style={{ fontWeight: 500 }}>{record.product?.name}</div>
+                        {(record.size || record.color) && (
+                            <div style={{ display: 'flex', gap: '6px', marginTop: '2px' }}>
+                                {record.size && <span style={{ fontSize: '10px', padding: '1px 6px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Size: {record.size}</span>}
+                                {record.color && <span style={{ fontSize: '10px', padding: '1px 6px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Màu: {record.color}</span>}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )
         },
         {
-            title: 'Price',
+            title: 'Đơn giá',
             dataIndex: 'price',
             key: 'price',
             render: (price) => formatPrice(price),
         },
         {
-            title: 'Quantity',
+            title: 'Số lượng',
             dataIndex: 'quantity',
             key: 'quantity',
         },
         {
-            title: 'Total',
+            title: 'Thành tiền',
             key: 'total',
             render: (_, record) => formatPrice(record.price * record.quantity),
         },
@@ -115,7 +123,7 @@ const OrderHistoryPage = () => {
 
     return (
         <div style={{ padding: '24px' }}>
-            <Title level={2}>Order History</Title>
+            <Title level={2}>Lịch sử đơn hàng</Title>
             <Card>
                 <Table
                     columns={columns}
@@ -127,7 +135,7 @@ const OrderHistoryPage = () => {
             </Card>
 
             <Modal
-                title={`Order Details #${selectedOrder?.id}`}
+                title={`Chi tiết đơn hàng #${selectedOrder?.id}`}
                 open={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
                 footer={null}
@@ -136,16 +144,16 @@ const OrderHistoryPage = () => {
                 {selectedOrder && (
                     <div>
                         <Descriptions bordered column={1} size="small" style={{ marginBottom: 24 }}>
-                            <Descriptions.Item label="Date">{new Date(selectedOrder.orderDate).toLocaleString()}</Descriptions.Item>
-                            <Descriptions.Item label="Status">
+                            <Descriptions.Item label="Ngày đặt">{new Date(selectedOrder.orderDate).toLocaleString()}</Descriptions.Item>
+                            <Descriptions.Item label="Trạng thái">
                                 <Tag color={selectedOrder.status === 'COMPLETED' ? 'green' : 'blue'}>
                                     {selectedOrder.status}
                                 </Tag>
                             </Descriptions.Item>
-                            <Descriptions.Item label="Receiver">{selectedOrder.receiverName}</Descriptions.Item>
-                            <Descriptions.Item label="Address">{selectedOrder.receiverAddress}</Descriptions.Item>
-                            <Descriptions.Item label="Phone">{selectedOrder.receiverPhone}</Descriptions.Item>
-                            <Descriptions.Item label="Total Amount">
+                            <Descriptions.Item label="Người nhận">{selectedOrder.receiverName}</Descriptions.Item>
+                            <Descriptions.Item label="Địa chỉ">{selectedOrder.receiverAddress}</Descriptions.Item>
+                            <Descriptions.Item label="Số điện thoại">{selectedOrder.receiverPhone}</Descriptions.Item>
+                            <Descriptions.Item label="Tổng tiền">
                                 <span style={{ fontWeight: 'bold', fontSize: '16px' }}>
                                     {formatPrice(selectedOrder.totalPrice)}
                                 </span>

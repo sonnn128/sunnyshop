@@ -153,7 +153,7 @@ const AdminLayout = ({ children }) => {
             letterSpacing: '-0.5px',
             boxShadow: '0 4px 15px rgba(79, 70, 229, 0.4)'
           }}>
-            {collapsed ? 'S.S' : 'Sunny Shop'}
+            {collapsed ? 'S.S' : 'TrendWear Shop'}
           </div>
           <Menu
             theme="light"

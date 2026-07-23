@@ -88,7 +88,7 @@ const ForgotPasswordPage = () => {
           color: '#fff'
         }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'auto', alignSelf: 'flex-start', color: '#fff', textDecoration: 'none' }}>
-            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>Sunny Shop</span>
+            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>TrendWear Shop</span>
           </Link>
           <div style={{ maxWidth: '480px' }}>
             <Typography.Title level={1} style={{ color: '#fff', fontSize: '48px', fontWeight: 800, lineHeight: 1.1, marginBottom: '24px' }}>

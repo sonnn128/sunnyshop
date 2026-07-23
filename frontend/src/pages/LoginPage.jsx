@@ -64,7 +64,7 @@ const LoginPage = () => {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'auto', alignSelf: 'flex-start' }}>
             <ShoppingOutlined style={{ fontSize: '32px', color: '#fff' }} />
-            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>Sunny Shop</span>
+            <span style={{ fontSize: '24px', fontWeight: 700, letterSpacing: '-0.5px' }}>TrendWear Shop</span>
           </div>
 
           <div style={{ maxWidth: '480px' }}>

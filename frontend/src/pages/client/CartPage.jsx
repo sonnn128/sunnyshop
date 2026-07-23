@@ -48,25 +48,25 @@ const CartPage = () => {
         }
     }, [error]);
 
-    const handleQuantityChange = async (productId, value) => {
+    const handleQuantityChange = async (record, value) => {
         if (value && value > 0) {
-            await updateQuantity(productId, value);
+            await updateQuantity(record.id, value, record.size, record.color);
         }
     };
 
-    const handleRemoveItem = async (productId) => {
-        await removeFromCart(productId);
-        message.success('Item removed from cart');
+    const handleRemoveItem = async (record) => {
+        await removeFromCart(record.id, record.size, record.color);
+        message.success('Đã xóa sản phẩm khỏi giỏ hàng');
     };
 
     const handleClearCart = async () => {
         await clearCart();
-        message.success('Cart cleared');
+        message.success('Đã xóa toàn bộ giỏ hàng');
     };
 
     const handleCheckout = () => {
         if (cartItems.length === 0) {
-            message.warning('Your cart is empty');
+            message.warning('Giỏ hàng đang trống');
             return;
         }
         navigate('/checkout');
@@ -74,7 +74,7 @@ const CartPage = () => {
 
     const columns = [
         {
-            title: 'Product',
+            title: 'Sản phẩm',
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
@@ -87,21 +87,27 @@ const CartPage = () => {
                     <div>
                         <div style={{ fontWeight: 'bold' }}>{text}</div>
                         {record.factory && (
-                            <div style={{ color: '#666', fontSize: '12px' }}>by {record.factory}</div>
+                            <div style={{ color: '#666', fontSize: '12px' }}>bởi {record.factory}</div>
+                        )}
+                        {(record.size || record.color) && (
+                            <div style={{ marginTop: '4px', display: 'flex', gap: '8px' }}>
+                                {record.size && <span style={{ padding: '2px 8px', fontSize: '11px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Size: {record.size}</span>}
+                                {record.color && <span style={{ padding: '2px 8px', fontSize: '11px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Màu: {record.color}</span>}
+                            </div>
                         )}
                     </div>
                 </div>
             ),
         },
         {
-            title: 'Price',
+            title: 'Đơn giá',
             dataIndex: 'price',
             key: 'price',
             render: (price) => formatPrice(price),
             width: 120,
         },
         {
-            title: 'Quantity',
+            title: 'Số lượng',
             dataIndex: 'quantity',
             key: 'quantity',
             render: (quantity, record) => (
@@ -109,30 +115,30 @@ const CartPage = () => {
                     min={1}
                     max={99}
                     value={quantity}
-                    onChange={(value) => handleQuantityChange(record.id, value)}
+                    onChange={(value) => handleQuantityChange(record, value)}
                     disabled={loading}
                 />
             ),
             width: 120,
         },
         {
-            title: 'Total',
+            title: 'Thành tiền',
             key: 'total',
             render: (_, record) => formatPrice(record.price * record.quantity),
             width: 120,
         },
         {
-            title: 'Action',
+            title: 'Thao tác',
             key: 'action',
             render: (_, record) => (
                 <Button
                     type="text"
                     danger
                     icon={<DeleteOutlined />}
-                    onClick={() => handleRemoveItem(record.id)}
+                    onClick={() => handleRemoveItem(record)}
                     loading={loading}
                 >
-                    Remove
+                    Xóa
                 </Button>
             ),
             width: 100,
@@ -143,7 +149,7 @@ const CartPage = () => {
         return (
             <div style={{ textAlign: 'center', padding: '50px' }}>
                 <Spin size="large" />
-                <div style={{ marginTop: '16px' }}>Loading cart...</div>
+                <div style={{ marginTop: '16px' }}>Đang tải giỏ hàng...</div>
             </div>
         );
     }
@@ -151,15 +157,15 @@ const CartPage = () => {
     if (cartItems.length === 0) {
         return (
             <div>
-                <Title level={2}>Shopping Cart</Title>
+                <Title level={2}>Giỏ hàng</Title>
                 <Card>
                     <Empty
                         image={<ShoppingCartOutlined style={{ fontSize: '64px', color: '#d9d9d9' }} />}
-                        description="Your cart is empty"
+                        description="Giỏ hàng đang trống"
                         style={{ padding: '50px 0' }}
                     >
                         <Button type="primary" onClick={() => navigate('/products')}>
-                            Continue Shopping
+                            Tiếp tục mua sắm
                         </Button>
                     </Empty>
                 </Card>
@@ -204,13 +210,13 @@ const CartPage = () => {
     return (
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <Title level={2} style={{ margin: 0 }}>Shopping Cart ({cartItems.length} items)</Title>
+                <Title level={2} style={{ margin: 0 }}>Giỏ hàng ({cartItems.length} sản phẩm)</Title>
                 <Button
                     danger
                     onClick={handleClearCart}
                     loading={loading}
                 >
-                    Clear Cart
+                    Xóa giỏ hàng
                 </Button>
             </div>
 
@@ -251,28 +257,28 @@ const CartPage = () => {
                                     setDiscount(0);
                                     setCouponCode('');
                                     localStorage.removeItem('coupon');
-                                }}>Remove</Button>
+                                }}>Xóa</Button>
                             ) : (
-                                <Button type="primary" onClick={handleApplyCoupon}>Apply</Button>
+                                <Button type="primary" onClick={handleApplyCoupon}>Áp dụng</Button>
                             )}
                         </div>
                     </div>
 
                     <div style={{ marginBottom: '8px' }}>
                         <Title level={4} style={{ margin: 0, fontWeight: 'normal' }}>
-                            Subtotal: {formatPrice(totalPrice)}
+                            Tạm tính: {formatPrice(totalPrice)}
                         </Title>
                     </div>
                     {discount > 0 && (
                         <div style={{ marginBottom: '8px', color: 'green' }}>
                             <Title level={4} style={{ margin: 0, fontWeight: 'normal' }}>
-                                Discount: -{formatPrice(discount)}
+                                Giảm giá: -{formatPrice(discount)}
                             </Title>
                         </div>
                     )}
                     <div style={{ marginBottom: '16px' }}>
                         <Title level={3} style={{ margin: 0 }}>
-                            Total: {formatPrice(finalPrice)}
+                            Tổng cộng: {formatPrice(finalPrice)}
                         </Title>
                     </div>
                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
@@ -280,7 +286,7 @@ const CartPage = () => {
                             size="large"
                             onClick={() => navigate('/products')}
                         >
-                            Continue Shopping
+                            Tiếp tục mua sắm
                         </Button>
                         <Button
                             type="primary"
@@ -288,7 +294,7 @@ const CartPage = () => {
                             onClick={handleCheckout}
                             loading={loading}
                         >
-                            Proceed to Checkout
+                            Tiến hành thanh toán
                         </Button>
                     </div>
                 </div>

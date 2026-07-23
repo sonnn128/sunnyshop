@@ -153,7 +153,7 @@ const Navbar = () => {
           color: '#111827',
           letterSpacing: '-0.5px'
         }}>
-          Sunny Shop
+          TrendWear Shop
         </div>
       </div>
 

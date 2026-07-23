@@ -54,13 +54,15 @@ export const CartProvider = ({ children }) => {
   }, [cartItems]);
 
   // Add item to cart
-  const addToCart = async (product, quantity = 1) => {
+  const addToCart = async (product, quantity = 1, size = "", color = "") => {
     try {
       setLoading(true);
       setError(null);
 
-      // Check if item already exists in cart
-      const existingItemIndex = cartItems.findIndex(item => item.id === product.id);
+      // Check if item already exists in cart with same size and color
+      const existingItemIndex = cartItems.findIndex(
+        item => item.id === product.id && item.size === size && item.color === color
+      );
       
       if (existingItemIndex > -1) {
         // Update quantity if item exists
@@ -71,10 +73,13 @@ export const CartProvider = ({ children }) => {
         // Add new item to cart
         const newItem = {
           id: product.id,
+          cartDetailId: null,
           name: product.name,
           price: product.price,
           image: product.image,
           quantity: quantity,
+          size: size,
+          color: color,
           category: product.category,
           factory: product.factory
         };
@@ -85,18 +90,36 @@ export const CartProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          console.log('Adding item to server cart:', { productId: product.id, quantity });
-          await api.post('/cart/items', {
+          console.log('Adding item to server cart:', { productId: product.id, quantity, size, color });
+          const response = await api.post('/cart/items', {
             productId: product.id,
-            quantity: quantity
+            quantity: quantity,
+            size: size,
+            color: color
           });
+          
+          // Update local cart details to set cartDetailId from server response
+          if (response.data && response.data.cartDetails) {
+            const updatedItemsFromServer = response.data.cartDetails.map(detail => ({
+              id: detail.product.id,
+              cartDetailId: detail.id,
+              name: detail.product.name,
+              price: detail.price,
+              image: detail.product.image,
+              quantity: detail.quantity,
+              size: detail.size || "",
+              color: detail.color || "",
+              category: {
+                id: detail.product.categoryId,
+                name: detail.product.categoryName
+              },
+              factory: detail.product.factory
+            }));
+            setCartItems(updatedItemsFromServer);
+          }
           console.log('Successfully added item to server cart');
         } catch (apiError) {
           console.error('Failed to sync cart with server:', apiError);
-          console.error('Error status:', apiError.response?.status);
-          console.error('Error data:', apiError.response?.data);
-          
-          // If 401 or 403, token might be invalid
           if (apiError.response?.status === 401 || apiError.response?.status === 403) {
             console.warn('Token might be invalid, clearing local storage');
             localStorage.removeItem('token');
@@ -115,28 +138,31 @@ export const CartProvider = ({ children }) => {
   };
 
   // Update item quantity
-  const updateQuantity = async (productId, quantity) => {
+  const updateQuantity = async (productId, quantity, size = "", color = "") => {
     try {
       setLoading(true);
       setError(null);
 
       if (quantity <= 0) {
-        removeFromCart(productId);
-        return { success: true };
+        return removeFromCart(productId, size, color);
       }
 
       const updatedItems = cartItems.map(item =>
-        item.id === productId ? { ...item, quantity } : item
+        item.id === productId && item.size === size && item.color === color
+          ? { ...item, quantity }
+          : item
       );
       setCartItems(updatedItems);
 
-      // If user is logged in, sync with server
+      // If user is logged in, sync with server using cartDetailId
       const token = localStorage.getItem('token');
-      if (token) {
+      const targetItem = cartItems.find(
+        item => item.id === productId && item.size === size && item.color === color
+      );
+
+      if (token && targetItem && targetItem.cartDetailId) {
         try {
-          // Note: This would need cartDetailId, but we don't have it in our local state
-          // For now, we'll skip server sync for quantity updates
-          console.warn('Quantity update sync not implemented - need cartDetailId');
+          await api.put(`/cart/items/${targetItem.cartDetailId}?quantity=${quantity}`);
         } catch (apiError) {
           console.warn('Failed to sync cart with server:', apiError);
         }
@@ -152,21 +178,24 @@ export const CartProvider = ({ children }) => {
   };
 
   // Remove item from cart
-  const removeFromCart = async (productId) => {
+  const removeFromCart = async (productId, size = "", color = "") => {
     try {
       setLoading(true);
       setError(null);
 
-      const updatedItems = cartItems.filter(item => item.id !== productId);
+      const targetItem = cartItems.find(
+        item => item.id === productId && item.size === size && item.color === color
+      );
+      const updatedItems = cartItems.filter(
+        item => !(item.id === productId && item.size === size && item.color === color)
+      );
       setCartItems(updatedItems);
 
-      // If user is logged in, sync with server
+      // If user is logged in, sync with server using cartDetailId
       const token = localStorage.getItem('token');
-      if (token) {
+      if (token && targetItem && targetItem.cartDetailId) {
         try {
-          // Note: This would need cartDetailId, but we don't have it in our local state
-          // For now, we'll skip server sync for item removal
-          console.warn('Item removal sync not implemented - need cartDetailId');
+          await api.delete(`/cart/items/${targetItem.cartDetailId}`);
         } catch (apiError) {
           console.warn('Failed to sync cart with server:', apiError);
         }
@@ -220,19 +249,21 @@ export const CartProvider = ({ children }) => {
         return { success: true };
       }
 
-      console.log('Loading cart from server with token:', token.substring(0, 20) + '...');
-      console.log('Full token:', token);
+      console.log('Loading cart from server...');
       const response = await api.get('/cart');
       const cartResponse = response.data;
 
-      if (cartResponse && cartResponse.cartDetails && cartResponse.cartDetails.length > 0) {
+      if (cartResponse && cartResponse.cartDetails) {
         // Convert CartDetailResponse to our cart item format
         const cartItems = cartResponse.cartDetails.map(detail => ({
           id: detail.product.id,
+          cartDetailId: detail.id,
           name: detail.product.name,
           price: detail.price,
           image: detail.product.image,
           quantity: detail.quantity,
+          size: detail.size || "",
+          color: detail.color || "",
           category: {
             id: detail.product.categoryId,
             name: detail.product.categoryName
@@ -245,16 +276,11 @@ export const CartProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Failed to load cart from server:', error);
-      console.error('Error status:', error.response?.status);
-      console.error('Error data:', error.response?.data);
-      
-      // If 401 or 403, token might be invalid
       if (error.response?.status === 401 || error.response?.status === 403) {
         console.warn('Token might be invalid, clearing local storage');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
-      
       return { success: false, error: error.message };
     } finally {
       setLoading(false);
@@ -272,7 +298,9 @@ export const CartProvider = ({ children }) => {
         try {
           await api.post('/cart/items', {
             productId: item.id,
-            quantity: item.quantity
+            quantity: item.quantity,
+            size: item.size || "",
+            color: item.color || ""
           });
         } catch (error) {
           console.warn(`Failed to sync item ${item.id}:`, error);

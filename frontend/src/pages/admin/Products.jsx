@@ -49,6 +49,13 @@ const Products = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [viewingProduct, setViewingProduct] = useState(null);
+
+  // Variants state
+  const [variantsModalVisible, setVariantsModalVisible] = useState(false);
+  const [variantsProduct, setVariantsProduct] = useState(null);
+  const [variantsList, setVariantsList] = useState([]);
+  const [variantsLoading, setVariantsLoading] = useState(false);
+
   const [form] = Form.useForm();
   const navigate = useNavigate();
 
@@ -188,7 +195,21 @@ const Products = () => {
 
   const handleEdit = (record) => {
     setEditingProduct(record);
-    form.setFieldsValue(record);
+    const sizes = record.sizes ? record.sizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const colors = record.colors ? record.colors.split(',').map(c => c.trim()).filter(Boolean) : [];
+    const images = record.images ? record.images.split(',').map(img => img.trim()) : [];
+    
+    const formattedRecord = {
+      ...record,
+      sizes,
+      colors
+    };
+
+    colors.forEach((color, idx) => {
+      formattedRecord[`colorImage_${idx}`] = images[idx] || "";
+    });
+
+    form.setFieldsValue(formattedRecord);
     setModalVisible(true);
   };
 
@@ -214,6 +235,15 @@ const Products = () => {
         imageFile = values.imageFile[0].originFileObj;
       }
 
+      // Combine color images into a comma-separated string
+      const colors = values.colors || [];
+      const colorImages = [];
+      colors.forEach((color, idx) => {
+        const imgUrl = values[`colorImage_${idx}`] || "";
+        colorImages.push(imgUrl.trim());
+      });
+      const imagesString = colorImages.join(',');
+
       // Create product object (without the file)
       const productData = {
         name: values.name,
@@ -223,7 +253,10 @@ const Products = () => {
         target: values.target,
         description: values.description,
         categoryId: values.categoryId,
-        image: values.image
+        image: values.image,
+        sizes: Array.isArray(values.sizes) ? values.sizes.join(',') : values.sizes || "",
+        colors: Array.isArray(values.colors) ? values.colors.join(',') : values.colors || "",
+        images: imagesString
       };
 
       if (editingProduct && !imageFile) {
@@ -251,6 +284,85 @@ const Products = () => {
     } finally {
       setSubmitLoading(false);
     }
+  };
+
+  const handleManageVariants = async (product) => {
+    setVariantsProduct(product);
+    setVariantsModalVisible(true);
+    setVariantsLoading(true);
+    try {
+      const existingVariants = await productService.getVariants(product.id);
+      
+      const sizes = product.sizes ? product.sizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+      const colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(Boolean) : [];
+      
+      const combinations = [];
+      
+      if (sizes.length > 0 && colors.length > 0) {
+        sizes.forEach(s => {
+          colors.forEach(c => {
+            const match = existingVariants.find(v => v.size === s && v.color === c);
+            combinations.push({
+              key: `${s}-${c}`,
+              size: s,
+              color: c,
+              quantity: match ? match.quantity : 0
+            });
+          });
+        });
+      } else if (sizes.length > 0) {
+        sizes.forEach(s => {
+          const match = existingVariants.find(v => v.size === s && (!v.color || v.color === ""));
+          combinations.push({
+            key: `${s}-`,
+            size: s,
+            color: "",
+            quantity: match ? match.quantity : 0
+          });
+        });
+      } else if (colors.length > 0) {
+        colors.forEach(c => {
+          const match = existingVariants.find(v => (!v.size || v.size === "") && v.color === c);
+          combinations.push({
+            key: `-${c}`,
+            size: "",
+            color: c,
+            quantity: match ? match.quantity : 0
+          });
+        });
+      }
+      
+      setVariantsList(combinations);
+    } catch (error) {
+      console.error("Failed to load variants:", error);
+      message.error("Không thể tải thông tin biến thể");
+    } finally {
+      setVariantsLoading(false);
+    }
+  };
+
+  const handleSaveVariants = async () => {
+    try {
+      setVariantsLoading(true);
+      const payload = variantsList.map(v => ({
+        size: v.size,
+        color: v.color,
+        quantity: v.quantity
+      }));
+      await productService.updateVariants(variantsProduct.id, payload);
+      message.success("Cập nhật số lượng biến thể thành công!");
+      setVariantsModalVisible(false);
+      fetchProducts(pagination.current, pagination.pageSize);
+    } catch (error) {
+      console.error("Failed to save variants:", error);
+      message.error("Lưu biến thể thất bại");
+    } finally {
+      setVariantsLoading(false);
+    }
+  };
+
+  const updateVariantQty = (key, val) => {
+    setVariantsList(prev => prev.map(item => item.key === key ? { ...item, quantity: val || 0 } : item));
   };
 
   const handleImport = async (file) => {
@@ -429,6 +541,19 @@ const Products = () => {
           >
             Sửa
           </Button>
+          <Button
+            type="dashed"
+            onClick={() => {
+              if (!record.sizes && !record.colors) {
+                message.warning("Vui lòng cấu hình Kích cỡ hoặc Màu sắc cho sản phẩm trước!");
+              } else {
+                handleManageVariants(record);
+              }
+            }}
+            style={{ borderRadius: '8px' }}
+          >
+            Biến thể
+          </Button>
           <Popconfirm
             title="Bạn có chắc muốn xóa sản phẩm này?"
             onConfirm={() => handleDelete(record.id)}
@@ -600,6 +725,117 @@ const Products = () => {
               </Form.Item>
             </Col>
           </Row>
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="sizes"
+                label={<span style={{ fontWeight: 500 }}>Kích cỡ (Sizes)</span>}
+                help="Nhập các kích cỡ và nhấn Enter (Ví dụ: S, M, L)"
+              >
+                <Select
+                  mode="tags"
+                  style={{ width: '100%' }}
+                  placeholder="Nhập các kích cỡ"
+                  size="large"
+                  tokenSeparators={[',']}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                name="colors"
+                label={<span style={{ fontWeight: 500 }}>Màu sắc (Colors)</span>}
+                help="Nhập các màu sắc và nhấn Enter (Ví dụ: Đen, Trắng)"
+              >
+                <Select
+                  mode="tags"
+                  style={{ width: '100%' }}
+                  placeholder="Nhập các màu sắc"
+                  size="large"
+                  tokenSeparators={[',']}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.colors !== currentValues.colors}>
+            {({ getFieldValue }) => {
+              const colors = getFieldValue('colors') || [];
+              if (colors.length === 0) return null;
+              
+              return (
+                <Card 
+                  size="small" 
+                  title={<span style={{ fontWeight: 600, fontSize: '14px', color: '#374151' }}>Bộ sưu tập ảnh (Ảnh đại diện cho từng màu sắc)</span>} 
+                  style={{ marginBottom: 24, borderRadius: '12px', border: '1px dashed #D1D5DB', backgroundColor: '#FAFAFA' }}
+                >
+                  <Row gutter={[16, 16]}>
+                    {colors.map((color, index) => {
+                      const fieldName = `colorImage_${index}`;
+                      return (
+                        <Col span={12} key={index}>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                            <Form.Item
+                              name={fieldName}
+                              label={<span style={{ fontWeight: 500 }}>Ảnh cho màu: <Typography.Text type="danger" strong>{color}</Typography.Text></span>}
+                              style={{ marginBottom: 8, flex: 1 }}
+                            >
+                              <Input 
+                                placeholder="Nhập URL hình ảnh..." 
+                                style={{ borderRadius: '8px' }}
+                                suffix={
+                                  <Form.Item noStyle shouldUpdate>
+                                    {({ getFieldValue }) => {
+                                      const url = getFieldValue(fieldName);
+                                      return url ? (
+                                        <Image
+                                          src={url}
+                                          alt={color}
+                                          width={24}
+                                          height={24}
+                                          style={{ objectFit: 'cover', borderRadius: '4px', border: '1px solid #E5E7EB' }}
+                                          preview={{ mask: null }}
+                                        />
+                                      ) : null;
+                                    }}
+                                  </Form.Item>
+                                }
+                              />
+                            </Form.Item>
+                            <div style={{ paddingTop: '29px' }}>
+                              <Upload
+                                accept="image/*"
+                                showUploadList={false}
+                                beforeUpload={async (file) => {
+                                  try {
+                                    message.loading({ content: 'Đang tải ảnh lên...', key: `upload-${index}` });
+                                    const result = await productService.uploadImage(file);
+                                    const uploadedUrl = result.data || result;
+                                    form.setFieldsValue({
+                                      [fieldName]: uploadedUrl
+                                    });
+                                    message.success({ content: 'Tải ảnh lên thành công!', key: `upload-${index}` });
+                                  } catch (err) {
+                                    message.error({ content: 'Tải ảnh lên thất bại!', key: `upload-${index}` });
+                                  }
+                                  return false;
+                                }}
+                              >
+                                <Button icon={<UploadOutlined />} style={{ borderRadius: '8px' }}>
+                                  Tải lên
+                                </Button>
+                              </Upload>
+                            </div>
+                          </div>
+                        </Col>
+                      );
+                    })}
+                  </Row>
+                </Card>
+              );
+            }}
+          </Form.Item>
 
           <Form.Item
             name="imageFile"
@@ -818,6 +1054,88 @@ const Products = () => {
             </Col>
           </Row>
         )}
+      </Modal>
+
+      <Modal
+        title={<span style={{ fontWeight: 700 }}>Quản lý tồn kho biến thể - {variantsProduct?.name}</span>}
+        open={variantsModalVisible}
+        onCancel={() => setVariantsModalVisible(false)}
+        width={650}
+        confirmLoading={variantsLoading}
+        onOk={handleSaveVariants}
+        okText="Lưu thay đổi"
+        cancelText="Hủy"
+        styles={{
+          header: {
+            borderBottom: '1px solid #f0f0f0',
+            paddingBottom: 16
+          }
+        }}
+      >
+        <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <Typography.Paragraph type="secondary">
+            Thiết lập số lượng tồn kho riêng biệt cho từng biến thể cụ thể (Size + Màu sắc). 
+            Tổng số lượng tồn kho của sản phẩm sẽ tự động cập nhật bằng tổng các biến thể này sau khi nhấn **Lưu thay đổi**.
+          </Typography.Paragraph>
+        </div>
+        <Table
+          dataSource={variantsList}
+          rowKey="key"
+          loading={variantsLoading}
+          pagination={false}
+          size="middle"
+          className="premium-table"
+          columns={[
+            {
+              title: 'Hình ảnh',
+              key: 'image',
+              render: (_, record) => {
+                let variantImage = variantsProduct?.image;
+                if (record.color && variantsProduct?.colors && variantsProduct?.images) {
+                  const colorList = variantsProduct.colors.split(',').map(x => x.trim()).filter(Boolean);
+                  const imageList = variantsProduct.images.split(',').map(x => x.trim()).filter(Boolean);
+                  const colorIndex = colorList.indexOf(record.color);
+                  if (colorIndex !== -1 && imageList[colorIndex]) {
+                    variantImage = imageList[colorIndex];
+                  }
+                }
+                return (
+                  <Image
+                    width={40}
+                    height={40}
+                    src={variantImage || 'https://via.placeholder.com/40x40?text=No+Img'}
+                    style={{ objectFit: 'cover', borderRadius: '4px' }}
+                  />
+                );
+              }
+            },
+            {
+              title: 'Kích cỡ (Size)',
+              dataIndex: 'size',
+              key: 'size',
+              render: (text) => text || <Typography.Text type="secondary" italic>Không có</Typography.Text>
+            },
+            {
+              title: 'Màu sắc (Color)',
+              dataIndex: 'color',
+              key: 'color',
+              render: (text) => text || <Typography.Text type="secondary" italic>Không có</Typography.Text>
+            },
+            {
+              title: 'Số lượng tồn kho',
+              dataIndex: 'quantity',
+              key: 'quantity',
+              render: (value, record) => (
+                <InputNumber
+                  min={0}
+                  value={value}
+                  onChange={(val) => updateVariantQty(record.key, val)}
+                  style={{ width: '150px', borderRadius: '8px' }}
+                />
+              )
+            }
+          ]}
+        />
       </Modal>
     </div>
   );

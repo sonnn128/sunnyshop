@@ -5,7 +5,7 @@ import { useCart } from '../contexts/CartContext.jsx';
 import { useWishlist } from '../contexts/WishlistContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
-const AddToCartButton = ({ product, size = 'default', showQuantity = true, style = {}, compact = false }) => {
+const AddToCartButton = ({ product, size = 'default', showQuantity = true, style = {}, compact = false, selectedSize = "", selectedColor = "", disabled = false }) => {
   const { addToCart, loading } = useCart();
   const { items: wishlistItems, toggle: toggleWishlist } = useWishlist();
   const navigate = useNavigate();
@@ -23,12 +23,22 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
       return;
     }
 
+    if (product.sizes && product.sizes.trim() && !selectedSize) {
+      message.warning('Vui lòng chọn kích cỡ (size)');
+      return;
+    }
+
+    if (product.colors && product.colors.trim() && !selectedColor) {
+      message.warning('Vui lòng chọn màu sắc');
+      return;
+    }
+
     try {
       setAdding(true);
-      const result = await addToCart(product, quantity);
+      const result = await addToCart(product, quantity, selectedSize, selectedColor);
 
       if (result.success) {
-        message.success(`${product.name} added to cart!`);
+        message.success(`Đã thêm ${product.name} vào giỏ hàng!`);
         setQuantity(1); // Reset quantity after adding
       } else {
         message.error(result.error || 'Failed to add to cart');
@@ -41,10 +51,20 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
   };
 
   const handleBuyNow = async () => {
+    if (product.sizes && product.sizes.trim() && !selectedSize) {
+      message.warning('Vui lòng chọn kích cỡ (size)');
+      return;
+    }
+
+    if (product.colors && product.colors.trim() && !selectedColor) {
+      message.warning('Vui lòng chọn màu sắc');
+      return;
+    }
+
     // Add to cart then navigate to checkout
     try {
       setAdding(true);
-      const result = await addToCart(product, quantity);
+      const result = await addToCart(product, quantity, selectedSize, selectedColor);
       if (result.success) {
         navigate('/checkout');
       } else {
@@ -74,7 +94,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           max={99}
           value={quantity}
           onChange={handleQuantityChange}
-          disabled={adding || loading}
+          disabled={adding || loading || disabled}
           style={{ width: 80 }}
           size={size}
         />
@@ -90,6 +110,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           type="primary"
           icon={<ShoppingCartOutlined />}
           onClick={handleAddToCart}
+          disabled={adding || loading || disabled}
           loading={adding || loading}
           size={size}
         >
@@ -98,7 +119,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
         <Button
           type="default"
           onClick={handleBuyNow}
-          disabled={adding || loading}
+          disabled={adding || loading || disabled}
           size={size}
         >
           Buy Now
@@ -168,13 +189,14 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
         type="primary"
         icon={<PlusOutlined />}
         onClick={handleAddToCart}
+        disabled={adding || loading || disabled}
         loading={adding || loading}
         size={size}
         style={style}
       >
         Add to Cart
       </Button>
-      <Button type="default" onClick={handleBuyNow} size={size}>Buy Now</Button>
+      <Button type="default" onClick={handleBuyNow} disabled={adding || loading || disabled} size={size}>Buy Now</Button>
     </Space>
   );
 };

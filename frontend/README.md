@@ -1,4 +1,4 @@
-# Sunny Shop - React Frontend (JavaScript)
+# TrendWear Shop - React Frontend (JavaScript)
 
 ## 🚀 Tech Stack
 
@@ -161,7 +161,7 @@ npm run build
 Create `.env` file:
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api/v1
-VITE_APP_NAME=Sunny Shop
+VITE_APP_NAME=TrendWear Shop
 ```
 
 ## 🤝 Contributing

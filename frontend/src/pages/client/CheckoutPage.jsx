@@ -18,7 +18,7 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         if (cartItems.length === 0) {
-            message.warning('Your cart is empty');
+            message.warning('Giỏ hàng đang trống');
             navigate('/cart');
         }
     }, [cartItems, navigate]);
@@ -28,7 +28,7 @@ const CheckoutPage = () => {
         console.log('Cart items:', cartItems);
 
         if (cartItems.length === 0) {
-            message.error('Your cart is empty');
+            message.error('Giỏ hàng đang trống');
             return;
         }
 
@@ -43,7 +43,9 @@ const CheckoutPage = () => {
                 paymentMethod: values.paymentMethod || 'COD',
                 cartItems: cartItems.map(item => ({
                     productId: parseInt(item.id),
-                    quantity: parseInt(item.quantity)
+                    quantity: parseInt(item.quantity),
+                    size: item.size || "",
+                    color: item.color || ""
                 }))
             };
 
@@ -90,7 +92,7 @@ const CheckoutPage = () => {
                 const offending = cartItems.find(i => i.name === productName || String(i.id) === productName);
                 if (offending) {
                     try {
-                        await removeFromCart(offending.id);
+                        await removeFromCart(offending.id, offending.size, offending.color);
                         message.error(`${productName} is out of stock and was removed from your cart. Please review your cart and try again.`);
                     } catch (e) {
                         console.error('Failed to remove out-of-stock item from cart:', e);
@@ -111,7 +113,7 @@ const CheckoutPage = () => {
 
     const columns = [
         {
-            title: 'Product',
+            title: 'Sản phẩm',
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
@@ -124,27 +126,33 @@ const CheckoutPage = () => {
                     <div>
                         <div style={{ fontWeight: 'bold' }}>{text}</div>
                         {record.factory && (
-                            <div style={{ color: '#666', fontSize: '12px' }}>by {record.factory}</div>
+                            <div style={{ color: '#666', fontSize: '12px' }}>bởi {record.factory}</div>
+                        )}
+                        {(record.size || record.color) && (
+                            <div style={{ marginTop: '4px', display: 'flex', gap: '8px' }}>
+                                {record.size && <span style={{ padding: '2px 8px', fontSize: '11px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Size: {record.size}</span>}
+                                {record.color && <span style={{ padding: '2px 8px', fontSize: '11px', backgroundColor: '#F3F4F6', borderRadius: '4px', color: '#4B5563', fontWeight: 500 }}>Màu: {record.color}</span>}
+                            </div>
                         )}
                     </div>
                 </div>
             ),
         },
         {
-            title: 'Price',
+            title: 'Đơn giá',
             dataIndex: 'price',
             key: 'price',
             render: (price) => formatPrice(price),
             width: 100,
         },
         {
-            title: 'Quantity',
+            title: 'Số lượng',
             dataIndex: 'quantity',
             key: 'quantity',
             width: 80,
         },
         {
-            title: 'Total',
+            title: 'Thành tiền',
             key: 'total',
             render: (_, record) => formatPrice(record.price * record.quantity),
             width: 100,
@@ -154,9 +162,9 @@ const CheckoutPage = () => {
     if (cartItems.length === 0) {
         return (
             <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Empty description="Your cart is empty" />
+                <Empty description="Giỏ hàng đang trống" />
                 <Button type="primary" onClick={() => navigate('/products')}>
-                    Continue Shopping
+                    Tiếp tục mua sắm
                 </Button>
             </div>
         );
@@ -164,11 +172,11 @@ const CheckoutPage = () => {
 
     return (
         <div>
-            <Title level={2}>Checkout</Title>
+            <Title level={2}>Thanh toán</Title>
 
             <Row gutter={[24, 24]}>
                 <Col xs={24} lg={16}>
-                    <Card title="Shipping Information">
+                    <Card title="Thông tin giao hàng">
                         <Form
                             form={form}
                             layout="vertical"
@@ -277,7 +285,7 @@ const CheckoutPage = () => {
                                     loading={loading}
                                     style={{ width: '100%' }}
                                 >
-                                    Place Order
+                                    Đặt hàng
                                 </Button>
                             </Form.Item>
                         </Form>
@@ -285,7 +293,7 @@ const CheckoutPage = () => {
                 </Col>
 
                 <Col xs={24} lg={8}>
-                    <Card title="Order Summary">
+                    <Card title="Tóm tắt đơn hàng">
                         <Table
                             columns={columns}
                             dataSource={cartItems}
@@ -296,15 +304,15 @@ const CheckoutPage = () => {
 
                         <div style={{ marginTop: '16px', padding: '16px', background: token.colorFillAlter, borderRadius: '6px' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                <Text>Subtotal:</Text>
+                                <Text>Tạm tính:</Text>
                                 <Text>{formatPrice(totalPrice)}</Text>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                                <Text>Shipping:</Text>
+                                <Text>Vận chuyển:</Text>
                                 <Text>{formatPrice(0)}</Text>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold', fontSize: '16px' }}>
-                                <Text strong>Total:</Text>
+                                <Text strong>Tổng cộng:</Text>
                                 <Text strong>{formatPrice(totalPrice)}</Text>
                             </div>
                         </div>

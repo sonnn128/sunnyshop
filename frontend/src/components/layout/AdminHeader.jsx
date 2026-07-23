@@ -133,7 +133,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
                 lineHeight: '1.2'
               }}
             >
-              Quản trị Sunny Shop
+              Quản trị TrendWear Shop
             </Text>
             <Text
               type="secondary"

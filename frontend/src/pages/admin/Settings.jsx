@@ -86,8 +86,8 @@ const Settings = () => {
               layout="vertical"
               onFinish={handleSave}
               initialValues={{
-                siteName: 'Sunny Shop',
-                siteDescription: 'Your trusted sunny shop store',
+                siteName: 'TrendWear Shop',
+                siteDescription: 'Your trusted trendwear shop store',
                 maintenanceMode: false,
                 allowRegistration: true,
                 defaultCurrency: 'VND'
@@ -145,10 +145,10 @@ const Settings = () => {
               initialValues={{
                 smtpHost: 'smtp.gmail.com',
                 smtpPort: 587,
-                smtpUsername: 'admin@sunnyshop.com',
+                smtpUsername: 'admin@trendwearshop.com',
                 smtpPassword: '********',
-                fromEmail: 'noreply@sunnyshop.com',
-                fromName: 'Sunny Shop'
+                fromEmail: 'noreply@trendwearshop.com',
+                fromName: 'TrendWear Shop'
               }}
             >
               <Form.Item

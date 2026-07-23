@@ -15,14 +15,14 @@ const CartIcon = ({ size = 'default', showText = false, style = {} }) => {
   const buttonContent = showText ? (
     <>
       <ShoppingCartOutlined />
-      <span style={{ marginLeft: '8px' }}>Cart</span>
+      <span style={{ marginLeft: '8px' }}>Giỏ hàng</span>
     </>
   ) : (
     <ShoppingCartOutlined />
   );
 
   return (
-    <Tooltip title={`${totalItems} items in cart`}>
+    <Tooltip title={`${totalItems} sản phẩm trong giỏ hàng`}>
       <Badge count={totalItems} size="small" offset={[-5, 5]}>
         <Button
           type="text"
@@ -38,7 +38,7 @@ const CartIcon = ({ size = 'default', showText = false, style = {} }) => {
           {showText && (
             <>
               <ShoppingCartOutlined style={{ marginRight: '8px' }} />
-              Cart
+              Giỏ hàng
             </>
           )}
         </Button>

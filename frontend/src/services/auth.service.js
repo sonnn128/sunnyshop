@@ -1,5 +1,5 @@
 
-// d:\sunnyshop\frontend\src\services\auth.service.js
+// d:\trendwearshop\frontend\src\services\auth.service.js
 import api from '@/config/api';
 
 export const authService = {

@@ -5,7 +5,7 @@ import { useCart } from '../contexts/CartContext.jsx';
 import { useWishlist } from '../contexts/WishlistContext.jsx';
 import { useNavigate } from 'react-router-dom';
 
-const AddToCartButton = ({ product, size = 'default', showQuantity = true, style = {}, compact = false, selectedSize = "", selectedColor = "", disabled = false }) => {
+const AddToCartButton = ({ product, size = 'default', showQuantity = true, style = {}, compact = false, selectedSize = "", selectedColor = "", disabled = false, onlyBuy = false, layout = "default", stock = null }) => {
   const { addToCart, loading } = useCart();
   const { items: wishlistItems, toggle: toggleWishlist } = useWishlist();
   const navigate = useNavigate();
@@ -86,6 +86,116 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
     }
   };
 
+  if (layout === 'detail') {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, width: '100%' }}>
+        {/* Quantity and Wishlist Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ fontWeight: 400, fontSize: '14px', color: '#757575', width: '110px' }}>Số lượng:</div>
+          <div style={{ 
+            display: 'inline-flex', 
+            alignItems: 'center', 
+            border: '1px solid #d8d8d8',
+            borderRadius: '2px', 
+            backgroundColor: '#fff'
+          }}>
+            <Button 
+              type="text" 
+              onClick={() => handleQuantityChange(quantity - 1)} 
+              disabled={quantity <= 1 || adding || loading || disabled}
+              style={{ fontWeight: 'normal', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', padding: 0, borderRadius: 0, border: 'none', borderRight: '1px solid #e8e8e8' }}
+            >
+              -
+            </Button>
+            <span style={{ fontWeight: 400, width: '50px', textAlign: 'center', fontSize: '16px', color: '#111827', display: 'inline-block', lineHeight: '32px', height: '32px' }}>
+              {quantity}
+            </span>
+            <Button 
+              type="text" 
+              onClick={() => handleQuantityChange(quantity + 1)} 
+              disabled={quantity >= 99 || adding || loading || disabled || (stock !== null && quantity >= stock)}
+              style={{ fontWeight: 'normal', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', padding: 0, borderRadius: 0, border: 'none', borderLeft: '1px solid #e8e8e8' }}
+            >
+              +
+            </Button>
+          </div>
+          
+          {stock !== null && (
+            <span style={{ color: '#757575', fontSize: '14px', marginLeft: '12px' }}>
+              {stock} sản phẩm có sẵn
+            </span>
+          )}
+
+          <Tooltip title={isInWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}>
+            <Button
+              type="text"
+              icon={isInWishlist ? <HeartFilled style={{ color: '#ee4d2d', fontSize: '20px' }} /> : <HeartOutlined style={{ fontSize: '20px', color: '#757575' }} />}
+              onClick={handleToggleWishlist}
+              disabled={adding}
+              style={{ 
+                height: '40px', 
+                width: '40px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                marginLeft: 'auto'
+              }}
+            />
+          </Tooltip>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+          <Button
+            type="default"
+            icon={<ShoppingCartOutlined style={{ fontSize: '20px' }} />}
+            onClick={handleAddToCart}
+            disabled={adding || loading || disabled}
+            loading={adding || loading}
+            style={{ 
+              flex: 1, 
+              height: '48px', 
+              borderRadius: '2px', 
+              fontSize: '15px', 
+              fontWeight: 500, 
+              color: '#ee4d2d', 
+              borderColor: '#ee4d2d', 
+              backgroundColor: '#ffeee8',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              gap: '8px',
+              boxShadow: '0 1px 1px 0 rgba(0,0,0,.03)'
+            }}
+          >
+            Thêm Vào Giỏ Hàng
+          </Button>
+          <Button
+            type="primary"
+            onClick={handleBuyNow}
+            disabled={adding || loading || disabled}
+            style={{ 
+              flex: 1, 
+              height: '48px', 
+              borderRadius: '2px', 
+              fontSize: '15px', 
+              fontWeight: 500, 
+              backgroundColor: '#ee4d2d', 
+              borderColor: '#ee4d2d',
+              color: '#fff',
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              boxShadow: '0 1px 1px 0 rgba(0,0,0,.09)'
+            }}
+          >
+            Mua Ngay
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (showQuantity) {
     return (
       <Space.Compact style={style} size={size}>
@@ -98,7 +208,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           style={{ width: 80 }}
           size={size}
         />
-        <Tooltip title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}>
+        <Tooltip title={isInWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}>
           <Button
             icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
             onClick={handleToggleWishlist}
@@ -114,7 +224,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           loading={adding || loading}
           size={size}
         >
-          Add to Cart
+          Thêm vào giỏ
         </Button>
         <Button
           type="default"
@@ -122,7 +232,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           disabled={adding || loading || disabled}
           size={size}
         >
-          Buy Now
+          Mua ngay
         </Button>
       </Space.Compact>
     );
@@ -138,9 +248,36 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
       fontSize: isLarge ? '13px' : undefined
     };
 
+    if (onlyBuy) {
+      return (
+        <Tooltip title="Mua ngay">
+          <Button 
+            type="primary" 
+            onClick={handleBuyNow} 
+            loading={adding || loading}
+            style={{ 
+              width: '100%', 
+              fontWeight: 700, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              backgroundColor: '#EA580C', 
+              borderColor: '#EA580C',
+              color: '#ffffff',
+              borderRadius: '8px',
+              height: '36px',
+              fontSize: '13px'
+            }}
+          >
+            Mua Ngay
+          </Button>
+        </Tooltip>
+      );
+    }
+
     return (
       <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
-        <Tooltip title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}>
+        <Tooltip title={isInWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}>
           <Button
             icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
             onClick={handleToggleWishlist}
@@ -149,7 +286,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
           />
         </Tooltip>
 
-        <Tooltip title="Add to cart">
+        <Tooltip title="Thêm vào giỏ hàng">
           <Button
             type="primary"
             icon={<ShoppingCartOutlined />}
@@ -158,18 +295,18 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
             size={compactSize}
             style={{ ...btnStyle, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >
-            Cart
+            Thêm
           </Button>
         </Tooltip>
 
-        <Tooltip title="Buy now">
+        <Tooltip title="Mua ngay">
           <Button 
             type="default" 
             onClick={handleBuyNow} 
             size={compactSize}
             style={{ ...btnStyle, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >
-            Buy
+            Mua
           </Button>
         </Tooltip>
       </div>
@@ -178,7 +315,7 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
 
   return (
     <Space>
-      <Tooltip title={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}>
+      <Tooltip title={isInWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}>
         <Button
           icon={isInWishlist ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
           onClick={handleToggleWishlist}
@@ -194,9 +331,9 @@ const AddToCartButton = ({ product, size = 'default', showQuantity = true, style
         size={size}
         style={style}
       >
-        Add to Cart
+        Thêm vào giỏ
       </Button>
-      <Button type="default" onClick={handleBuyNow} disabled={adding || loading || disabled} size={size}>Buy Now</Button>
+      <Button type="default" onClick={handleBuyNow} disabled={adding || loading || disabled} size={size}>Mua ngay</Button>
     </Space>
   );
 };

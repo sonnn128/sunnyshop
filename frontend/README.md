@@ -1,3 +1,13 @@
+### Admin
+```
+username: admin
+password: admin123
+```
+### User
+```
+username: user
+password: user123
+```
 # TrendWear Shop - React Frontend (JavaScript)
 
 ## 🚀 Tech Stack

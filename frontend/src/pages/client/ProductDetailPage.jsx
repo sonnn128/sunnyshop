@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
 import { Card, Typography, Button, Row, Col, Spin, message, Tag, Divider, Rate, List, Avatar, Input, Form } from 'antd';
 import { ShoppingCartOutlined, ArrowLeftOutlined, HeartOutlined, HeartFilled, UserOutlined } from '@ant-design/icons';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import AddToCartButton from '@/components/AddToCartButton.jsx';
 import { productService } from '@/services/product.service.js';
 import { wishlistService } from '@/services/wishlist.service.js';
 import { reviewService } from '@/services/review.service.js';
+import { useAuth } from '@/contexts/AuthContext.jsx';
+import { orderService } from '@/services/order.service.js';
 import { pushView } from '@/utils/recentViews.js';
 import RecentlyViewed from '@/components/RecentlyViewed.jsx';
 
@@ -16,7 +18,11 @@ const { TextArea } = Input;
 const ProductDetailPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useAuth();
     const [product, setProduct] = useState(null);
+    const [hasOrdered, setHasOrdered] = useState(false);
+    const [ratingFilter, setRatingFilter] = useState('all');
     const [loading, setLoading] = useState(true);
     const [selectedSize, setSelectedSize] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
@@ -30,6 +36,20 @@ const ProductDetailPage = () => {
     const [reviews, setReviews] = useState([]);
     const [submittingReview, setSubmittingReview] = useState(false);
     const [form] = Form.useForm();
+
+    const discountPercent = product && product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
+    const oldPrice = product && discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
+
+    const totalReviewsCount = reviews.length;
+    const count5 = reviews.filter(r => Math.round(r.rating) === 5).length;
+    const count4 = reviews.filter(r => Math.round(r.rating) === 4).length;
+    const count3 = reviews.filter(r => Math.round(r.rating) === 3).length;
+    const count2 = reviews.filter(r => Math.round(r.rating) === 2).length;
+    const count1 = reviews.filter(r => Math.round(r.rating) === 1).length;
+
+    const filteredReviews = ratingFilter === 'all'
+        ? reviews
+        : reviews.filter(r => Math.round(r.rating) === Number(ratingFilter));
 
     // Compute gallery images list
     const galleryImages = React.useMemo(() => {
@@ -110,13 +130,34 @@ const ProductDetailPage = () => {
         }
     };
 
+    const checkPurchaseStatus = async () => {
+        if (!user) {
+            setHasOrdered(false);
+            return;
+        }
+        try {
+            const ordersResult = await orderService.getMyOrders();
+            const orders = ordersResult.data || ordersResult || [];
+            const hasOrderedProduct = orders.some(order => 
+                order.orderDetails && order.orderDetails.some(detail => 
+                    detail.product && String(detail.product.id) === String(id)
+                )
+            );
+            setHasOrdered(hasOrderedProduct);
+        } catch (error) {
+            console.error('Error checking order status:', error);
+            setHasOrdered(false);
+        }
+    };
+
     useEffect(() => {
         if (id) {
             loadProduct();
             checkWishlistStatus();
             loadReviews();
+            checkPurchaseStatus();
         }
-    }, [id]);
+    }, [id, user]);
 
     const loadProduct = async () => {
         try {
@@ -188,7 +229,12 @@ const ProductDetailPage = () => {
             form.resetFields();
             loadReviews();
         } catch (e) {
-            message.error('Gửi đánh giá thất bại');
+            if (e.response?.status === 401) {
+                message.warning('Vui lòng đăng nhập để gửi đánh giá!');
+                navigate('/login', { state: { from: location.pathname } });
+            } else {
+                message.error('Gửi đánh giá thất bại');
+            }
         } finally {
             setSubmittingReview(false);
         }
@@ -231,31 +277,30 @@ const ProductDetailPage = () => {
                 <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', overflow: 'hidden', marginBottom: '60px' }} bodyStyle={{ padding: 0 }}>
                     <Row gutter={[0, 0]}>
                         {/* Image Section */}
-                        <Col xs={24} md={12} lg={14}>
-                            <div style={{ backgroundColor: '#F3F4F6', height: '100%', minHeight: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
-                                <div style={{ minHeight: '480px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: '24px' }}>
+                        <Col xs={24} md={10} lg={9}>
+                            <div style={{ backgroundColor: '#ffffff', height: '100%', minHeight: '550px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+                                <div style={{ minHeight: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', marginBottom: '24px', border: '1px solid rgba(0,0,0,.05)', borderRadius: '4px', overflow: 'hidden', padding: '16px' }}>
                                     <img
                                         src={activeImage || 'https://via.placeholder.com/800x800?text=Chưa+có+ảnh'}
                                         alt={product.name}
-                                        style={{ maxWidth: '100%', maxHeight: '480px', objectFit: 'contain', borderRadius: '16px', transition: 'transform 0.3s ease' }}
+                                        style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain', borderRadius: '4px', transition: 'transform 0.3s ease' }}
                                         onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
                                         onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                                     />
                                 </div>
                                 {galleryImages.length > 1 && (
-                                    <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' }}>
                                         {galleryImages.map((imgUrl, idx) => (
                                             <div
                                                 key={idx}
                                                 style={{
-                                                    width: '70px',
-                                                    height: '70px',
-                                                    borderRadius: '8px',
-                                                    border: activeImage === imgUrl ? '2px solid #4F46E5' : '2px solid transparent',
+                                                    width: '64px',
+                                                    height: '64px',
+                                                    borderRadius: '2px',
+                                                    border: activeImage === imgUrl ? '2px solid #ee4d2d' : '1px solid #e8e8e8',
                                                     padding: '2px',
                                                     backgroundColor: '#FFFFFF',
                                                     cursor: 'pointer',
-                                                    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
                                                     transition: 'all 0.2s ease',
                                                     overflow: 'hidden'
                                                 }}
@@ -265,7 +310,7 @@ const ProductDetailPage = () => {
                                                 <img 
                                                     src={imgUrl} 
                                                     alt={`Thumbnail ${idx}`} 
-                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '1px' }}
                                                 />
                                             </div>
                                         ))}
@@ -275,72 +320,115 @@ const ProductDetailPage = () => {
                         </Col>
 
                         {/* Details Section */}
-                        <Col xs={24} md={12} lg={10}>
-                            <div style={{ padding: '40px 40px 40px 40px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                                    <div>
-                                        <Text style={{ fontSize: '14px', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
-                                            {product.factory || 'Thương Hiệu Riêng'}
-                                        </Text>
-                                        <Title level={1} style={{ margin: '8px 0 16px 0', fontSize: '32px', fontWeight: 800, color: '#111827', lineHeight: 1.2 }}>
-                                            {product.name}
-                                        </Title>
-                                    </div>
-                                    <Button
-                                        type="text"
-                                        shape="circle"
-                                        size="large"
-                                        icon={inWishlist ? <HeartFilled style={{ color: '#EF4444', fontSize: '28px' }} /> : <HeartOutlined style={{ fontSize: '28px', color: '#6B7280' }} />}
-                                        loading={wishlistLoading}
-                                        onClick={toggleWishlist}
-                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '50px', height: '50px' }}
-                                    />
+                        <Col xs={24} md={14} lg={15}>
+                            <div style={{ padding: '32px 32px 32px 32px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                {/* Title with Mall/Yêu thích+ tag */}
+                                <div style={{ marginBottom: '12px' }}>
+                                    <span style={{ 
+                                        backgroundColor: '#ee4d2d', 
+                                        color: '#fff', 
+                                        padding: '2px 4px', 
+                                        borderRadius: '2px', 
+                                        fontSize: '12px', 
+                                        fontWeight: 600, 
+                                        marginRight: '8px',
+                                        verticalAlign: 'middle',
+                                        textTransform: 'uppercase'
+                                    }}>
+                                        Yêu thích+
+                                    </span>
+                                    <span style={{ fontSize: '20px', fontWeight: 500, color: 'rgba(0,0,0,.8)', lineHeight: 1.4, verticalAlign: 'middle' }}>
+                                        {product.name}
+                                    </span>
                                 </div>
 
-                                <div style={{ marginBottom: '24px' }}>
-                                    <Text style={{ fontSize: '32px', color: '#4F46E5', fontWeight: 800 }}>
+                                {/* Rating summary row */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', fontSize: '14px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                        <span style={{ color: '#ee4d2d', fontWeight: 500, borderBottom: '1px solid #ee4d2d' }}>4.8</span>
+                                        <Rate disabled defaultValue={4} style={{ fontSize: '12px', color: '#ee4d2d' }} />
+                                    </div>
+                                    <div style={{ width: '1px', height: '12px', backgroundColor: '#dbdbdb' }} />
+                                    <div>
+                                        <span style={{ fontWeight: 500, borderBottom: '1px solid #222' }}>{reviews.length}</span>
+                                        <span style={{ color: '#767676', marginLeft: '4px' }}>Đánh Giá</span>
+                                    </div>
+                                    <div style={{ width: '1px', height: '12px', backgroundColor: '#dbdbdb' }} />
+                                    <div>
+                                        <span style={{ fontWeight: 500 }}>{((product.id || 0) % 7 + 1) * 32}</span>
+                                        <span style={{ color: '#767676', marginLeft: '4px' }}>Đã Bán</span>
+                                    </div>
+                                </div>
+
+                                {/* Price Box */}
+                                <div style={{ 
+                                    backgroundColor: '#fafafa', 
+                                    padding: '15px 20px', 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    gap: '12px',
+                                    marginBottom: '24px',
+                                    borderRadius: '4px'
+                                }}>
+                                    {oldPrice && (
+                                        <Text delete style={{ color: '#929292', fontSize: '16px' }}>
+                                            {formatPrice(oldPrice)}
+                                        </Text>
+                                    )}
+                                    <Text style={{ color: '#ee4d2d', fontSize: '30px', fontWeight: 500 }}>
                                         {formatPrice(product.price)}
                                     </Text>
-                                </div>
-
-                                <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                                    {product.categoryName && (
-                                        <Tag style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none', backgroundColor: '#F3F4F6', color: '#374151' }}>
-                                            Mục: {product.categoryName}
-                                        </Tag>
-                                    )}
-                                    <Tag color={stockQuantity > 0 ? '#10B981' : '#EF4444'} style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none' }}>
-                                        {stockQuantity > 0 ? `Còn ${stockQuantity} sản phẩm` : 'Hết hàng'}
-                                    </Tag>
-                                    {product.target && (
-                                        <Tag style={{ padding: '4px 12px', fontSize: '14px', borderRadius: '16px', border: 'none', backgroundColor: '#EEF2FF', color: '#4F46E5' }}>
-                                            {product.target}
-                                        </Tag>
+                                    {discountPercent > 0 && (
+                                        <span style={{ 
+                                            backgroundColor: '#ee4d2d', 
+                                            color: '#fff', 
+                                            fontSize: '11px', 
+                                            fontWeight: 600, 
+                                            padding: '2px 4px', 
+                                            borderRadius: '2px',
+                                            marginLeft: '8px',
+                                            textTransform: 'uppercase'
+                                        }}>
+                                            {discountPercent}% GIẢM
+                                        </span>
                                     )}
                                 </div>
 
-                                <Divider style={{ margin: '24px 0' }} />
+                                {/* Delivery row */}
+                                <div style={{ display: 'flex', marginBottom: '24px', fontSize: '14px', alignItems: 'flex-start' }}>
+                                    <div style={{ color: '#757575', width: '110px', flexShrink: 0 }}>Vận chuyển:</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/fafaf98cef4c402be432f4e43b147f7d.png" style={{ height: '20px' }} alt="Free shipping" />
+                                            <span style={{ fontWeight: 500, color: 'rgba(0,0,0,.8)' }}>Miễn phí vận chuyển</span>
+                                        </div>
+                                        <div style={{ color: '#757575', fontSize: '13px' }}>
+                                            Miễn phí vận chuyển cho đơn hàng từ 1.000.000₫
+                                        </div>
+                                    </div>
+                                </div>
 
+                                {/* Sizes selection */}
                                 {product.sizes && product.sizes.trim() && (
-                                    <div style={{ marginBottom: '24px' }}>
-                                        <div style={{ fontWeight: 600, fontSize: '15px', color: '#374151', marginBottom: '8px' }}>Kích cỡ:</div>
+                                    <div style={{ display: 'flex', marginBottom: '24px', alignItems: 'center' }}>
+                                        <div style={{ color: '#757575', fontSize: '14px', width: '110px', flexShrink: 0 }}>Kích cỡ:</div>
                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                             {product.sizes.split(',').map(s => s.trim()).filter(Boolean).map(s => {
                                                 const disabled = isSizeDisabled(s);
                                                 return (
                                                     <Button
                                                         key={s}
-                                                        type={selectedSize === s ? 'primary' : 'default'}
                                                         disabled={disabled}
                                                         style={{ 
-                                                            borderRadius: '8px', 
-                                                            minWidth: '50px', 
+                                                            borderRadius: '2px', 
+                                                            minWidth: '60px', 
                                                             height: '40px',
-                                                            borderColor: selectedSize === s ? '#4F46E5' : '#D1D5DB',
-                                                            backgroundColor: selectedSize === s ? '#4F46E5' : '#FFFFFF',
-                                                            color: selectedSize === s ? '#FFFFFF' : '#374151',
-                                                            fontWeight: selectedSize === s ? 600 : 400,
-                                                            opacity: disabled ? 0.4 : 1
+                                                            border: selectedSize === s ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                            backgroundColor: '#fff',
+                                                            color: selectedSize === s ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                            fontWeight: selectedSize === s ? 500 : 400,
+                                                            opacity: disabled ? 0.4 : 1,
+                                                            boxShadow: 'none'
                                                         }}
                                                         onClick={() => setSelectedSize(s)}
                                                     >
@@ -352,26 +440,27 @@ const ProductDetailPage = () => {
                                     </div>
                                 )}
 
+                                {/* Colors selection */}
                                 {product.colors && product.colors.trim() && (
-                                    <div style={{ marginBottom: '24px' }}>
-                                        <div style={{ fontWeight: 600, fontSize: '15px', color: '#374151', marginBottom: '8px' }}>Màu sắc:</div>
+                                    <div style={{ display: 'flex', marginBottom: '24px', alignItems: 'center' }}>
+                                        <div style={{ color: '#757575', fontSize: '14px', width: '110px', flexShrink: 0 }}>Màu sắc:</div>
                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                             {product.colors.split(',').map(c => c.trim()).filter(Boolean).map(c => {
                                                 const disabled = isColorDisabled(c);
                                                 return (
                                                     <Button
                                                         key={c}
-                                                        type={selectedColor === c ? 'primary' : 'default'}
                                                         disabled={disabled}
                                                         style={{ 
-                                                            borderRadius: '8px', 
+                                                            borderRadius: '2px', 
                                                             height: '40px',
                                                             padding: '0 16px',
-                                                            borderColor: selectedColor === c ? '#4F46E5' : '#D1D5DB',
-                                                            backgroundColor: selectedColor === c ? '#4F46E5' : '#FFFFFF',
-                                                            color: selectedColor === c ? '#FFFFFF' : '#374151',
-                                                            fontWeight: selectedColor === c ? 600 : 400,
-                                                            opacity: disabled ? 0.4 : 1
+                                                            border: selectedColor === c ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                            backgroundColor: '#fff',
+                                                            color: selectedColor === c ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                            fontWeight: selectedColor === c ? 500 : 400,
+                                                            opacity: disabled ? 0.4 : 1,
+                                                            boxShadow: 'none'
                                                         }}
                                                         onClick={() => handleColorSelect(c)}
                                                     >
@@ -383,14 +472,8 @@ const ProductDetailPage = () => {
                                     </div>
                                 )}
 
-                                <div style={{ flex: 1 }}>
-                                    <Title level={4} style={{ fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>Mô tả sản phẩm</Title>
-                                    <Paragraph style={{ fontSize: '16px', color: '#4B5563', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-                                        {product.description || 'Sản phẩm này chưa có mô tả chi tiết.'}
-                                    </Paragraph>
-                                </div>
-
-                                <div style={{ marginTop: 'auto', paddingTop: '32px' }}>
+                                {/* Buy / AddToCart Button Panel */}
+                                <div style={{ marginTop: '24px', paddingTop: '16px', borderTop: '1px dashed #efefef' }}>
                                     <AddToCartButton
                                         product={product}
                                         size="large"
@@ -398,16 +481,19 @@ const ProductDetailPage = () => {
                                         selectedSize={selectedSize}
                                         selectedColor={selectedColor}
                                         disabled={stockQuantity <= 0}
+                                        layout="detail"
+                                        stock={stockQuantity}
                                     />
                                     {stockQuantity === 0 && (
                                         <div style={{
-                                            padding: '16px',
+                                            padding: '12px 16px',
                                             backgroundColor: '#FEF2F2',
-                                            borderRadius: '12px',
+                                            borderRadius: '2px',
                                             marginTop: '16px',
-                                            textAlign: 'center'
+                                            textAlign: 'center',
+                                            border: '1px solid #FCA5A5'
                                         }}>
-                                            <Text style={{ color: '#EF4444', fontWeight: 600 }}>
+                                            <Text style={{ color: '#EF4444', fontWeight: 500, fontSize: '13px' }}>
                                                 Sản phẩm hiện đang tạm hết hàng ở biến thể đã chọn. Vui lòng chọn biến thể khác!
                                             </Text>
                                         </div>
@@ -416,6 +502,16 @@ const ProductDetailPage = () => {
                             </div>
                         </Col>
                     </Row>
+                </Card>
+
+                {/* Product Description Details Card */}
+                <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', marginBottom: '60px', overflow: 'hidden' }} bodyStyle={{ padding: '32px' }}>
+                    <Title level={3} style={{ fontSize: '20px', fontWeight: 700, marginBottom: '24px', textTransform: 'uppercase', color: '#222', borderBottom: '1px solid #f5f5f5', paddingBottom: '12px' }}>
+                        Chi tiết sản phẩm
+                    </Title>
+                    <Paragraph style={{ fontSize: '15px', color: '#4B5563', lineHeight: 1.8, whiteSpace: 'pre-wrap', margin: 0 }}>
+                        {product.description || 'Sản phẩm này chưa có mô tả chi tiết.'}
+                    </Paragraph>
                 </Card>
 
                 {/* Reviews Section */}
@@ -430,17 +526,40 @@ const ProductDetailPage = () => {
                         <Col xs={24} lg={8}>
                             <Card bordered={false} style={{ borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
                                 <Title level={4} style={{ marginBottom: '24px', fontWeight: 700 }}>Viết đánh giá của bạn</Title>
-                                <Form form={form} onFinish={handleReviewSubmit} layout="vertical">
-                                    <Form.Item name="rating" label={<span style={{ fontWeight: 600 }}>Chất lượng sản phẩm</span>} rules={[{ required: true, message: 'Vui lòng chọn số sao' }]}>
-                                        <Rate style={{ fontSize: '24px', color: '#F59E0B' }} />
-                                    </Form.Item>
-                                    <Form.Item name="comment" label={<span style={{ fontWeight: 600 }}>Nhận xét chi tiết</span>} rules={[{ required: true, message: 'Vui lòng nhập trải nghiệm của bạn' }]}>
-                                        <TextArea rows={5} placeholder="Chia sẻ cảm nhận của bạn về chất liệu, kiểu dáng..." style={{ borderRadius: '12px', padding: '12px' }} />
-                                    </Form.Item>
-                                    <Button type="primary" htmlType="submit" size="large" loading={submittingReview} style={{ width: '100%', borderRadius: '12px', height: '48px', backgroundColor: '#111827', fontWeight: 600 }}>
-                                        Gửi đánh giá
-                                    </Button>
-                                </Form>
+                                {!user ? (
+                                    <div style={{ textAlign: 'center', padding: '24px 12px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px dashed #D1D5DB' }}>
+                                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔒</div>
+                                        <Text type="secondary" style={{ display: 'block', fontSize: '14px', lineHeight: 1.5, marginBottom: '16px' }}>
+                                            Vui lòng đăng nhập để viết đánh giá cho sản phẩm này.
+                                        </Text>
+                                        <Button 
+                                            type="primary" 
+                                            onClick={() => navigate('/login', { state: { from: location.pathname } })}
+                                            style={{ backgroundColor: '#ee4d2d', borderColor: '#ee4d2d', borderRadius: '4px' }}
+                                        >
+                                            Đăng nhập ngay
+                                        </Button>
+                                    </div>
+                                ) : hasOrdered ? (
+                                    <Form form={form} onFinish={handleReviewSubmit} layout="vertical">
+                                        <Form.Item name="rating" label={<span style={{ fontWeight: 600 }}>Chất lượng sản phẩm</span>} rules={[{ required: true, message: 'Vui lòng chọn số sao' }]}>
+                                            <Rate style={{ fontSize: '24px', color: '#F59E0B' }} />
+                                        </Form.Item>
+                                        <Form.Item name="comment" label={<span style={{ fontWeight: 600 }}>Nhận xét chi tiết</span>} rules={[{ required: true, message: 'Vui lòng nhập trải nghiệm của bạn' }]}>
+                                            <TextArea rows={5} placeholder="Chia sẻ cảm nhận của bạn về chất liệu, kiểu dáng..." style={{ borderRadius: '12px', padding: '12px' }} />
+                                        </Form.Item>
+                                        <Button type="primary" htmlType="submit" size="large" loading={submittingReview} style={{ width: '100%', borderRadius: '12px', height: '48px', backgroundColor: '#111827', fontWeight: 600 }}>
+                                            Gửi đánh giá
+                                        </Button>
+                                    </Form>
+                                ) : (
+                                    <div style={{ textAlign: 'center', padding: '24px 12px', backgroundColor: '#F9FAFB', borderRadius: '12px', border: '1px dashed #D1D5DB' }}>
+                                        <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔒</div>
+                                        <Text type="secondary" style={{ display: 'block', fontSize: '14px', lineHeight: 1.5 }}>
+                                            Chỉ những khách hàng đã mua sản phẩm này mới có thể viết đánh giá.
+                                        </Text>
+                                    </div>
+                                )}
                             </Card>
                         </Col>
                         
@@ -450,31 +569,150 @@ const ProductDetailPage = () => {
                                     <Text style={{ color: '#6B7280', fontSize: '16px' }}>Chưa có đánh giá nào cho sản phẩm này.<br/>Hãy là người đầu tiên chia sẻ cảm nhận!</Text>
                                 </div>
                             ) : (
-                                <List
-                                    itemLayout="vertical"
-                                    dataSource={reviews}
-                                    renderItem={item => (
-                                        <Card bordered={false} style={{ marginBottom: '16px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: '24px' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <Avatar size={48} icon={<UserOutlined />} src={item.user?.avatar} style={{ backgroundColor: '#F3F4F6', color: '#9CA3AF' }} />
-                                                    <div>
-                                                        <div style={{ fontWeight: 600, fontSize: '16px', color: '#111827' }}>
-                                                            {item.user?.fullName || item.user?.username || 'Khách hàng ẩn danh'}
+                                <>
+                                    {/* Shopee-style Rating Filter Bar */}
+                                    <div style={{ 
+                                        backgroundColor: '#fffbf8', 
+                                        border: '1px solid #f9ede5', 
+                                        padding: '24px', 
+                                        borderRadius: '8px', 
+                                        marginBottom: '24px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '16px'
+                                    }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontSize: '24px', fontWeight: 600, color: '#ee4d2d' }}>4.8</span>
+                                            <span style={{ fontSize: '14px', color: '#ee4d2d', marginTop: '6px' }}>trên 5</span>
+                                            <Rate disabled defaultValue={5} style={{ fontSize: '16px', color: '#ee4d2d', marginLeft: '12px' }} />
+                                        </div>
+                                        
+                                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <Button 
+                                                onClick={() => setRatingFilter('all')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === 'all' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === 'all' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                Tất Cả ({totalReviewsCount})
+                                            </Button>
+                                            <Button 
+                                                onClick={() => setRatingFilter('5')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === '5' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === '5' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                5 Sao ({count5})
+                                            </Button>
+                                            <Button 
+                                                onClick={() => setRatingFilter('4')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === '4' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === '4' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                4 Sao ({count4})
+                                            </Button>
+                                            <Button 
+                                                onClick={() => setRatingFilter('3')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === '3' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === '3' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                3 Sao ({count3})
+                                            </Button>
+                                            <Button 
+                                                onClick={() => setRatingFilter('2')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === '2' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === '2' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                2 Sao ({count2})
+                                            </Button>
+                                            <Button 
+                                                onClick={() => setRatingFilter('1')}
+                                                style={{
+                                                    height: '32px',
+                                                    padding: '0 16px',
+                                                    borderRadius: '2px',
+                                                    fontSize: '14px',
+                                                    border: ratingFilter === '1' ? '1px solid #ee4d2d' : '1px solid rgba(0,0,0,.09)',
+                                                    backgroundColor: '#fff',
+                                                    color: ratingFilter === '1' ? '#ee4d2d' : 'rgba(0,0,0,.8)',
+                                                    boxShadow: 'none'
+                                                }}
+                                            >
+                                                1 Sao ({count1})
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    {filteredReviews.length === 0 ? (
+                                        <div style={{ textAlign: 'center', padding: '40px 0', backgroundColor: 'white', borderRadius: '16px', border: '1px dashed #D1D5DB' }}>
+                                            <Text style={{ color: '#6B7280', fontSize: '15px' }}>Không có đánh giá nào cho phân loại sao đã chọn.</Text>
+                                        </div>
+                                    ) : (
+                                        <List
+                                            itemLayout="vertical"
+                                            dataSource={filteredReviews}
+                                            renderItem={item => (
+                                                <Card bordered={false} style={{ marginBottom: '16px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: '24px' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                            <Avatar size={48} icon={<UserOutlined />} src={item.user?.avatar} style={{ backgroundColor: '#F3F4F6', color: '#9CA3AF' }} />
+                                                            <div>
+                                                                <div style={{ fontWeight: 600, fontSize: '16px', color: '#111827' }}>
+                                                                    {item.user?.fullName || item.user?.username || 'Khách hàng ẩn danh'}
+                                                                </div>
+                                                                <div style={{ fontSize: '13px', color: '#9CA3AF' }}>
+                                                                    {new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div style={{ fontSize: '13px', color: '#9CA3AF' }}>
-                                                            {new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'long', day: 'numeric' })}
-                                                        </div>
+                                                        <Rate disabled defaultValue={item.rating} style={{ fontSize: '16px', color: '#F59E0B' }} />
                                                     </div>
-                                                </div>
-                                                <Rate disabled defaultValue={item.rating} style={{ fontSize: '16px', color: '#F59E0B' }} />
-                                            </div>
-                                            <Paragraph style={{ color: '#4B5563', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>
-                                                {item.comment}
-                                            </Paragraph>
-                                        </Card>
+                                                    <Paragraph style={{ color: '#4B5563', fontSize: '15px', lineHeight: 1.6, margin: 0 }}>
+                                                        {item.comment}
+                                                    </Paragraph>
+                                                </Card>
+                                            )}
+                                        />
                                     )}
-                                />
+                                </>
                             )}
                         </Col>
                     </Row>

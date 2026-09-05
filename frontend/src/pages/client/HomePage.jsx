@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
-import { Card, Typography, Button, Row, Col, Spin, message, Badge, Carousel } from 'antd';
+import { Card, Typography, Button, Row, Col, Spin, message, Badge, Carousel, Rate } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingOutlined, FireOutlined, EyeOutlined, HeartOutlined, ArrowRightOutlined, SkinOutlined } from '@ant-design/icons';
 import AddToCartButton from '@/components/AddToCartButton.jsx';
@@ -339,64 +339,107 @@ const HomePage = () => {
                         </div>
                     ) : (
                         <Row gutter={[24, 32]}>
-                            {featuredProducts.map(product => (
-                                <Col xs={24} sm={12} lg={6} key={product.id}>
-                                    <Card
-                                        className="product-card"
-                                        bodyStyle={{ padding: '24px' }}
-                                        cover={
-                                            <div 
-                                                className="product-image-container"
-                                                onClick={() => handleProductClick(product.id)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                <img
-                                                    alt={product.name}
-                                                    src={product.image || 'https://via.placeholder.com/300x200?text=No+Image'}
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                        }
-                                    >
-                                        <div style={{ marginBottom: '16px' }}>
-                                            <Text style={{ fontSize: '12px', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>
-                                                {product.factory || 'Thương Hiệu Độc Quyền'}
-                                            </Text>
-                                            <Title level={4} style={{ margin: '8px 0', fontSize: '18px', lineHeight: 1.4, height: '50px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                                                <div
-                                                    onClick={() => handleProductClick(product.id)}
-                                                    style={{ cursor: 'pointer', color: '#111827', transition: 'color 0.2s' }}
-                                                    onMouseEnter={(e) => e.target.style.color = '#4F46E5'}
-                                                    onMouseLeave={(e) => e.target.style.color = '#111827'}
-                                                >
-                                                    {product.name}
+                            {featuredProducts.map(product => {
+                                const rating = 1 + (product.id ? (product.id % 5) : 4);
+                                const discountPercent = product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
+                                const oldPrice = discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
+                                const isSellingFast = product.id && product.id % 2 === 0;
+
+                                return (
+                                    <Col xs={24} sm={12} lg={6} key={product.id}>
+                                        <Card
+                                            hoverable
+                                            style={{ borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
+                                            bodyStyle={{ padding: '12px' }}
+                                            cover={
+                                                <div style={{ overflow: 'hidden', backgroundColor: '#F9FAFB', position: 'relative' }}>
+                                                    <img
+                                                        alt={product.name}
+                                                        src={product.image || 'https://via.placeholder.com/300x200'}
+                                                        style={{ height: 220, width: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
+                                                        onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
+                                                        onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
+                                                        onClick={() => handleProductClick(product.id)}
+                                                    />
                                                 </div>
-                                            </Title>
-                                            <Text strong style={{ fontSize: '20px', color: '#111827' }}>
-                                                {formatPrice(product.price)}
-                                            </Text>
-                                        </div>
-                                        <div style={{ display: 'flex', gap: '8px', height: '40px' }}>
-                                            <Button
-                                                type="default"
-                                                icon={<EyeOutlined />}
-                                                onClick={() => handleProductClick(product.id)}
-                                                style={{ flex: 1, borderRadius: '8px', height: '100%', padding: '0 8px' }}
+                                            }
+                                        >
+                                            <div 
+                                                onClick={() => handleProductClick(product.id)} 
+                                                style={{ 
+                                                    cursor: 'pointer', 
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    overflow: 'hidden',
+                                                    height: '40px',
+                                                    lineHeight: '20px',
+                                                    fontWeight: 700, 
+                                                    fontSize: '14px', 
+                                                    marginBottom: '4px', 
+                                                    color: '#111827' 
+                                                }}
                                             >
-                                                Chi tiết
-                                            </Button>
-                                            <div style={{ flex: 1, height: '100%' }}>
-                                                <AddToCartButton
-                                                    product={product}
-                                                    showQuantity={false}
-                                                    compact={true}
-                                                    size="large"
-                                                />
+                                                {product.name}
                                             </div>
-                                        </div>
-                                    </Card>
-                                </Col>
-                            ))}
+
+                                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                                                <Rate disabled defaultValue={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
+                                            </div>
+
+                                            <div style={{ minHeight: '20px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                {oldPrice && (
+                                                    <>
+                                                        <Text delete style={{ color: '#9CA3AF', fontSize: '12px' }}>
+                                                            {formatPrice(oldPrice)}
+                                                        </Text>
+                                                        <span style={{ 
+                                                            backgroundColor: '#FEF08A', 
+                                                            color: '#EA580C', 
+                                                            fontSize: '10px', 
+                                                            fontWeight: 700, 
+                                                            padding: '2px 6px', 
+                                                            borderRadius: '4px',
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '2px',
+                                                            lineHeight: 1
+                                                        }}>
+                                                            ⏰ -{discountPercent}%
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <Text strong style={{ color: '#EA580C', fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>
+                                                    {formatPrice(product.price)}
+                                                </Text>
+                                                <div style={{ width: '84px' }}>
+                                                    <AddToCartButton product={product} size="small" compact showQuantity={false} onlyBuy={true} />
+                                                </div>
+                                            </div>
+
+                                            <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
+                                                <div style={{
+                                                    background: isSellingFast ? '#FFEAEA' : '#F3F4F6',
+                                                    borderLeft: isSellingFast ? '4px solid #EF4444' : '4px solid #D1D5DB',
+                                                    padding: '2px 8px',
+                                                    borderRadius: '10px',
+                                                    fontSize: '10px',
+                                                    fontWeight: 700,
+                                                    color: isSellingFast ? '#EF4444' : '#6B7280',
+                                                    letterSpacing: '0.5px',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center'
+                                                 }}>
+                                                    {isSellingFast ? 'ĐANG BÁN CHẠY' : 'SẴN HÀNG'}
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </Col>
+                                );
+                            })}
                         </Row>
                     )}
                 </div>

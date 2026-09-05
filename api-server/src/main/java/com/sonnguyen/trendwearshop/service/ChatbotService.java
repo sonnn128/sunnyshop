@@ -175,33 +175,37 @@ public class ChatbotService {
         JsonNode parts = content.path("parts");
 
         if (parts.isArray() && parts.size() > 0) {
-            JsonNode part = parts.get(0);
-            
+            // Kiểm tra xem có functionCall trong parts hay không
+            JsonNode functionCallPart = null;
+            for (JsonNode p : parts) {
+                if (p.has("functionCall")) {
+                    functionCallPart = p;
+                    break;
+                }
+            }
+
             // Trường hợp Gemini yêu cầu gọi Function (Tool Calling)
-            if (part.has("functionCall")) {
-                JsonNode functionCall = part.get("functionCall");
+            if (functionCallPart != null) {
+                JsonNode functionCall = functionCallPart.get("functionCall");
                 String functionName = functionCall.path("name").asText();
                 JsonNode args = functionCall.path("args");
 
                 // Thực thi hàm tương ứng ở Backend
                 JsonNode resultNode = executeFunction(functionName, args);
 
-                // Thêm phản hồi functionCall của Gemini vào lịch sử chat
+                // Thêm phản hồi của Gemini vào lịch sử chat (giữ nguyên toàn bộ parts bao gồm thoughtSignature)
                 ObjectNode modelMessage = objectMapper.createObjectNode();
                 modelMessage.put("role", "model");
-                ArrayNode modelParts = objectMapper.createArrayNode();
-                modelParts.add(part.deepCopy());
-                modelMessage.set("parts", modelParts);
+                modelMessage.set("parts", parts.deepCopy());
                 historyNode.add(modelMessage);
 
-                // Thêm kết quả trả về từ Backend (role: function) vào lịch sử chat
+                // Thêm kết quả trả về từ Backend vào lịch sử chat với role "user"
                 ObjectNode functionMessage = objectMapper.createObjectNode();
-                functionMessage.put("role", "function");
+                functionMessage.put("role", "user");
                 ArrayNode functionParts = objectMapper.createArrayNode();
                 ObjectNode responseWrapper = objectMapper.createObjectNode();
                 ObjectNode functionResponse = objectMapper.createObjectNode();
                 functionResponse.put("name", functionName);
-                
                 functionResponse.set("response", resultNode);
                 
                 responseWrapper.set("functionResponse", functionResponse);
@@ -213,9 +217,15 @@ public class ChatbotService {
                 return executeChatLoop(historyNode, depth + 1);
             }
 
-            // Trường hợp Gemini trả về Text thông thường
-            if (part.has("text")) {
-                return part.get("text").asText();
+            // Trường hợp Gemini trả về Text thông thường (ghép các part text nếu có)
+            StringBuilder textBuilder = new StringBuilder();
+            for (JsonNode p : parts) {
+                if (p.has("text")) {
+                    textBuilder.append(p.get("text").asText());
+                }
+            }
+            if (textBuilder.length() > 0) {
+                return textBuilder.toString();
             }
         }
 

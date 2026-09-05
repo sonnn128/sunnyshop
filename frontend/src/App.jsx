@@ -52,7 +52,7 @@ const AppContent = () => {
     <Layout style={{ minHeight: '100vh' }}>
       {!isAdminRoute && <Navbar />}
       {!isAdminRoute && <CategoryStrip />}
-      <Content style={{ padding: isAdminRoute ? 0 : '0 50px', marginTop: isAdminRoute ? 0 : 64 }}>
+      <Content style={{ padding: isAdminRoute ? 0 : '0 50px', marginTop: 0 }}>
         <div style={{ padding: isAdminRoute ? 0 : 24, minHeight: 380 }}>
           <Routes>
             {/* Public Routes */}

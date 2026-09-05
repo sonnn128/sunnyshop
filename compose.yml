@@ -4,9 +4,9 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD-root}
-      MYSQL_USER: laptopshop
-      MYSQL_PASSWORD: laptopshop
-      MYSQL_DATABASE: laptopshop
+      MYSQL_USER: trendwearshop
+      MYSQL_PASSWORD: trendwearshop
+      MYSQL_DATABASE: trendwearshop
     ports:
       - "3306:3306"
     healthcheck:
@@ -15,7 +15,7 @@ services:
       retries: 10
     volumes:
       - ./data/mysql:/var/lib/mysql
-      - ./laptopshop.sql:/docker-entrypoint-initdb.d/laptopshop.sql
+      - ./trendwearshop.sql:/docker-entrypoint-initdb.d/trendwearshop.sql
 
   redis:
     image: redis:alpine
@@ -33,9 +33,9 @@ services:
     environment:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
-      MYSQL_DB: laptopshop
-      MYSQL_USER: laptopshop
-      MYSQL_PASSWORD: laptopshop
+      MYSQL_DB: trendwearshop
+      MYSQL_USER: trendwearshop
+      MYSQL_PASSWORD: trendwearshop
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:

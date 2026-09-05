@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message, Divider, Row, Col } from 'antd';
 import { UserOutlined, LockOutlined, ShoppingOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 const { Title, Paragraph, Text } = Typography;
@@ -10,6 +10,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -24,7 +25,8 @@ const LoginPage = () => {
         if (isAdmin) {
           navigate('/admin/dashboard');
         } else {
-          navigate('/');
+          const from = location.state?.from || '/';
+          navigate(from);
         }
       } else {
         message.error(result.message);

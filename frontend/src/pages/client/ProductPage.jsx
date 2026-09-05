@@ -22,7 +22,7 @@ const ProductPage = () => {
     const [sortOrder, setSortOrder] = useState('desc');
 
     const [searchParams] = useSearchParams();
-    
+
     // Filter States
     const [searchTerm, setSearchTerm] = useState('');
     const [brands, setBrands] = useState([]);
@@ -34,6 +34,7 @@ const ProductPage = () => {
     const [selectedTargets, setSelectedTargets] = useState([]);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [priceRange, setPriceRange] = useState([0, 50000000]);
+    const [selectedRating, setSelectedRating] = useState(null);
 
     // Sync selected filters from URL search params
     useEffect(() => {
@@ -106,9 +107,15 @@ const ProductPage = () => {
             const data = result.data || result;
 
             if (data.content) {
-                const filtered = data.content.filter(p => (p.quantity ?? p.stock ?? 0) > 0);
+                let filtered = data.content.filter(p => (p.quantity ?? p.stock ?? 0) > 0);
+                if (selectedRating !== null) {
+                    filtered = filtered.filter(p => {
+                        const rating = 1 + (p.id ? (p.id % 5) : 4);
+                        return rating >= selectedRating;
+                    });
+                }
                 setProducts(filtered);
-                setTotalProducts(data.totalElements);
+                setTotalProducts(filtered.length);
             } else {
                 setProducts([]);
                 setTotalProducts(0);
@@ -127,7 +134,7 @@ const ProductPage = () => {
             loadProducts();
         }, 500);
         return () => clearTimeout(timer);
-    }, [currentPage, searchTerm, selectedBrands, selectedTargets, selectedCategories, priceRange, sortBy, sortOrder]);
+    }, [currentPage, searchTerm, selectedBrands, selectedTargets, selectedCategories, priceRange, sortBy, sortOrder, selectedRating]);
 
     const handleProductClick = (productId) => {
         navigate(`/products/${productId}`);
@@ -163,7 +170,7 @@ const ProductPage = () => {
                             <Slider
                                 range
                                 min={0}
-                                max={10000000}
+                                max={50000000}
                                 step={500000}
                                 marks={{
                                     0: '0',
@@ -225,6 +232,51 @@ const ProductPage = () => {
                             />
                         </div>
 
+                        <div style={{ marginBottom: 32 }}>
+                            <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Đánh giá</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                {[
+                                    { value: null, label: 'Tất cả' },
+                                    { value: 5, label: '⭐⭐⭐⭐⭐' },
+                                    { value: 4, label: '⭐⭐⭐⭐ & lên' },
+                                    { value: 3, label: '⭐⭐⭐ & lên' },
+                                    { value: 2, label: '⭐⭐ & lên' },
+                                    { value: 1, label: '⭐ & lên' }
+                                ].map((item, idx) => (
+                                    <div 
+                                        key={idx}
+                                        onClick={() => {
+                                            setSelectedRating(item.value);
+                                            setCurrentPage(1);
+                                        }}
+                                        style={{ 
+                                            cursor: 'pointer', 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: '8px', 
+                                            padding: '6px 12px', 
+                                            borderRadius: '6px',
+                                            backgroundColor: selectedRating === item.value ? '#FFEAEA' : 'transparent',
+                                            borderLeft: selectedRating === item.value ? '4px solid #EF4444' : '4px solid transparent',
+                                            color: selectedRating === item.value ? '#EF4444' : '#4B5563',
+                                            fontWeight: selectedRating === item.value ? 700 : 400,
+                                            transition: 'all 0.2s',
+                                            userSelect: 'none'
+                                        }}
+                                    >
+                                        {item.value !== null ? (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <Rate disabled defaultValue={item.value} style={{ fontSize: '11px', color: '#FBBF24' }} />
+                                                {item.value < 5 && <span style={{ fontSize: '12px' }}>trở lên</span>}
+                                            </div>
+                                        ) : (
+                                            <span style={{ fontSize: '13px' }}>Tất cả đánh giá</span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
                         <Button
                             onClick={() => {
                                 setSearchTerm('');
@@ -232,6 +284,7 @@ const ProductPage = () => {
                                 setSelectedTargets([]);
                                 setSelectedCategories([]);
                                 setPriceRange([0, 50000000]);
+                                setSelectedRating(null);
                                 setCurrentPage(1);
                             }}
                             block
@@ -276,29 +329,23 @@ const ProductPage = () => {
                             <Row gutter={[24, 24]}>
                                 {products.map(product => {
                                     // MOCK UI DATA based on product ID for visual presentation
-                                    const rating = 4 + (product.id ? (product.id % 2) / 2 : 0);
+                                    const rating = 1 + (product.id ? (product.id % 5) : 4);
                                     const discountPercent = product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
                                     const oldPrice = discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
                                     const isSellingFast = product.id && product.id % 2 === 0;
 
                                     return (
-                                        <Col xs={24} sm={12} lg={8} xl={8} key={product.id}>
+                                        <Col xs={24} sm={12} md={8} lg={6} xl={6} key={product.id}>
                                             <Card
                                                 hoverable
-                                                style={{ borderRadius: '20px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
-                                                bodyStyle={{ padding: '16px' }}
+                                                style={{ borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
+                                                bodyStyle={{ padding: '12px' }}
                                                 cover={
-                                                    <div style={{ overflow: 'hidden', padding: '16px', backgroundColor: '#F9FAFB', position: 'relative' }}>
-                                                        {discountPercent > 0 && (
-                                                            <div style={{ position: 'absolute', top: 12, left: 12, backgroundColor: '#FEF08A', color: '#B45309', padding: '4px 8px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', zIndex: 1, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                                <ThunderboltFilled style={{ color: '#EAB308' }} />
-                                                                -{discountPercent}%
-                                                            </div>
-                                                        )}
+                                                    <div style={{ overflow: 'hidden', backgroundColor: '#F9FAFB', position: 'relative' }}>
                                                         <img
                                                             alt={product.name}
                                                             src={product.image || 'https://via.placeholder.com/300x200'}
-                                                            style={{ height: 200, width: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
+                                                            style={{ height: 220, width: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
                                                             onMouseOver={e => e.currentTarget.style.transform = 'scale(1.08)'}
                                                             onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
                                                             onClick={() => handleProductClick(product.id)}
@@ -306,46 +353,77 @@ const ProductPage = () => {
                                                     </div>
                                                 }
                                             >
-                                                <div onClick={() => handleProductClick(product.id)} style={{ cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700, fontSize: '15px', marginBottom: '8px', color: '#111827' }}>
+                                                <div 
+                                                    onClick={() => handleProductClick(product.id)} 
+                                                    style={{ 
+                                                        cursor: 'pointer', 
+                                                        display: '-webkit-box',
+                                                        WebkitLineClamp: 2,
+                                                        WebkitBoxOrient: 'vertical',
+                                                        overflow: 'hidden',
+                                                        height: '40px',
+                                                        lineHeight: '20px',
+                                                        fontWeight: 700, 
+                                                        fontSize: '14px', 
+                                                        marginBottom: '4px', 
+                                                        color: '#111827' 
+                                                    }}
+                                                >
                                                     {product.name}
                                                 </div>
-                                                
-                                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                                                    <Rate disabled defaultValue={rating} style={{ fontSize: '12px', color: '#FBBF24' }} />
+
+                                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+                                                    <Rate disabled defaultValue={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
                                                 </div>
 
-                                                <div style={{ minHeight: '24px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                                <div style={{ minHeight: '20px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                                                     {oldPrice && (
-                                                        <Text delete style={{ color: '#9CA3AF', fontSize: '13px' }}>
-                                                            {formatPrice(oldPrice)}
-                                                        </Text>
+                                                        <>
+                                                            <Text delete style={{ color: '#9CA3AF', fontSize: '12px' }}>
+                                                                {formatPrice(oldPrice)}
+                                                            </Text>
+                                                            <span style={{ 
+                                                                backgroundColor: '#FEF08A', 
+                                                                color: '#EA580C', 
+                                                                fontSize: '10px', 
+                                                                fontWeight: 700, 
+                                                                padding: '2px 6px', 
+                                                                borderRadius: '4px',
+                                                                display: 'inline-flex',
+                                                                alignItems: 'center',
+                                                                gap: '2px',
+                                                                lineHeight: 1
+                                                            }}>
+                                                                ⏰ -{discountPercent}%
+                                                            </span>
+                                                        </>
                                                     )}
                                                 </div>
 
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '12px' }}>
-                                                    <Text strong style={{ color: '#EF4444', fontSize: '22px', lineHeight: 1 }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                    <Text strong style={{ color: '#EA580C', fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>
                                                         {formatPrice(product.price)}
                                                     </Text>
-                                                    <div style={{ fontSize: '12px', color: '#6B7280', textTransform: 'uppercase' }}>
-                                                        {product.factory || 'No Brand'}
+                                                    <div style={{ width: '84px' }}>
+                                                        <AddToCartButton product={product} size="small" compact showQuantity={false} onlyBuy={true} />
                                                     </div>
                                                 </div>
 
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>
                                                     <div style={{
-                                                        background: isSellingFast ? 'linear-gradient(90deg, #FECACA 0%, #FFEDD5 100%)' : '#F3F4F6',
+                                                        background: isSellingFast ? '#FFEAEA' : '#F3F4F6',
                                                         borderLeft: isSellingFast ? '4px solid #EF4444' : '4px solid #D1D5DB',
-                                                        padding: '4px 8px',
-                                                        borderRadius: '4px',
-                                                        fontSize: '11px',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '10px',
+                                                        fontSize: '10px',
                                                         fontWeight: 700,
-                                                        color: isSellingFast ? '#DC2626' : '#6B7280',
-                                                        letterSpacing: '0.5px'
-                                                    }}>
+                                                        color: isSellingFast ? '#EF4444' : '#6B7280',
+                                                        letterSpacing: '0.5px',
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center'
+                                                     }}>
                                                         {isSellingFast ? 'ĐANG BÁN CHẠY' : 'SẴN HÀNG'}
                                                     </div>
-                                                    
-                                                    <AddToCartButton product={product} size="middle" compact showQuantity={false} />
                                                 </div>
                                             </Card>
                                         </Col>

@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useTheme } from '@/contexts/ThemeContext.jsx';
+import { useWishlist } from '@/contexts/WishlistContext.jsx';
 import CartIcon from '../CartIcon.jsx';
 import { categoryService } from '@/services/category.service.js';
 
@@ -22,6 +23,8 @@ const { Header } = Layout;
 const Navbar = () => {
   const { user, logout, isAdmin } = useAuth();
   const { themeMode, setThemeMode } = useTheme();
+  const { items: wishlistItems } = useWishlist();
+  const wishlistCount = wishlistItems ? wishlistItems.length : 0;
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const location = useLocation();
@@ -230,13 +233,15 @@ const Navbar = () => {
       {/* 3. Actions Section */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 200, justifyContent: 'flex-end' }}>
         <Space size="small">
-          <Button
-            type="text"
-            icon={<HeartOutlined style={{ fontSize: '20px' }} />}
-            onClick={() => navigate('/wishlist')}
-            style={{ color: token.colorText }}
-            title="Yêu Thích"
-          />
+          <Badge count={wishlistCount} size="small" offset={[-4, 4]}>
+            <Button
+              type="text"
+              icon={<HeartOutlined style={{ fontSize: '20px' }} />}
+              onClick={() => navigate('/wishlist')}
+              style={{ color: token.colorText }}
+              title="Yêu Thích"
+            />
+          </Badge>
 
           <CartIcon style={{ color: token.colorText, fontSize: '20px' }} />
 

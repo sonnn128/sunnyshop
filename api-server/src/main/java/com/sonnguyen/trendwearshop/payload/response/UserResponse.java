@@ -19,6 +19,9 @@ public class UserResponse {
     private Gender gender;
     private Boolean isLocked;
     private List<RoleInfo> roles;
+    private Long totalOrders;
+    private Double totalSpent;
+    private Long totalProductsPurchased;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")
     private Instant createdAt;

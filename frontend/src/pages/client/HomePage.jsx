@@ -340,7 +340,9 @@ const HomePage = () => {
                     ) : (
                         <Row gutter={[24, 32]}>
                             {featuredProducts.map(product => {
-                                const rating = 1 + (product.id ? (product.id % 5) : 4);
+                                const rating = product.averageRating !== undefined && product.averageRating !== null
+                                    ? product.averageRating
+                                    : 5.0;
                                 const discountPercent = product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
                                 const oldPrice = discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
                                 const isSellingFast = product.id && product.id % 2 === 0;
@@ -350,7 +352,7 @@ const HomePage = () => {
                                         <Card
                                             hoverable
                                             style={{ borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
-                                            bodyStyle={{ padding: '12px' }}
+                                            styles={{ body: { padding: '12px' } }}
                                             cover={
                                                 <div style={{ overflow: 'hidden', backgroundColor: '#F9FAFB', position: 'relative' }}>
                                                     <img
@@ -384,7 +386,7 @@ const HomePage = () => {
                                             </div>
 
                                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                                                <Rate disabled defaultValue={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
+                                                <Rate disabled allowHalf value={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
                                             </div>
 
                                             <div style={{ minHeight: '20px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -411,13 +413,10 @@ const HomePage = () => {
                                                 )}
                                             </div>
 
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                            <div style={{ marginBottom: '8px' }}>
                                                 <Text strong style={{ color: '#EA580C', fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>
                                                     {formatPrice(product.price)}
                                                 </Text>
-                                                <div style={{ width: '84px' }}>
-                                                    <AddToCartButton product={product} size="small" compact showQuantity={false} onlyBuy={true} />
-                                                </div>
                                             </div>
 
                                             <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>

@@ -213,6 +213,7 @@ const AdminHeader = ({ collapsed, onToggleCollapse }) => {
             <Avatar
               size="small"
               icon={<UserOutlined />}
+              src={user?.avatar}
               style={{ backgroundColor: '#1890ff', flexShrink: 0 }}
             />
             <div style={{

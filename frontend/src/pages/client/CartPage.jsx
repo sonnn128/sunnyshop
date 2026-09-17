@@ -170,43 +170,35 @@ const CartPage = () => {
         },
     ];
 
-    if (loading && cartItems.length === 0) {
-        return (
-            <div style={{ textAlign: 'center', padding: '50px' }}>
-                <Spin size="large" />
-                <div style={{ marginTop: '16px' }}>Đang tải giỏ hàng...</div>
-            </div>
-        );
-    }
-
-    if (cartItems.length === 0) {
-        return (
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
-                <Title level={2}>Giỏ hàng</Title>
-                <Card>
-                    <Empty
-                        image={<ShoppingCartOutlined style={{ fontSize: '64px', color: '#d9d9d9' }} />}
-                        description="Giỏ hàng đang trống"
-                        style={{ padding: '50px 0' }}
-                    >
-                        <Button type="primary" onClick={() => navigate('/products')}>
-                            Tiếp tục mua sắm
-                        </Button>
-                    </Empty>
-                </Card>
-            </div>
-        );
-    }
-
-
-
     const selectedItems = cartItems.filter(item => selectedRowKeys.includes(getRowKey(item)));
     const selectedItemsCount = selectedItems.reduce((sum, item) => sum + item.quantity, 0);
     const selectedTotalPrice = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    // Recalculate discount based on selected items price
+    // Filter only coupons that can be applied to the current order total
+    const applicableCoupons = React.useMemo(() => {
+        const now = new Date();
+        return activeCoupons.filter(c => {
+            if (c.isActive === false || c.active === false) return false;
+            if (c.startDate && new Date(c.startDate) > now) return false;
+            if (c.endDate && new Date(c.endDate) < now) return false;
+            if (c.usageLimit && (c.usedCount || 0) >= c.usageLimit) return false;
+            if (c.minOrderValue && selectedTotalPrice < c.minOrderValue) return false;
+            return true;
+        });
+    }, [activeCoupons, selectedTotalPrice]);
+
+    // Recalculate discount based on selected items price & validate eligibility
     useEffect(() => {
         if (appliedCoupon) {
+            if (appliedCoupon.minOrderValue && selectedTotalPrice < appliedCoupon.minOrderValue) {
+                setDiscount(0);
+                setAppliedCoupon(null);
+                setCouponCode('');
+                localStorage.removeItem('coupon');
+                message.warning(`Mã ${appliedCoupon.code} đã tự động hủy do đơn hàng chưa đạt giá trị tối thiểu ${formatPrice(appliedCoupon.minOrderValue)}`);
+                return;
+            }
+
             let calculatedDiscount = 0;
             if (appliedCoupon.discountType === 'PERCENTAGE') {
                 calculatedDiscount = (selectedTotalPrice * appliedCoupon.discountValue) / 100;
@@ -221,6 +213,13 @@ const CartPage = () => {
             setDiscount(0);
         }
     }, [selectedTotalPrice, appliedCoupon]);
+
+    // Reset unapplied coupon selection if order price changes and coupon is no longer eligible
+    useEffect(() => {
+        if (couponCode && !appliedCoupon && !applicableCoupons.some(c => c.code === couponCode)) {
+            setCouponCode('');
+        }
+    }, [applicableCoupons, couponCode, appliedCoupon]);
 
     const handleApplyCoupon = async () => {
         if (selectedItems.length === 0) {
@@ -257,6 +256,33 @@ const CartPage = () => {
 
     const finalPrice = Math.max(0, selectedTotalPrice - discount);
 
+    if (loading && cartItems.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Spin size="large" />
+                <div style={{ marginTop: '16px' }}>Đang tải giỏ hàng...</div>
+            </div>
+        );
+    }
+
+    if (cartItems.length === 0) {
+        return (
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
+                <Title level={2}>Giỏ hàng</Title>
+                <Card styles={{ body: { padding: '50px 0' } }}>
+                    <Empty
+                        image={<ShoppingCartOutlined style={{ fontSize: '64px', color: '#d9d9d9' }} />}
+                        description="Giỏ hàng đang trống"
+                    >
+                        <Button type="primary" onClick={() => navigate('/products')}>
+                            Tiếp tục mua sắm
+                        </Button>
+                    </Empty>
+                </Card>
+            </div>
+        );
+    }
+
     return (
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -270,7 +296,7 @@ const CartPage = () => {
                 </Button>
             </div>
 
-            <Card bodyStyle={{ padding: 0 }} style={{ overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', marginBottom: '24px' }}>
+            <Card styles={{ body: { padding: 0 } }} style={{ overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', marginBottom: '24px' }}>
                 <Table
                     rowSelection={{
                         selectedRowKeys,
@@ -323,7 +349,7 @@ const CartPage = () => {
                             </span>
                         )}
                         <Select
-                            placeholder="Chọn mã giảm giá"
+                            placeholder={selectedTotalPrice === 0 ? "Vui lòng chọn sản phẩm" : (applicableCoupons.length > 0 ? "Chọn mã giảm giá" : "Không có mã phù hợp")}
                             value={couponCode || undefined}
                             onChange={(val) => {
                                 setCouponCode(val);
@@ -333,12 +359,12 @@ const CartPage = () => {
                                     localStorage.removeItem('coupon');
                                 }
                             }}
-                            style={{ width: 220, textAlign: 'left' }}
-                            disabled={!!appliedCoupon}
+                            style={{ minWidth: 280, textAlign: 'left' }}
+                            disabled={!!appliedCoupon || applicableCoupons.length === 0}
                             allowClear
-                            options={activeCoupons.map(c => ({
+                            options={applicableCoupons.map(c => ({
                                 value: c.code,
-                                label: `${c.code} - Giảm ${c.discountType === 'PERCENTAGE' ? c.discountValue + '%' : formatPrice(c.discountValue)}`
+                                label: `${c.code} - Giảm ${c.discountType === 'PERCENTAGE' ? c.discountValue + '%' : formatPrice(c.discountValue)}${c.minOrderValue ? ` (Đơn từ ${formatPrice(c.minOrderValue)})` : ''}`
                             }))}
                         />
                         {appliedCoupon ? (

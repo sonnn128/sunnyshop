@@ -23,6 +23,19 @@ export const productService = {
     }
   },
 
+  // Search products by name or description
+  search: async (keyword, page = 0, size = 10) => {
+    try {
+      const response = await api.get('/products/search', {
+        params: { keyword, page, size }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  },
+
   // Create new product
   create: async (productData) => {
     try {

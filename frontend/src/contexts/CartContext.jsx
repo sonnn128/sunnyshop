@@ -90,7 +90,6 @@ export const CartProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          console.log('Adding item to server cart:', { productId: product.id, quantity, size, color });
           const response = await api.post('/cart/items', {
             productId: product.id,
             quantity: quantity,
@@ -117,7 +116,6 @@ export const CartProvider = ({ children }) => {
             }));
             setCartItems(updatedItemsFromServer);
           }
-          console.log('Successfully added item to server cart');
         } catch (apiError) {
           console.error('Failed to sync cart with server:', apiError);
           if (apiError.response?.status === 401 || apiError.response?.status === 403) {
@@ -245,11 +243,9 @@ export const CartProvider = ({ children }) => {
 
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No token found, skipping cart load from server');
         return { success: true };
       }
 
-      console.log('Loading cart from server...');
       const response = await api.get('/cart');
       const cartResponse = response.data;
 

@@ -16,7 +16,7 @@ username: admin
 passsword: admin123
 
 ### User
-username: sonvipkl04@gmail.com 
+username: sonvipkl04@gmail.com
 password: sonvipkl04@gmail.com 
 
 ### Restart container

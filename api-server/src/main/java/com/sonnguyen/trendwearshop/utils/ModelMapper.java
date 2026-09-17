@@ -65,6 +65,19 @@ public class ModelMapper {
                     })
                     .toList());
         }
+
+        // Map reviews & rating (default 5.0 when 0 reviews)
+        if (product.getReviews() != null && !product.getReviews().isEmpty()) {
+            double avg = product.getReviews().stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(5.0);
+            response.setAverageRating(Math.round(avg * 10.0) / 10.0);
+            response.setReviewCount(product.getReviews().size());
+        } else {
+            response.setAverageRating(5.0);
+            response.setReviewCount(0);
+        }
         
         return response;
     }

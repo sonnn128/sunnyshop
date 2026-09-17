@@ -9,9 +9,10 @@ import { fileService } from '@/services/file.service';
 const { Title } = Typography;
 
 const ProfilePage = () => {
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
     const [loadingProfile, setLoadingProfile] = useState(false);
     const [loadingPassword, setLoadingPassword] = useState(false);
+    const [loadingAvatar, setLoadingAvatar] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState('');
     const [form] = Form.useForm();
 
@@ -31,19 +32,21 @@ const ProfilePage = () => {
 
     const handleUpload = async ({ file, onSuccess, onError }) => {
         try {
+            setLoadingAvatar(true);
             const response = await fileService.upload(file);
-            console.log("Upload response:", response);
-            // Check if response is just the string URL or an object with data property
-            // Based on FileController, it returns ApiResponse with data field
             const url = response.data || response;
 
             setAvatarUrl(url);
+            form.setFieldValue('avatar', url);
+            updateUser({ ...user, avatar: url });
             onSuccess(url);
             message.success('Đã tải ảnh đại diện lên thành công');
         } catch (error) {
             console.error('Upload error:', error);
             onError(error);
             message.error('Không thể tải ảnh đại diện lên');
+        } finally {
+            setLoadingAvatar(false);
         }
     };
 
@@ -58,10 +61,7 @@ const ProfilePage = () => {
             message.success('Đã cập nhật hồ sơ');
 
             const updatedUser = res.data.data || res.data;
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-
-            // Reload to reflect changes in layout/navbar if needed
-            window.location.reload();
+            updateUser(updatedUser);
         } catch (e) {
             console.error(e);
             message.error('Không thể cập nhật hồ sơ');
@@ -101,8 +101,9 @@ const ProfilePage = () => {
                                 customRequest={handleUpload}
                                 showUploadList={false}
                                 accept="image/*"
+                                disabled={loadingAvatar}
                             >
-                                <Button icon={<UploadOutlined />}>Đổi ảnh đại diện</Button>
+                                <Button icon={<UploadOutlined />} loading={loadingAvatar}>Đổi ảnh đại diện</Button>
                             </Upload>
                             <Title level={4} style={{ marginTop: 16 }}>{user?.fullName || 'Người dùng'}</Title>
                             <p>{user?.email || 'user@example.com'}</p>

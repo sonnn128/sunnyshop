@@ -16,7 +16,17 @@ import java.util.UUID;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser(User user);
     List<Order> findByUserId(UUID userId);
+    List<Order> findByUserIdOrderByOrderDateDesc(UUID userId);
     
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId")
+    Long countByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId AND o.status != 'CANCELLED'")
+    Long countActiveByUserId(@Param("userId") UUID userId);
+
+    @Query("SELECT COALESCE(SUM(o.totalPrice), 0.0) FROM Order o WHERE o.user.id = :userId AND o.status != 'CANCELLED'")
+    Double sumSpentByUserId(@Param("userId") UUID userId);
+
     @Query("SELECT o FROM Order o WHERE o.status = :status")
     Page<Order> findByStatus(@Param("status") String status, Pageable pageable);
     

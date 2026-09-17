@@ -22,6 +22,8 @@ public class ProductResponse {
     private Long categoryId;
     private String categoryName;
     private java.util.List<ProductVariantResponse> variants;
+    private Double averageRating;
+    private Integer reviewCount;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT")
     private Instant createdAt;

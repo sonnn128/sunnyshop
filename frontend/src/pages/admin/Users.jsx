@@ -15,7 +15,11 @@ import {
   Popconfirm,
   Row,
   Col,
-  InputNumber
+  Statistic,
+  Tooltip,
+  Descriptions,
+  Divider,
+  Spin
 } from 'antd';
 import {
   UserOutlined,
@@ -24,11 +28,17 @@ import {
   DeleteOutlined,
   SearchOutlined,
   LockOutlined,
-  UnlockOutlined
+  UnlockOutlined,
+  ShoppingCartOutlined,
+  HistoryOutlined,
+  DollarOutlined,
+  CheckCircleOutlined
 } from '@ant-design/icons';
 import { userService } from '../../services/user.service';
+import { orderService } from '../../services/order.service';
+import { formatPrice } from '@/utils/format';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 
 const Users = () => {
@@ -44,6 +54,12 @@ const Users = () => {
     pageSize: 10,
     total: 0
   });
+
+  // Customer order history modal state
+  const [orderModalVisible, setOrderModalVisible] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerOrders, setCustomerOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
   // Available roles
   const availableRoles = [
@@ -129,6 +145,22 @@ const Users = () => {
     }
   };
 
+  const handleViewOrderHistory = async (user) => {
+    setSelectedCustomer(user);
+    setOrderModalVisible(true);
+    setLoadingOrders(true);
+    try {
+      const orders = await orderService.getOrdersByUserId(user.id);
+      setCustomerOrders(Array.isArray(orders) ? orders : []);
+    } catch (error) {
+      console.error('Failed to load customer orders:', error);
+      message.error('Không thể tải lịch sử đơn hàng của khách');
+      setCustomerOrders([]);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
   const handleSubmit = async (values) => {
     try {
       if (editingUser) {
@@ -154,48 +186,72 @@ const Users = () => {
     }
   };
 
+  const getOrderStatusColor = (status) => {
+    switch ((status || '').toUpperCase()) {
+      case 'COMPLETED': return 'green';
+      case 'SHIPPED': return 'blue';
+      case 'PROCESSING': return 'orange';
+      case 'PENDING': return 'gold';
+      case 'CANCELLED': case 'CANCELED': return 'red';
+      default: return 'default';
+    }
+  };
+
+  // Summary statistics calculations
+  const totalCustomers = pagination.total || users.length;
+  const purchasingCustomers = users.filter(u => (u.totalOrders || 0) > 0).length;
+  const totalOrdersPlaced = users.reduce((acc, u) => acc + (u.totalOrders || 0), 0);
+  const totalCustomerSpending = users.reduce((acc, u) => acc + (u.totalSpent || 0), 0);
+
   const columns = [
     {
       title: 'Avatar',
       dataIndex: 'username',
       key: 'avatar',
-      width: 80,
-      render: (username) => (
-        <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#8B5CF6' }} />
+      width: 70,
+      render: (username, record) => (
+        <Avatar
+          icon={<UserOutlined />}
+          style={{
+            backgroundColor: record.roles?.some(r => r.id === 'ADMIN') ? '#EF4444' : '#6366F1'
+          }}
+        />
       ),
     },
     {
-      title: 'Tên tài khoản',
-      dataIndex: 'username',
-      key: 'username',
-      sorter: (a, b) => a.username.localeCompare(b.username),
-      render: (text) => <Typography.Text strong style={{ color: '#111827' }}>{text}</Typography.Text>
+      title: 'Tài khoản & Khách hàng',
+      key: 'userInfo',
+      render: (_, record) => (
+        <div>
+          <Text strong style={{ color: '#111827', fontSize: '14px', display: 'block' }}>
+            {record.fullName || record.username}
+          </Text>
+          <Text type="secondary" style={{ fontSize: '12px' }}>
+            @{record.username}
+          </Text>
+        </div>
+      ),
+      sorter: (a, b) => (a.fullName || a.username).localeCompare(b.fullName || b.username),
     },
     {
-      title: 'Họ và tên',
-      dataIndex: 'fullName',
-      key: 'fullName',
-      sorter: (a, b) => a.fullName.localeCompare(b.fullName),
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
-      key: 'phone',
-      render: (phone) => phone || '-',
+      title: 'Liên hệ',
+      key: 'contact',
+      render: (_, record) => (
+        <div>
+          <div style={{ fontSize: '13px', color: '#374151' }}>{record.email}</div>
+          <div style={{ fontSize: '12px', color: '#6B7280' }}>{record.phone || 'Chưa cập nhật SĐT'}</div>
+        </div>
+      ),
     },
     {
       title: 'Quyền',
       dataIndex: 'roles',
       key: 'roles',
+      width: 90,
       render: (roles) => (
         <Space>
           {roles?.map(role => (
-            <Tag key={role.id} color={getRoleColor(role.id)} style={{ borderRadius: '12px' }}>
+            <Tag key={role.id} color={getRoleColor(role.id)} style={{ borderRadius: '12px', fontWeight: 600 }}>
               {role.id}
             </Tag>
           ))}
@@ -203,14 +259,52 @@ const Users = () => {
       ),
     },
     {
+      title: 'Đã mua (Hàng / Đơn)',
+      key: 'ordersPurchased',
+      align: 'center',
+      render: (_, record) => {
+        const orderCount = record.totalOrders || 0;
+        const itemCount = record.totalProductsPurchased || 0;
+        return (
+          <div>
+            {orderCount > 0 ? (
+              <Tooltip title={`Đã mua ${itemCount} sản phẩm qua ${orderCount} đơn hàng`}>
+                <Tag color="cyan" style={{ borderRadius: '12px', fontWeight: 600, fontSize: '12px', cursor: 'pointer' }} onClick={() => handleViewOrderHistory(record)}>
+                  {orderCount} đơn {itemCount > 0 && `(${itemCount} SP)`}
+                </Tag>
+              </Tooltip>
+            ) : (
+              <span style={{ color: '#9CA3AF', fontSize: '13px' }}>0 đơn</span>
+            )}
+          </div>
+        );
+      },
+      sorter: (a, b) => (a.totalOrders || 0) - (b.totalOrders || 0),
+    },
+    {
+      title: 'Tổng chi tiêu',
+      key: 'totalSpent',
+      align: 'right',
+      render: (_, record) => {
+        const spent = record.totalSpent || 0;
+        return (
+          <Text strong style={{ color: spent > 0 ? '#059669' : '#9CA3AF', fontSize: '13px' }}>
+            {spent > 0 ? formatPrice(spent) : '0 ₫'}
+          </Text>
+        );
+      },
+      sorter: (a, b) => (a.totalSpent || 0) - (b.totalSpent || 0),
+    },
+    {
       title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date) => new Date(date).toLocaleDateString('vi-VN'),
+      render: (date) => date ? new Date(date).toLocaleDateString('vi-VN') : '-',
     },
     {
       title: 'Trạng thái',
       key: 'status',
+      width: 110,
       render: (_, record) => (
         <Tag color={record.isLocked ? 'error' : 'success'} style={{ borderRadius: '12px' }}>
           {record.isLocked ? 'Bị khóa' : 'Hoạt động'}
@@ -220,17 +314,29 @@ const Users = () => {
     {
       title: 'Thao tác',
       key: 'actions',
+      align: 'center',
       render: (_, record) => {
         const isAdmin = record.roles?.some(role => role.id === 'ADMIN');
         return (
-          <Space>
-            <Button
-              type="primary"
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() => handleEdit(record)}
-              style={{ borderRadius: '6px' }}
-            />
+          <Space size="small">
+            <Tooltip title="Xem lịch sử đơn hàng">
+              <Button
+                type="default"
+                size="small"
+                icon={<HistoryOutlined style={{ color: '#4F46E5' }} />}
+                onClick={() => handleViewOrderHistory(record)}
+                style={{ borderRadius: '6px', borderColor: '#C7D2FE', backgroundColor: '#EEF2FF' }}
+              />
+            </Tooltip>
+            <Tooltip title="Chỉnh sửa thông tin">
+              <Button
+                type="primary"
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => handleEdit(record)}
+                style={{ borderRadius: '6px', backgroundColor: '#4F46E5' }}
+              />
+            </Tooltip>
             {!isAdmin && (
               <>
                 <Popconfirm
@@ -239,13 +345,14 @@ const Users = () => {
                   okText="Đồng ý"
                   cancelText="Hủy"
                 >
-                  <Button
-                    type="primary"
-                    warning={!record.isLocked}
-                    size="small"
-                    icon={record.isLocked ? <UnlockOutlined /> : <LockOutlined />}
-                    style={{ borderRadius: '6px', backgroundColor: record.isLocked ? '#10B981' : '#F59E0B', border: 'none' }}
-                  />
+                  <Tooltip title={record.isLocked ? "Mở khóa" : "Khóa tài khoản"}>
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={record.isLocked ? <UnlockOutlined /> : <LockOutlined />}
+                      style={{ borderRadius: '6px', backgroundColor: record.isLocked ? '#10B981' : '#F59E0B', border: 'none' }}
+                    />
+                  </Tooltip>
                 </Popconfirm>
                 <Popconfirm
                   title="Bạn có chắc muốn xóa người dùng này?"
@@ -253,13 +360,15 @@ const Users = () => {
                   okText="Đồng ý"
                   cancelText="Hủy"
                 >
-                  <Button
-                    type="primary"
-                    danger
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    style={{ borderRadius: '6px' }}
-                  />
+                  <Tooltip title="Xóa người dùng">
+                    <Button
+                      type="primary"
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      style={{ borderRadius: '6px' }}
+                    />
+                  </Tooltip>
                 </Popconfirm>
               </>
             )}
@@ -271,6 +380,50 @@ const Users = () => {
 
   return (
     <div>
+      {/* Summary Statistics Cards */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: '12px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)' }}>
+            <Statistic
+              title={<span style={{ color: '#4338CA', fontWeight: 600 }}>Tổng khách hàng</span>}
+              value={totalCustomers}
+              prefix={<UserOutlined style={{ color: '#4F46E5', marginRight: 8 }} />}
+              valueStyle={{ color: '#312E81', fontWeight: 700 }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: '12px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)' }}>
+            <Statistic
+              title={<span style={{ color: '#047857', fontWeight: 600 }}>Khách đã mua hàng</span>}
+              value={purchasingCustomers}
+              prefix={<CheckCircleOutlined style={{ color: '#10B981', marginRight: 8 }} />}
+              valueStyle={{ color: '#064E3B', fontWeight: 700 }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: '12px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)' }}>
+            <Statistic
+              title={<span style={{ color: '#1D4ED8', fontWeight: 600 }}>Tổng số đơn khách đặt</span>}
+              value={totalOrdersPlaced}
+              prefix={<ShoppingCartOutlined style={{ color: '#3B82F6', marginRight: 8 }} />}
+              valueStyle={{ color: '#1E3A8A', fontWeight: 700 }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card style={{ borderRadius: '12px', border: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', background: 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)' }}>
+            <Statistic
+              title={<span style={{ color: '#C2410C', fontWeight: 600 }}>Tổng chi tiêu khách hàng</span>}
+              value={formatPrice(totalCustomerSpending)}
+              prefix={<DollarOutlined style={{ color: '#F97316', marginRight: 8 }} />}
+              valueStyle={{ color: '#7C2D12', fontWeight: 700, fontSize: '20px' }}
+            />
+          </Card>
+        </Col>
+      </Row>
+
       <Card style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: 0 }}>
         <div style={{
           padding: '24px',
@@ -278,7 +431,10 @@ const Users = () => {
         }}>
           <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
             <Col>
-              <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý người dùng</Title>
+              <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý người dùng & Khách hàng</Title>
+              <Text type="secondary" style={{ fontSize: '13px' }}>
+                Thống kê số lượng hàng mua, đơn đặt và tổng chi tiêu của từng khách hàng
+              </Text>
             </Col>
             <Col>
               <Button
@@ -295,7 +451,7 @@ const Users = () => {
           <Row gutter={16}>
             <Col span={8}>
               <Input
-                placeholder="Tìm kiếm theo tên tài khoản..."
+                placeholder="Tìm kiếm theo tên tài khoản, họ tên..."
                 prefix={<SearchOutlined />}
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
@@ -349,8 +505,119 @@ const Users = () => {
         />
       </Card>
 
+      {/* Customer Order History Modal */}
       <Modal
-        title={<span style={{ fontWeight: 700 }}>{editingUser ? 'Sửa người dùng' : 'Thêm người dùng mới'}</span>}
+        title={
+          <Space>
+            <HistoryOutlined style={{ color: '#4F46E5', fontSize: '18px' }} />
+            <span style={{ fontWeight: 700, fontSize: '16px' }}>
+              Lịch sử mua hàng: {selectedCustomer?.fullName || selectedCustomer?.username}
+            </span>
+          </Space>
+        }
+        open={orderModalVisible}
+        onCancel={() => setOrderModalVisible(false)}
+        footer={null}
+        width={850}
+        styles={{
+          header: { borderBottom: '1px solid #f0f0f0', paddingBottom: 16 }
+        }}
+      >
+        {selectedCustomer && (
+          <div style={{ marginTop: 12 }}>
+            <Descriptions size="small" bordered column={2} style={{ marginBottom: 16 }}>
+              <Descriptions.Item label="Khách hàng">{selectedCustomer.fullName || selectedCustomer.username}</Descriptions.Item>
+              <Descriptions.Item label="Tài khoản">@{selectedCustomer.username}</Descriptions.Item>
+              <Descriptions.Item label="Email">{selectedCustomer.email}</Descriptions.Item>
+              <Descriptions.Item label="Số điện thoại">{selectedCustomer.phone || '-'}</Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ">{selectedCustomer.address || '-'}</Descriptions.Item>
+              <Descriptions.Item label="Thống kê chi tiêu">
+                <Text strong style={{ color: '#059669' }}>
+                  {formatPrice(selectedCustomer.totalSpent || 0)} ({selectedCustomer.totalOrders || 0} đơn)
+                </Text>
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Divider style={{ margin: '16px 0 12px 0' }}>Danh sách đơn hàng đã đặt</Divider>
+
+            {loadingOrders ? (
+              <div style={{ textAlign: 'center', padding: '30px 0' }}>
+                <Spin tip="Đang tải dữ liệu đơn hàng..." />
+              </div>
+            ) : customerOrders.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '30px 0', color: '#9CA3AF' }}>
+                Khách hàng này chưa phát sinh đơn hàng nào.
+              </div>
+            ) : (
+              <Table
+                dataSource={customerOrders}
+                rowKey="id"
+                pagination={false}
+                size="small"
+                columns={[
+                  {
+                    title: 'Mã đơn',
+                    dataIndex: 'id',
+                    key: 'id',
+                    render: (id) => <Text strong style={{ color: '#4F46E5' }}>#{id}</Text>
+                  },
+                  {
+                    title: 'Ngày đặt',
+                    dataIndex: 'orderDate',
+                    key: 'orderDate',
+                    render: (date) => date ? new Date(date).toLocaleString('vi-VN') : '-'
+                  },
+                  {
+                    title: 'Sản phẩm đã mua',
+                    key: 'products',
+                    render: (_, record) => (
+                      <div>
+                        {record.orderDetails?.map((item, idx) => (
+                          <div key={idx} style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: 2 }}>
+                            <span style={{ fontWeight: 500 }}>• {item.product?.name || 'Sản phẩm'}</span>
+                            <Tag size="small" color="default" style={{ fontSize: '10px', padding: '0 4px', lineHeight: '16px' }}>
+                              x{item.quantity} {item.size && `| Size ${item.size}`} {item.color && `| ${item.color}`}
+                            </Tag>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  },
+                  {
+                    title: 'Tổng tiền',
+                    dataIndex: 'totalPrice',
+                    key: 'totalPrice',
+                    align: 'right',
+                    render: (price) => <Text strong style={{ color: '#EA580C' }}>{formatPrice(price)}</Text>
+                  },
+                  {
+                    title: 'Thanh toán',
+                    dataIndex: 'paymentMethod',
+                    key: 'paymentMethod',
+                    align: 'center',
+                    render: (pm) => <Tag color="geekblue">{pm || 'COD'}</Tag>
+                  },
+                  {
+                    title: 'Trạng thái',
+                    dataIndex: 'status',
+                    key: 'status',
+                    align: 'center',
+                    render: (status) => (
+                      <Tag color={getOrderStatusColor(status)} style={{ borderRadius: '10px', fontWeight: 600 }}>
+                        {status}
+                      </Tag>
+                    )
+                  }
+                ]}
+              />
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Edit / Create User Modal */}
+      <Modal
+        title={<span style={{ fontWeight: 700 }}>{editingUser ? 'Sửa thông tin người dùng' : 'Thêm người dùng mới'}</span>}
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}

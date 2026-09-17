@@ -5,6 +5,10 @@ export const orderService = {
     const response = await api.get('/orders/my-orders');
     return response.data;
   },
+  getMyOrderStatistics: async () => {
+    const response = await api.get('/orders/my-orders/statistics');
+    return response.data;
+  },
   getOrderById: async (id) => {
     const response = await api.get(`/orders/${id}`);
     return response.data;
@@ -15,6 +19,10 @@ export const orderService = {
   },
   getAll: async (params) => {
     const response = await api.get('/orders', { params });
+    return response.data;
+  },
+  getOrdersByUserId: async (userId) => {
+    const response = await api.get(`/orders/user/${userId}`);
     return response.data;
   },
   getByStatus: async (status, params) => {

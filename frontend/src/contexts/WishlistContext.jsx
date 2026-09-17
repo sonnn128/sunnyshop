@@ -77,7 +77,12 @@ export const WishlistProvider = ({ children }) => {
     });
   };
 
-  const remove = (productId) => setItems((prev) => prev.filter(p => p.id !== productId));
+  const remove = (productId) => {
+    setItems((prev) => prev.filter(p => p.id !== productId));
+    if (user) {
+      wishlistService.removeFromWishlist(productId).catch(e => console.warn('Wishlist remove failed', e));
+    }
+  };
 
   const clear = () => setItems([]);
 

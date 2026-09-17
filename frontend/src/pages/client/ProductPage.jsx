@@ -22,6 +22,8 @@ const ProductPage = () => {
     const [sortOrder, setSortOrder] = useState('desc');
 
     const [searchParams] = useSearchParams();
+    const queryKey = searchParams.toString();
+    const [loadedRequestKey, setLoadedRequestKey] = useState(null);
 
     // Filter States
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,9 +32,20 @@ const ProductPage = () => {
     const [categories, setCategories] = useState([]);
     const [rawCategories, setRawCategories] = useState([]);
 
-    const [selectedBrands, setSelectedBrands] = useState([]);
-    const [selectedTargets, setSelectedTargets] = useState([]);
-    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedBrands, setSelectedBrands] = useState(() => {
+        const brand = searchParams.get('brand');
+        return brand ? [brand] : [];
+    });
+    const [selectedTargets, setSelectedTargets] = useState(() => {
+        const target = searchParams.get('target');
+        return target ? [target] : [];
+    });
+    const [selectedCategories, setSelectedCategories] = useState(() => {
+        const category = searchParams.get('category');
+        return category
+            ? category.split(',').map(value => Number(value)).filter(value => !Number.isNaN(value))
+            : [];
+    });
     const [priceRange, setPriceRange] = useState([0, 50000000]);
     const [selectedRating, setSelectedRating] = useState(null);
 
@@ -88,8 +101,21 @@ const ProductPage = () => {
 
     // Load products with filters
     const loadProducts = async () => {
+        const requestKey = JSON.stringify({
+            queryKey,
+            currentPage,
+            searchTerm,
+            selectedBrands,
+            selectedTargets,
+            selectedCategories,
+            priceRange,
+            sortBy,
+            sortOrder,
+            selectedRating
+        });
+        const showLoading = products.length === 0 || loadedRequestKey !== requestKey;
         try {
-            setLoading(true);
+            setLoading(showLoading);
             const params = {
                 page: currentPage - 1,
                 size: pageSize,
@@ -107,32 +133,40 @@ const ProductPage = () => {
             const data = result.data || result;
 
             if (data.content) {
-                let filtered = data.content.filter(p => (p.quantity ?? p.stock ?? 0) > 0);
+                let filtered = data.content;
                 if (selectedRating !== null) {
                     filtered = filtered.filter(p => {
-                        const rating = 1 + (p.id ? (p.id % 5) : 4);
+                        const rating = p.averageRating !== undefined && p.averageRating !== null
+                            ? p.averageRating
+                            : 5.0;
                         return rating >= selectedRating;
                     });
                 }
                 setProducts(filtered);
-                setTotalProducts(filtered.length);
+                setTotalProducts(data.totalElements ?? data.page?.totalElements ?? filtered.length);
+                setLoadedRequestKey(requestKey);
             } else {
                 setProducts([]);
                 setTotalProducts(0);
+                setLoadedRequestKey(requestKey);
             }
         } catch (error) {
             console.error('Error loading products:', error);
             message.error('Failed to load products');
+            setLoadedRequestKey(requestKey);
         } finally {
             setLoading(false);
         }
     };
 
-    // Debounce effect for search and filters
+    // Debounce filter changes while loading immediately on first render.
     useEffect(() => {
-        const timer = setTimeout(() => {
+        if (currentPage === 1 && !searchTerm && !selectedBrands.length && !selectedTargets.length && !selectedCategories.length && selectedRating === null) {
             loadProducts();
-        }, 500);
+            return undefined;
+        }
+
+        const timer = setTimeout(loadProducts, 500);
         return () => clearTimeout(timer);
     }, [currentPage, searchTerm, selectedBrands, selectedTargets, selectedCategories, priceRange, sortBy, sortOrder, selectedRating]);
 
@@ -148,8 +182,10 @@ const ProductPage = () => {
                     <Card
                         title={<span style={{ fontSize: '20px', fontWeight: 800 }}>Bộ lọc tìm kiếm</span>}
                         style={{ marginBottom: 24, borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.04)', border: 'none' }}
-                        headStyle={{ borderBottom: '1px solid #F3F4F6', padding: '20px 24px' }}
-                        bodyStyle={{ padding: '24px' }}
+                        styles={{
+                            header: { borderBottom: '1px solid #F3F4F6', padding: '20px 24px' },
+                            body: { padding: '24px' }
+                        }}
                     >
                         <div style={{ marginBottom: 28 }}>
                             <div style={{ fontWeight: 700, marginBottom: 12, color: '#374151', fontSize: '15px' }}>Từ khóa</div>
@@ -316,7 +352,18 @@ const ProductPage = () => {
                         </Select>
                     </div>
 
-                    {loading ? (
+                    {loading || loadedRequestKey !== JSON.stringify({
+                        queryKey,
+                        currentPage,
+                        searchTerm,
+                        selectedBrands,
+                        selectedTargets,
+                        selectedCategories,
+                        priceRange,
+                        sortBy,
+                        sortOrder,
+                        selectedRating
+                    }) ? (
                         <div style={{ textAlign: 'center', padding: '100px 0' }}>
                             <Spin size="large" />
                         </div>
@@ -328,8 +375,9 @@ const ProductPage = () => {
                         <>
                             <Row gutter={[24, 24]}>
                                 {products.map(product => {
-                                    // MOCK UI DATA based on product ID for visual presentation
-                                    const rating = 1 + (product.id ? (product.id % 5) : 4);
+                                    const rating = product.averageRating !== undefined && product.averageRating !== null
+                                        ? product.averageRating
+                                        : 5.0;
                                     const discountPercent = product.id && product.id % 3 !== 0 ? 15 + (product.id % 5) * 10 : 0;
                                     const oldPrice = discountPercent > 0 ? product.price * (100 / (100 - discountPercent)) : null;
                                     const isSellingFast = product.id && product.id % 2 === 0;
@@ -339,7 +387,7 @@ const ProductPage = () => {
                                             <Card
                                                 hoverable
                                                 style={{ borderRadius: '16px', overflow: 'hidden', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}
-                                                bodyStyle={{ padding: '12px' }}
+                                                styles={{ body: { padding: '12px' } }}
                                                 cover={
                                                     <div style={{ overflow: 'hidden', backgroundColor: '#F9FAFB', position: 'relative' }}>
                                                         <img
@@ -373,7 +421,7 @@ const ProductPage = () => {
                                                 </div>
 
                                                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
-                                                    <Rate disabled defaultValue={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
+                                                    <Rate disabled allowHalf value={rating} style={{ fontSize: '11px', color: '#FBBF24' }} />
                                                 </div>
 
                                                 <div style={{ minHeight: '20px', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -400,13 +448,10 @@ const ProductPage = () => {
                                                     )}
                                                 </div>
 
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                                                <div style={{ marginBottom: '8px' }}>
                                                     <Text strong style={{ color: '#EA580C', fontSize: '18px', fontWeight: 800, lineHeight: 1 }}>
                                                         {formatPrice(product.price)}
                                                     </Text>
-                                                    <div style={{ width: '84px' }}>
-                                                        <AddToCartButton product={product} size="small" compact showQuantity={false} onlyBuy={true} />
-                                                    </div>
                                                 </div>
 
                                                 <div style={{ display: 'flex', alignItems: 'center', minHeight: '22px' }}>

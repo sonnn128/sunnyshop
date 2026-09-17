@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -48,6 +49,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @GetMapping("/my-orders/statistics")
+    public ResponseEntity<Map<String, Object>> getMyOrderStatistics(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(orderService.getUserOrderStatistics(authentication.getName()));
+    }
+
     @GetMapping("/my-orders/{status}")
     public ResponseEntity<List<OrderResponse>> getMyOrdersByStatus(
             @PathVariable String status,
@@ -65,6 +74,18 @@ public class OrderController {
         return orderService.getOrderById(id)
                 .map(order -> ResponseEntity.ok(order))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<OrderResponse>> getOrdersByUserId(
+            @PathVariable java.util.UUID userId,
+            Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(401).build();
+        }
+        List<OrderResponse> orders = orderService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(orders);
     }
 
     @GetMapping

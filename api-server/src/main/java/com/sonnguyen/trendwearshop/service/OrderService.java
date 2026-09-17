@@ -16,6 +16,8 @@ import com.sonnguyen.trendwearshop.exception.CommonException;
 import java.util.List;
 import java.util.UUID;
 import java.util.Optional;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Service
 @Transactional
@@ -123,6 +125,13 @@ public class OrderService {
         }
     }
 
+    public List<OrderResponse> getOrdersByUserId(UUID userId) {
+        List<Order> orders = orderRepository.findByUserIdOrderByOrderDateDesc(userId);
+        return orders.stream()
+                .map(ModelMapper::toOrderResponse)
+                .toList();
+    }
+
     public Page<OrderResponse> getOrdersByUserId(String username, Pageable pageable) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
@@ -143,6 +152,19 @@ public class OrderService {
         return orders.stream()
                 .map(ModelMapper::toOrderResponse)
                 .toList();
+    }
+
+    public Map<String, Object> getUserOrderStatistics(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        Map<String, Object> statistics = new LinkedHashMap<>();
+        statistics.put("totalOrders", orderRepository.countActiveByUserId(user.getId()));
+        statistics.put("totalProductsPurchased", orderDetailRepository.sumQuantityPurchasedByUserId(user.getId()));
+        statistics.put("totalSpent", orderRepository.sumSpentByUserId(user.getId()));
+        return statistics;
     }
 
     public Optional<OrderResponse> getOrderById(Long orderId) {

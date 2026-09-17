@@ -30,7 +30,9 @@ import {
   DeleteOutlined,
   UploadOutlined,
   DownloadOutlined,
-  EyeOutlined
+  EyeOutlined,
+  LinkOutlined,
+  PictureOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -49,6 +51,7 @@ const Products = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [viewingProduct, setViewingProduct] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   // Variants state
   const [variantsModalVisible, setVariantsModalVisible] = useState(false);
@@ -79,13 +82,15 @@ const Products = () => {
     fetchTargets();
   }, []);
 
-  const fetchProducts = async (page = 1, size = 10) => {
+  const fetchProducts = async (page = 1, size = 10, keyword = searchKeyword) => {
     setLoading(true);
     try {
-      const response = await productService.getAll({
-        page: page - 1, // API is 0-indexed
-        size: size
-      });
+      const response = keyword.trim()
+        ? await productService.search(keyword.trim(), page - 1, size)
+        : await productService.getAll({
+            page: page - 1, // API is 0-indexed
+            size: size
+          });
       // console.log("DEBUG RESPONSE:", response);
 
       // Handle Page object response
@@ -127,6 +132,11 @@ const Products = () => {
 
   const handleTableChange = (newPagination) => {
     fetchProducts(newPagination.current, newPagination.pageSize);
+  };
+
+  const handleSearch = (value) => {
+    setSearchKeyword(value);
+    fetchProducts(1, pagination.pageSize, value);
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
@@ -202,7 +212,8 @@ const Products = () => {
     const formattedRecord = {
       ...record,
       sizes,
-      colors
+      colors,
+      image: record.image || ""
     };
 
     colors.forEach((color, idx) => {
@@ -244,6 +255,12 @@ const Products = () => {
       });
       const imagesString = colorImages.join(',');
 
+      // Determine main product image
+      let mainImage = values.image ? values.image.trim() : "";
+      if (!mainImage && editingProduct && editingProduct.image) {
+        mainImage = editingProduct.image;
+      }
+
       // Create product object (without the file)
       const productData = {
         name: values.name,
@@ -253,15 +270,11 @@ const Products = () => {
         target: values.target,
         description: values.description,
         categoryId: values.categoryId,
-        image: values.image,
+        image: mainImage,
         sizes: Array.isArray(values.sizes) ? values.sizes.join(',') : values.sizes || "",
         colors: Array.isArray(values.colors) ? values.colors.join(',') : values.colors || "",
         images: imagesString
       };
-
-      if (editingProduct && !imageFile) {
-        productData.image = editingProduct.image;
-      }
 
       formData.append('product', JSON.stringify(productData));
 
@@ -580,6 +593,14 @@ const Products = () => {
           borderBottom: '1px solid #F3F4F6'
         }}>
           <Title level={4} style={{ margin: 0, fontWeight: 700, color: '#111827' }}>Quản lý sản phẩm</Title>
+          <Input.Search
+            placeholder="Tìm kiếm theo tên sản phẩm"
+            allowClear
+            value={searchKeyword}
+            onChange={(event) => setSearchKeyword(event.target.value)}
+            onSearch={handleSearch}
+            style={{ width: 280, marginLeft: 'auto', marginRight: 16 }}
+          />
           <Space>
             {selectedRowKeys.length > 0 && (
               <Popconfirm
@@ -837,38 +858,105 @@ const Products = () => {
             }}
           </Form.Item>
 
-          <Form.Item
-            name="imageFile"
-            label={<span style={{ fontWeight: 500 }}>Hình ảnh sản phẩm</span>}
-            valuePropName="fileList"
-            getValueFromEvent={(e) => {
-              if (Array.isArray(e)) {
-                return e;
-              }
-              return e?.fileList;
-            }}
+          {/* Main Product Image */}
+          <Card 
+            size="small" 
+            title={
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <PictureOutlined style={{ color: '#4F46E5', fontSize: '16px' }} />
+                <span style={{ fontWeight: 600, fontSize: '14px', color: '#374151' }}>
+                  Hình ảnh đại diện sản phẩm (Ảnh chính)
+                </span>
+              </div>
+            } 
+            style={{ marginBottom: 24, borderRadius: '12px', border: '1px solid #E5E7EB', backgroundColor: '#FAFAFA' }}
           >
-            <Upload
-              listType="picture"
-              maxCount={1}
-              beforeUpload={() => false}
-              accept="image/*"
-            >
-              <Button icon={<UploadOutlined />} size="large" style={{ borderRadius: '8px' }}>Chọn ảnh</Button>
-            </Upload>
-          </Form.Item>
-
-          {editingProduct && editingProduct.image && (
-            <div style={{ marginBottom: 24 }}>
-              <Typography.Text type="secondary">Ảnh hiện tại:</Typography.Text>
-              <br />
-              <Image
-                width={100}
-                src={editingProduct.image}
-                style={{ marginTop: 8, borderRadius: '8px' }}
-              />
-            </div>
-          )}
+            <Row gutter={[16, 16]} align="middle">
+              <Col xs={24} md={16}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                  <Form.Item
+                    name="image"
+                    label={<span style={{ fontWeight: 500 }}>Đường dẫn ảnh (URL) hoặc tải ảnh lên</span>}
+                    style={{ marginBottom: 8, flex: 1 }}
+                    help="Dán URL ảnh hoặc nhấn nút 'Tải lên' để chọn file ảnh từ thiết bị"
+                  >
+                    <Input 
+                      placeholder="https://images.unsplash.com/... hoặc dán link ảnh" 
+                      size="large"
+                      allowClear
+                      prefix={<LinkOutlined style={{ color: '#9CA3AF' }} />}
+                      style={{ borderRadius: '8px' }}
+                    />
+                  </Form.Item>
+                  <div style={{ paddingTop: '29px' }}>
+                    <Upload
+                      accept="image/*"
+                      showUploadList={false}
+                      beforeUpload={async (file) => {
+                        try {
+                          message.loading({ content: 'Đang tải ảnh đại diện lên...', key: 'upload-main-img' });
+                          const result = await productService.uploadImage(file);
+                          const uploadedUrl = result.data || result;
+                          form.setFieldsValue({
+                            image: uploadedUrl
+                          });
+                          message.success({ content: 'Tải ảnh đại diện thành công!', key: 'upload-main-img' });
+                        } catch (err) {
+                          message.error({ content: 'Tải ảnh lên thất bại!', key: 'upload-main-img' });
+                        }
+                        return false;
+                      }}
+                    >
+                      <Button icon={<UploadOutlined />} size="large" type="dashed" style={{ borderRadius: '8px', borderColor: '#4F46E5', color: '#4F46E5', fontWeight: 500 }}>
+                        Tải lên
+                      </Button>
+                    </Upload>
+                  </div>
+                </div>
+              </Col>
+              
+              <Col xs={24} md={8}>
+                <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.image !== currentValues.image}>
+                  {({ getFieldValue }) => {
+                    const imgUrl = getFieldValue('image') || (editingProduct ? editingProduct.image : null);
+                    return (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '12px',
+                        backgroundColor: '#FFFFFF',
+                        borderRadius: '8px',
+                        border: '1px dashed #D1D5DB',
+                        minHeight: '115px'
+                      }}>
+                        {imgUrl ? (
+                          <div style={{ textAlign: 'center' }}>
+                            <Image
+                              src={imgUrl}
+                              alt="Ảnh đại diện"
+                              height={85}
+                              style={{ objectFit: 'contain', borderRadius: '6px', maxWidth: '100%' }}
+                              fallback="https://via.placeholder.com/85?text=Ảnh+lỗi"
+                            />
+                            <div style={{ marginTop: '4px', fontSize: '11px', color: '#6B7280' }}>
+                              Xem trước ảnh chính
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '12px' }}>
+                            <PictureOutlined style={{ fontSize: '26px', marginBottom: '4px', color: '#D1D5DB' }} />
+                            <div>Chưa có ảnh đại diện</div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }}
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
 
           <Row gutter={16}>
             <Col span={12}>

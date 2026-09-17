@@ -98,11 +98,6 @@ cloudinary:
 
 gemini:
   api:
-    key: ${GEMINI_API_KEY:AIzaSyCY-roxgEeoF45EsPEOf-4Mawi0v1VJ9BI}
+    key: ${GEMINI_API_KEY:}
     url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent}
-
-
-
-
-
 

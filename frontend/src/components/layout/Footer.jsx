@@ -92,8 +92,8 @@ const Footer = () => {
             © {new Date().getFullYear()} TrendWear Shop. All rights reserved. Created by Son Nguyen.
           </Text>
           <div style={{ display: 'flex', gap: 16 }}>
-             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/200px-Visa_Inc._logo.svg.png" alt="Visa" style={{ height: 20, filter: 'grayscale(1) brightness(2)' }} />
-             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/200px-Mastercard-logo.svg.png" alt="Mastercard" style={{ height: 20, filter: 'grayscale(1) brightness(2)' }} />
+             <span style={{ color: '#9CA3AF', fontWeight: 700, fontSize: 12 }}>VISA</span>
+             <span style={{ color: '#9CA3AF', fontWeight: 700, fontSize: 12 }}>Mastercard</span>
           </div>
         </div>
       </div>

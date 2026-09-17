@@ -34,18 +34,16 @@ const CheckoutPage = () => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('COD');
+    const orderCompletedRef = React.useRef(false);
 
     useEffect(() => {
-        if (cartItems.length === 0) {
+        if (cartItems.length === 0 && !orderCompletedRef.current) {
             message.warning('Giỏ hàng đang trống');
             navigate('/cart');
         }
     }, [cartItems, navigate]);
 
     const onFinish = async (values) => {
-        console.log('Form values:', values);
-        console.log('Cart items:', cartItems);
-
         if (cartItems.length === 0) {
             message.error('Giỏ hàng đang trống');
             return;
@@ -68,12 +66,7 @@ const CheckoutPage = () => {
                 }))
             };
 
-            console.log('Sending order data:', orderData);
-
             const response = await api.post('/orders', orderData);
-
-            console.log('Order response status:', response.status);
-            console.log('Order response data:', response.data);
 
             if (response.status === 201 && response.data) {
                 const createdOrder = response.data;
@@ -91,6 +84,7 @@ const CheckoutPage = () => {
                 }
 
                 message.success('Đặt hàng thành công!');
+                orderCompletedRef.current = true;
                 if (checkoutItemKeys) {
                     for (const key of checkoutItemKeys) {
                         const [id, size, color] = key.split('-');
@@ -223,8 +217,7 @@ const CheckoutPage = () => {
                         </div>
                     }
                     style={{ marginBottom: '24px', borderRadius: '8px', border: '1px solid #f2f2f2', boxShadow: '0 1px 1px rgba(0,0,0,0.05)' }}
-                    headStyle={{ borderBottom: '1px solid #f2f2f2' }}
-                    bodyStyle={{ padding: '24px' }}
+                    styles={{ header: { borderBottom: '1px solid #f2f2f2' }, body: { padding: '24px' } }}
                 >
                     <Row gutter={[16, 16]}>
                         <Col xs={24} md={8}>
@@ -305,8 +298,7 @@ const CheckoutPage = () => {
                         </div>
                     }
                     style={{ marginBottom: '24px', borderRadius: '8px', border: '1px solid #f2f2f2', boxShadow: '0 1px 1px rgba(0,0,0,0.05)' }}
-                    headStyle={{ borderBottom: '1px solid #f2f2f2' }}
-                    bodyStyle={{ padding: 0 }}
+                    styles={{ header: { borderBottom: '1px solid #f2f2f2' }, body: { padding: 0 } }}
                 >
                     <Table
                         columns={columns}
@@ -327,8 +319,7 @@ const CheckoutPage = () => {
                         </div>
                     }
                     style={{ marginBottom: '24px', borderRadius: '8px', border: '1px solid #f2f2f2', boxShadow: '0 1px 1px rgba(0,0,0,0.05)' }}
-                    headStyle={{ borderBottom: '1px solid #f2f2f2' }}
-                    bodyStyle={{ padding: '24px' }}
+                    styles={{ header: { borderBottom: '1px solid #f2f2f2' }, body: { padding: '24px' } }}
                 >
                     <Form.Item
                         name="paymentMethod"

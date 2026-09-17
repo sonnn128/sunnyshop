@@ -56,7 +56,7 @@ public class UserService {
 
     public Page<UserResponse> getAllUsers(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
-        return users.map(ModelMapper::toUserResponse);
+        return users.map(this::convertToResponse);
     }
 
     public UserResponse getUserById(UUID id) {
@@ -83,14 +83,14 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-               user.setGender(request.getGender() != null ? Gender.valueOf(request.getGender().toUpperCase()) : null);
+        user.setGender(request.getGender() != null ? Gender.valueOf(request.getGender().toUpperCase()) : null);
 
         // Set roles
         List<Role> roles = roleRepository.findAllById(request.getRoleIds());
         if (roles.size() != request.getRoleIds().size()) {
             throw new CommonException("One or more roles not found", HttpStatus.BAD_REQUEST);
         }
-               user.setRoles(new HashSet<>(roles));
+        user.setRoles(new HashSet<>(roles));
 
         User savedUser = userRepository.save(user);
         return convertToResponse(savedUser);
@@ -120,14 +120,14 @@ public class UserService {
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-               user.setGender(request.getGender() != null ? Gender.valueOf(request.getGender().toUpperCase()) : null);
+        user.setGender(request.getGender() != null ? Gender.valueOf(request.getGender().toUpperCase()) : null);
 
         // Update roles
         List<Role> roles = roleRepository.findAllById(request.getRoleIds());
         if (roles.size() != request.getRoleIds().size()) {
             throw new CommonException("One or more roles not found", HttpStatus.BAD_REQUEST);
         }
-               user.setRoles(new HashSet<>(roles));
+        user.setRoles(new HashSet<>(roles));
 
         User savedUser = userRepository.save(user);
         return convertToResponse(savedUser);
@@ -166,13 +166,13 @@ public class UserService {
         if (keyword != null && !keyword.isEmpty() && role != null && !role.isEmpty()) {
             users = userRepository.findByUsernameContainingAndRolesId(keyword, role, pageable);
         } else if (keyword != null && !keyword.isEmpty()) {
-                   users = userRepository.findAllByUsernameContaining(keyword, pageable);
+            users = userRepository.findAllByUsernameContaining(keyword, pageable);
         } else if (role != null && !role.isEmpty()) {
             users = userRepository.findByRolesId(role, pageable);
         } else {
             users = userRepository.findAll(pageable);
         }
-        return users.map(ModelMapper::toUserResponse);
+        return users.map(this::convertToResponse);
     }
 
     private UserResponse convertToResponse(User user) {
@@ -189,18 +189,35 @@ public class UserService {
         response.setUpdatedAt(user.getUpdatedAt());
 
         // Convert roles
-        List<UserResponse.RoleInfo> roleInfos = user.getRoles().stream()
-                .map(role -> {
-                    UserResponse.RoleInfo roleInfo = new UserResponse.RoleInfo();
-                    roleInfo.setId(role.getId());
-                    roleInfo.setAuthority(role.getAuthority());
-                    roleInfo.setPermissions(role.getPermissions().stream()
-                            .map(permission -> permission.getDescription())
-                            .collect(Collectors.toList()));
-                    return roleInfo;
-                })
-                .collect(Collectors.toList());
-        response.setRoles(roleInfos);
+        if (user.getRoles() != null) {
+            List<UserResponse.RoleInfo> roleInfos = user.getRoles().stream()
+                    .map(role -> {
+                        UserResponse.RoleInfo roleInfo = new UserResponse.RoleInfo();
+                        roleInfo.setId(role.getId());
+                        roleInfo.setAuthority(role.getAuthority());
+                        roleInfo.setPermissions(role.getPermissions() != null ?
+                                role.getPermissions().stream()
+                                        .map(permission -> permission.getDescription())
+                                        .collect(Collectors.toList()) : List.of());
+                        return roleInfo;
+                    })
+                    .collect(Collectors.toList());
+            response.setRoles(roleInfos);
+        }
+
+        // Calculate purchase stats
+        if (user.getId() != null) {
+            Long totalOrders = orderRepository.countByUserId(user.getId());
+            Double totalSpent = orderRepository.sumSpentByUserId(user.getId());
+            Long totalProductsPurchased = orderDetailRepository.sumQuantityPurchasedByUserId(user.getId());
+            response.setTotalOrders(totalOrders != null ? totalOrders : 0L);
+            response.setTotalSpent(totalSpent != null ? totalSpent : 0.0);
+            response.setTotalProductsPurchased(totalProductsPurchased != null ? totalProductsPurchased : 0L);
+        } else {
+            response.setTotalOrders(0L);
+            response.setTotalSpent(0.0);
+            response.setTotalProductsPurchased(0L);
+        }
 
         return response;
     }

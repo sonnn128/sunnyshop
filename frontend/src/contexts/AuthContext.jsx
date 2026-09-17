@@ -60,8 +60,6 @@ export const AuthProvider = ({ children }) => {
       const responseData = response.data.data || response.data;
       const { token, refreshToken, user: userData } = responseData;
 
-      console.log('Login response:', { responseData, userData, token });
-
       tokenService.setToken(token);
       if (refreshToken) tokenService.setRefreshToken(refreshToken);
       tokenService.setUser(userData);
@@ -121,20 +119,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+    tokenService.setUser(updatedUser);
+  };
+
   const isAdmin = () => {
     // First check JWT token for authorities
     const token = localStorage.getItem('token');
     if (token) {
       const tokenInfo = getTokenInfo(token);
-      console.log('JWT token info:', tokenInfo);
       
       if (tokenInfo) {
         const hasAdminAuthority = isAdminFromJWT(token);
-        console.log('JWT authorities check:', { 
-          authorities: tokenInfo.authorities, 
-          hasAdminAuthority,
-          isExpired: tokenInfo.isExpired 
-        });
         
         // Only return true if token is not expired and has ADMIN authority
         if (!tokenInfo.isExpired && hasAdminAuthority) {
@@ -170,6 +167,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    updateUser,
     isAdmin,
     tryRefresh,
   }), [user, loading]);

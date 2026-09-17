@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
-import { Table, Tag, Button, Typography, Card, Modal, Descriptions } from 'antd';
-import { EyeOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Typography, Card, Modal, Descriptions, Row, Col, Statistic } from 'antd';
+import { EyeOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarOutlined } from '@ant-design/icons';
 import { orderService } from '@/services/order.service';
 
 const { Title } = Typography;
@@ -9,15 +9,28 @@ const { Title } = Typography;
 const OrderHistoryPage = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [statistics, setStatistics] = useState({
+        totalOrders: 0,
+        totalProductsPurchased: 0,
+        totalSpent: 0
+    });
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const data = await orderService.getMyOrders();
+                const [ordersData, statisticsData] = await Promise.all([
+                    orderService.getMyOrders(),
+                    orderService.getMyOrderStatistics()
+                ]);
                 // Ensure data is an array
-                setOrders(Array.isArray(data) ? data : []);
+                setOrders(Array.isArray(ordersData) ? ordersData : []);
+                setStatistics({
+                    totalOrders: statisticsData?.totalOrders || 0,
+                    totalProductsPurchased: statisticsData?.totalProductsPurchased || 0,
+                    totalSpent: statisticsData?.totalSpent || 0
+                });
             } catch (error) {
                 console.error("Failed to fetch orders", error);
             } finally {
@@ -124,6 +137,23 @@ const OrderHistoryPage = () => {
     return (
         <div style={{ padding: '24px' }}>
             <Title level={2}>Lịch sử đơn hàng</Title>
+            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+                <Col xs={24} sm={8}>
+                    <Card>
+                        <Statistic title="Tổng đơn hàng" value={statistics.totalOrders} prefix={<ShoppingCartOutlined />} />
+                    </Card>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Card>
+                        <Statistic title="Sản phẩm đã mua" value={statistics.totalProductsPurchased} prefix={<ShoppingOutlined />} />
+                    </Card>
+                </Col>
+                <Col xs={24} sm={8}>
+                    <Card>
+                        <Statistic title="Tổng tiền đã mua" value={statistics.totalSpent} prefix={<DollarOutlined />} formatter={(value) => formatPrice(value)} />
+                    </Card>
+                </Col>
+            </Row>
             <Card>
                 <Table
                     columns={columns}

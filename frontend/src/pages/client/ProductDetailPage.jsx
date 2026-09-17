@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { formatPrice } from '@/utils/format';
 import { Card, Typography, Button, Row, Col, Spin, message, Tag, Divider, Rate, List, Avatar, Input, Form } from 'antd';
-import { ShoppingCartOutlined, ArrowLeftOutlined, HeartOutlined, HeartFilled, UserOutlined } from '@ant-design/icons';
+import { ShoppingCartOutlined, ArrowLeftOutlined, HeartOutlined, HeartFilled, UserOutlined, CarOutlined } from '@ant-design/icons';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import AddToCartButton from '@/components/AddToCartButton.jsx';
 import { productService } from '@/services/product.service.js';
 import { wishlistService } from '@/services/wishlist.service.js';
 import { reviewService } from '@/services/review.service.js';
 import { useAuth } from '@/contexts/AuthContext.jsx';
+import { useWishlist } from '@/contexts/WishlistContext.jsx';
 import { orderService } from '@/services/order.service.js';
 import { pushView } from '@/utils/recentViews.js';
 import RecentlyViewed from '@/components/RecentlyViewed.jsx';
@@ -20,6 +21,7 @@ const ProductDetailPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { user } = useAuth();
+    const { items: wishlistItems, toggle: toggleWishlistContext } = useWishlist();
     const [product, setProduct] = useState(null);
     const [hasOrdered, setHasOrdered] = useState(false);
     const [ratingFilter, setRatingFilter] = useState('all');
@@ -28,9 +30,8 @@ const ProductDetailPage = () => {
     const [selectedColor, setSelectedColor] = useState("");
     const [activeImage, setActiveImage] = useState("");
 
-    // Wishlist State
-    const [inWishlist, setInWishlist] = useState(false);
-    const [wishlistLoading, setWishlistLoading] = useState(false);
+    // Wishlist State (derived from context)
+    const inWishlist = wishlistItems ? wishlistItems.some(p => p.id === Number(id)) : false;
 
     // Review State
     const [reviews, setReviews] = useState([]);
@@ -46,6 +47,10 @@ const ProductDetailPage = () => {
     const count3 = reviews.filter(r => Math.round(r.rating) === 3).length;
     const count2 = reviews.filter(r => Math.round(r.rating) === 2).length;
     const count1 = reviews.filter(r => Math.round(r.rating) === 1).length;
+
+    const averageRating = totalReviewsCount > 0
+        ? Number((reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviewsCount).toFixed(1))
+        : 5.0;
 
     const filteredReviews = ratingFilter === 'all'
         ? reviews
@@ -151,6 +156,8 @@ const ProductDetailPage = () => {
     };
 
     useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
         if (id) {
             loadProduct();
             checkWishlistStatus();
@@ -197,22 +204,18 @@ const ProductDetailPage = () => {
     }
 
     const toggleWishlist = async () => {
-        if (wishlistLoading) return;
-        setWishlistLoading(true);
-        try {
+        if (!user) {
+            message.warning('Vui lòng đăng nhập để lưu sản phẩm yêu thích');
+            navigate('/login', { state: { from: location.pathname } });
+            return;
+        }
+        if (product) {
+            toggleWishlistContext(product);
             if (inWishlist) {
-                await wishlistService.removeFromWishlist(id);
-                setInWishlist(false);
                 message.success('Đã bỏ khỏi danh sách yêu thích');
             } else {
-                await wishlistService.addToWishlist(id);
-                setInWishlist(true);
                 message.success('Đã thêm vào danh sách yêu thích');
             }
-        } catch (e) {
-            message.error('Vui lòng đăng nhập để lưu sản phẩm');
-        } finally {
-            setWishlistLoading(false);
         }
     };
 
@@ -274,7 +277,7 @@ const ProductDetailPage = () => {
                     Trở về cửa hàng
                 </Button>
 
-                <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', overflow: 'hidden', marginBottom: '60px' }} bodyStyle={{ padding: 0 }}>
+                <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', overflow: 'hidden', marginBottom: '60px' }} styles={{ body: { padding: 0 } }}>
                     <Row gutter={[0, 0]}>
                         {/* Image Section */}
                         <Col xs={24} md={10} lg={9}>
@@ -345,8 +348,8 @@ const ProductDetailPage = () => {
                                 {/* Rating summary row */}
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', fontSize: '14px' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                        <span style={{ color: '#ee4d2d', fontWeight: 500, borderBottom: '1px solid #ee4d2d' }}>4.8</span>
-                                        <Rate disabled defaultValue={4} style={{ fontSize: '12px', color: '#ee4d2d' }} />
+                                        <span style={{ color: '#ee4d2d', fontWeight: 500, borderBottom: '1px solid #ee4d2d' }}>{averageRating.toFixed(1)}</span>
+                                        <Rate disabled allowHalf value={averageRating} style={{ fontSize: '12px', color: '#ee4d2d' }} />
                                     </div>
                                     <div style={{ width: '1px', height: '12px', backgroundColor: '#dbdbdb' }} />
                                     <div>
@@ -355,7 +358,7 @@ const ProductDetailPage = () => {
                                     </div>
                                     <div style={{ width: '1px', height: '12px', backgroundColor: '#dbdbdb' }} />
                                     <div>
-                                        <span style={{ fontWeight: 500 }}>{((product.id || 0) % 7 + 1) * 32}</span>
+                                        <span style={{ fontWeight: 500 }}>{product.sold || 0}</span>
                                         <span style={{ color: '#767676', marginLeft: '4px' }}>Đã Bán</span>
                                     </div>
                                 </div>
@@ -399,7 +402,7 @@ const ProductDetailPage = () => {
                                     <div style={{ color: '#757575', width: '110px', flexShrink: 0 }}>Vận chuyển:</div>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <img src="https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/fafaf98cef4c402be432f4e43b147f7d.png" style={{ height: '20px' }} alt="Free shipping" />
+                                            <CarOutlined style={{ color: '#26AA99', fontSize: '20px' }} />
                                             <span style={{ fontWeight: 500, color: 'rgba(0,0,0,.8)' }}>Miễn phí vận chuyển</span>
                                         </div>
                                         <div style={{ color: '#757575', fontSize: '13px' }}>
@@ -505,7 +508,7 @@ const ProductDetailPage = () => {
                 </Card>
 
                 {/* Product Description Details Card */}
-                <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', marginBottom: '60px', overflow: 'hidden' }} bodyStyle={{ padding: '32px' }}>
+                <Card bordered={false} style={{ borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.06)', marginBottom: '60px', overflow: 'hidden' }} styles={{ body: { padding: '32px' } }}>
                     <Title level={3} style={{ fontSize: '20px', fontWeight: 700, marginBottom: '24px', textTransform: 'uppercase', color: '#222', borderBottom: '1px solid #f5f5f5', paddingBottom: '12px' }}>
                         Chi tiết sản phẩm
                     </Title>
@@ -582,9 +585,9 @@ const ProductDetailPage = () => {
                                         gap: '16px'
                                     }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <span style={{ fontSize: '24px', fontWeight: 600, color: '#ee4d2d' }}>4.8</span>
+                                            <span style={{ fontSize: '24px', fontWeight: 600, color: '#ee4d2d' }}>{averageRating.toFixed(1)}</span>
                                             <span style={{ fontSize: '14px', color: '#ee4d2d', marginTop: '6px' }}>trên 5</span>
-                                            <Rate disabled defaultValue={5} style={{ fontSize: '16px', color: '#ee4d2d', marginLeft: '12px' }} />
+                                            <Rate disabled allowHalf value={averageRating} style={{ fontSize: '16px', color: '#ee4d2d', marginLeft: '12px' }} />
                                         </div>
                                         
                                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -690,7 +693,7 @@ const ProductDetailPage = () => {
                                             itemLayout="vertical"
                                             dataSource={filteredReviews}
                                             renderItem={item => (
-                                                <Card bordered={false} style={{ marginBottom: '16px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} bodyStyle={{ padding: '24px' }}>
+                                                <Card bordered={false} style={{ marginBottom: '16px', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }} styles={{ body: { padding: '24px' } }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                                             <Avatar size={48} icon={<UserOutlined />} src={item.user?.avatar} style={{ backgroundColor: '#F3F4F6', color: '#9CA3AF' }} />

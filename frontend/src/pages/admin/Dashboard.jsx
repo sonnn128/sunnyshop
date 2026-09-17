@@ -23,12 +23,10 @@ import {
   EditOutlined,
   PlusOutlined,
   SkinOutlined,
-  TagsOutlined,
   ClockCircleOutlined,
   ArrowUpOutlined
 } from '@ant-design/icons';
 import { userService } from '../../services/user.service.js';
-import { categoryService } from '../../services/category.service.js';
 
 const { Title, Text } = Typography;
 
@@ -44,7 +42,6 @@ const Dashboard = () => {
   const [recentProducts, setRecentProducts] = useState([]);
   const [recentUsers, setRecentUsers] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -58,14 +55,12 @@ const Dashboard = () => {
         statsRes,
         productsRes,
         usersRes,
-        ordersRes,
-        categoriesRes
+        ordersRes
       ] = await Promise.all([
         dashboardService.getStats(),
         dashboardService.getTopProducts(),
         userService.getAll(0, 5),
-        dashboardService.getRecentOrders(),
-        categoryService.getAll()
+        dashboardService.getRecentOrders()
       ]);
 
       setStats({
@@ -79,7 +74,6 @@ const Dashboard = () => {
       setRecentProducts(productsRes || []);
       setRecentUsers(usersRes.data?.content || []);
       setRecentOrders(ordersRes || []);
-      setCategories(categoriesRes.data || []);
 
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -281,7 +275,7 @@ const Dashboard = () => {
 
       {/* Table Rows */}
       <Row gutter={[24, 24]}>
-        <Col xs={24} xl={16}>
+        <Col xs={24}>
           <Card
             title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><ClockCircleOutlined style={{ color: '#4F46E5' }}/> Đơn Hàng Gần Đây</Space>}
             extra={<Button type="link" style={{ color: '#4F46E5', fontWeight: 500 }}>Xem tất cả</Button>}
@@ -295,29 +289,6 @@ const Dashboard = () => {
               rowKey="id"
               className="premium-table"
             />
-          </Card>
-        </Col>
-
-        <Col xs={24} xl={8}>
-          <Card
-            title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><TagsOutlined style={{ color: '#F59E0B' }}/> Danh Mục Nổi Bật</Space>}
-            style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', height: '100%' }}
-          >
-            {categories.slice(0, 5).map(cat => (
-              <div key={cat.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid #F3F4F6' }}>
-                 <Space>
-                    <div style={{ width: 40, height: 40, borderRadius: '8px', backgroundColor: '#FEF3C7', color: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                       <TagsOutlined />
-                    </div>
-                    <div>
-                      <Text strong style={{ color: '#111827' }}>{cat.name}</Text>
-                      <br/>
-                      <Text type="secondary" style={{ fontSize: '12px' }}>{cat.productCount} sản phẩm</Text>
-                    </div>
-                 </Space>
-                 <Button type="text" shape="circle" icon={<ArrowRightOutlined />} />
-              </div>
-            ))}
           </Card>
         </Col>
       </Row>

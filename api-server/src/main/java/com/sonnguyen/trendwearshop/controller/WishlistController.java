@@ -34,6 +34,7 @@ public class WishlistController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public ResponseEntity<List<ProductResponse>> getMyWishlist() {
         User user = getCurrentUser();
         List<Wishlist> wishlists = wishlistRepository.findByUserId(user.getId());

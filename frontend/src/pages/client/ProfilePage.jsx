@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Typography, Form, Input, Button, Row, Col, Avatar, message, Upload } from 'antd';
+import { Card, Typography, Form, Input, Button, Row, Col, Avatar, message, Upload, Select } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import api from '@/config/api.js';
@@ -25,7 +25,8 @@ const ProfilePage = () => {
                 fullName: user.fullName,
                 phone: user.phone,
                 address: user.address,
-                avatar: user.avatar
+                avatar: user.avatar,
+                gender: user.gender
             });
         }
     }, [user, form]);
@@ -44,7 +45,7 @@ const ProfilePage = () => {
         } catch (error) {
             console.error('Upload error:', error);
             onError(error);
-            message.error('Không thể tải ảnh đại diện lên');
+            message.error(error.response?.data?.message || 'Không thể tải ảnh đại diện lên');
         } finally {
             setLoadingAvatar(false);
         }
@@ -58,13 +59,13 @@ const ProfilePage = () => {
                 avatar: avatarUrl
             };
             const res = await api.put('/auth/profile', updateData);
-            message.success('Đã cập nhật hồ sơ');
+            message.success('Đã cập nhật hồ sơ thành công');
 
-            const updatedUser = res.data.data || res.data;
+            const updatedUser = res.data?.data || res.data;
             updateUser(updatedUser);
         } catch (e) {
             console.error(e);
-            message.error('Không thể cập nhật hồ sơ');
+            message.error(e.response?.data?.message || 'Không thể cập nhật hồ sơ');
         } finally {
             setLoadingProfile(false);
         }
@@ -74,9 +75,9 @@ const ProfilePage = () => {
         setLoadingPassword(true);
         try {
             await api.post('/auth/change-password', { oldPassword: vals.oldPassword, newPassword: vals.newPassword });
-            message.success('Đã đổi mật khẩu');
+            message.success('Đã đổi mật khẩu thành công');
         } catch (e) {
-            message.error('Không thể đổi mật khẩu');
+            message.error(e.response?.data?.message || 'Không thể đổi mật khẩu');
         } finally {
             setLoadingPassword(false);
         }
@@ -135,16 +136,33 @@ const ProfilePage = () => {
                                 </Col>
                             </Row>
 
-                            <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true }]}>
-                                <Input />
-                            </Form.Item>
+                            <Row gutter={16}>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item name="fullName" label="Họ và tên" rules={[{ required: true, message: 'Vui lòng nhập họ và tên' }]}>
+                                        <Input placeholder="Nhập họ và tên" />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12}>
+                                    <Form.Item name="gender" label="Giới tính">
+                                        <Select
+                                            placeholder="Chọn giới tính"
+                                            allowClear
+                                            options={[
+                                                { value: 'MALE', label: 'Nam' },
+                                                { value: 'FEMALE', label: 'Nữ' },
+                                                { value: 'OTHER', label: 'Khác' }
+                                            ]}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                            </Row>
 
                             <Form.Item name="phone" label="Số điện thoại">
-                                <Input />
+                                <Input placeholder="Nhập số điện thoại" />
                             </Form.Item>
 
                             <Form.Item name="address" label="Địa chỉ">
-                                <Input.TextArea rows={2} />
+                                <Input.TextArea rows={2} placeholder="Nhập địa chỉ" />
                             </Form.Item>
 
                             <Form.Item label="Sổ địa chỉ">

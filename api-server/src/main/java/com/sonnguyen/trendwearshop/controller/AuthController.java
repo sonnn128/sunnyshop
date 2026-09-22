@@ -120,7 +120,7 @@ public class AuthController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody RegisterRequest updateRequest, Authentication authentication) {
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequest updateRequest, Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(401).body(
                     ApiResponse.builder()

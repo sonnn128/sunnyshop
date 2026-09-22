@@ -11,6 +11,7 @@ import com.sonnguyen.trendwearshop.exception.NotFoundException;
 import com.sonnguyen.trendwearshop.model.Role;
 import com.sonnguyen.trendwearshop.model.User;
 import com.sonnguyen.trendwearshop.payload.request.RegisterRequest;
+import com.sonnguyen.trendwearshop.payload.request.UpdateProfileRequest;
 import com.sonnguyen.trendwearshop.payload.response.AuthResponse;
 import com.sonnguyen.trendwearshop.repository.RoleRepository;
 import com.sonnguyen.trendwearshop.repository.UserRepository;
@@ -107,18 +108,35 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public User updateProfile(String username, RegisterRequest updateRequest) {
+    public User updateProfile(String username, UpdateProfileRequest updateRequest) {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new CommonException("User not found", HttpStatus.NOT_FOUND);
         }
         
-        user.setEmail(updateRequest.getEmail());
-        user.setFullName(updateRequest.getFullName());
-        user.setPhone(updateRequest.getPhone());
-        user.setAddress(updateRequest.getAddress());
-        user.setGender(updateRequest.getGender());
-        user.setAvatar(updateRequest.getAvatar());
+        if (updateRequest.getEmail() != null && !updateRequest.getEmail().trim().isEmpty()
+                && !updateRequest.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (userRepository.existsByEmail(updateRequest.getEmail())) {
+                throw new CommonException("Email already exists: " + updateRequest.getEmail(), HttpStatus.CONFLICT);
+            }
+            user.setEmail(updateRequest.getEmail());
+        }
+        
+        if (updateRequest.getFullName() != null) {
+            user.setFullName(updateRequest.getFullName());
+        }
+        if (updateRequest.getPhone() != null) {
+            user.setPhone(updateRequest.getPhone());
+        }
+        if (updateRequest.getAddress() != null) {
+            user.setAddress(updateRequest.getAddress());
+        }
+        if (updateRequest.getGender() != null) {
+            user.setGender(updateRequest.getGender());
+        }
+        if (updateRequest.getAvatar() != null) {
+            user.setAvatar(updateRequest.getAvatar());
+        }
         
         return userRepository.save(user);
     }

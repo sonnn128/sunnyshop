@@ -2,3 +2,7 @@ data
 *.txt
 .idea
 .env
+
+*.pptx
+*.docx
+*.word.docx

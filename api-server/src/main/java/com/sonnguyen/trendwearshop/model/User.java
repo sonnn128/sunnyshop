@@ -1,6 +1,7 @@
 package com.sonnguyen.trendwearshop.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,6 +17,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String username;
+    @JsonIgnore
     private String password;
     private String email;
     private String fullName;

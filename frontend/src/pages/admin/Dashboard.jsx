@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { dashboardService } from '../../services/dashboard.service.js';
 import { formatPrice } from '@/utils/format';
 import {
@@ -31,6 +32,7 @@ import { userService } from '../../services/user.service.js';
 const { Title, Text } = Typography;
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalProducts: 0,
@@ -128,7 +130,12 @@ const Dashboard = () => {
       render: (_, record) => (
         <Space>
           <Tooltip title="Xem chi tiết">
-            <Button type="text" icon={<EyeOutlined />} style={{ color: '#4F46E5' }} />
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              style={{ color: '#4F46E5' }}
+              onClick={() => navigate('/admin/products')}
+            />
           </Tooltip>
         </Space>
       ),
@@ -176,7 +183,15 @@ const Dashboard = () => {
       title: 'Mã đơn',
       dataIndex: 'id',
       key: 'id',
-      render: (id) => <Text strong style={{ color: '#4F46E5' }}>#{id?.toString().slice(-8) || 'N/A'}</Text>,
+      render: (id) => (
+        <Text
+          strong
+          style={{ color: '#4F46E5', cursor: 'pointer' }}
+          onClick={() => navigate('/admin/orders')}
+        >
+          #{id?.toString().slice(-8) || 'N/A'}
+        </Text>
+      ),
     },
     {
       title: 'Khách hàng',
@@ -220,10 +235,10 @@ const Dashboard = () => {
   }
 
   const statCards = [
-    { title: 'Tổng Doanh Thu', value: formatPrice(stats.totalRevenue), icon: <DollarOutlined />, color: '#10B981', bg: '#D1FAE5' },
-    { title: 'Tổng Đơn Hàng', value: stats.totalOrders, icon: <ShoppingCartOutlined />, color: '#3B82F6', bg: '#DBEAFE' },
-    { title: 'Tổng Sản Phẩm', value: stats.totalProducts, icon: <SkinOutlined />, color: '#8B5CF6', bg: '#EDE9FE' },
-    { title: 'Khách Hàng', value: stats.totalUsers, icon: <UserOutlined />, color: '#F59E0B', bg: '#FEF3C7' },
+    { title: 'Tổng Doanh Thu', value: formatPrice(stats.totalRevenue), icon: <DollarOutlined />, color: '#10B981', bg: '#D1FAE5', path: '/admin/orders' },
+    { title: 'Tổng Đơn Hàng', value: stats.totalOrders, icon: <ShoppingCartOutlined />, color: '#3B82F6', bg: '#DBEAFE', path: '/admin/orders' },
+    { title: 'Tổng Sản Phẩm', value: stats.totalProducts, icon: <SkinOutlined />, color: '#8B5CF6', bg: '#EDE9FE', path: '/admin/products' },
+    { title: 'Khách Hàng', value: stats.totalUsers, icon: <UserOutlined />, color: '#F59E0B', bg: '#FEF3C7', path: '/admin/users' },
   ];
 
   return (
@@ -243,7 +258,8 @@ const Dashboard = () => {
           <Col xs={24} sm={12} lg={6} key={idx}>
             <Card 
               bodyStyle={{ padding: '24px' }} 
-              style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }}
+              style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)', cursor: 'pointer', transition: 'all 0.3s ease' }}
+              onClick={() => stat.path && navigate(stat.path)}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
@@ -278,7 +294,15 @@ const Dashboard = () => {
         <Col xs={24}>
           <Card
             title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><ClockCircleOutlined style={{ color: '#4F46E5' }}/> Đơn Hàng Gần Đây</Space>}
-            extra={<Button type="link" style={{ color: '#4F46E5', fontWeight: 500 }}>Xem tất cả</Button>}
+            extra={
+              <Button
+                type="link"
+                onClick={() => navigate('/admin/orders')}
+                style={{ color: '#4F46E5', fontWeight: 500 }}
+              >
+                Xem tất cả
+              </Button>
+            }
             style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
             bodyStyle={{ padding: 0 }}
           >
@@ -297,7 +321,16 @@ const Dashboard = () => {
         <Col xs={24}>
           <Card
             title={<Space style={{ fontWeight: 700, fontSize: '16px' }}><SkinOutlined style={{ color: '#8B5CF6' }}/> Sản Phẩm Xu Hướng</Space>}
-            extra={<Button type="link" icon={<PlusOutlined />} style={{ color: '#8B5CF6', fontWeight: 500 }}>Thêm Sản Phẩm</Button>}
+            extra={
+              <Button
+                type="link"
+                icon={<PlusOutlined />}
+                onClick={() => navigate('/admin/products')}
+                style={{ color: '#8B5CF6', fontWeight: 500 }}
+              >
+                Thêm Sản Phẩm
+              </Button>
+            }
             style={{ borderRadius: '16px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}
             bodyStyle={{ padding: 0 }}
           >
